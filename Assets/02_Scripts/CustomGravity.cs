@@ -1,10 +1,6 @@
 using System.Collections;
 using UnityEngine;
 
-/// <summary>
-/// Wendet Gravitation nur an wenn der Charakter nicht am Boden ist.
-/// Wird bei Treffern automatisch pausiert (HitStun = Juggle-Float).
-/// </summary>
 [RequireComponent(typeof(Rigidbody))]
 public class CustomGravity : MonoBehaviour
 {
@@ -45,7 +41,7 @@ public class CustomGravity : MonoBehaviour
     private IEnumerator PauseRoutine(float duration)
     {
         _paused = true;
-        // Y-Velocity nullen damit der Enemy floated statt weiter zu fallen
+
         var v = _rb.linearVelocity;
         v.y = 0f;
         _rb.linearVelocity = v;

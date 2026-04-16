@@ -26,7 +26,7 @@ public class ComboAttacker : MonoBehaviour
 
         _lastHitTime = Time.time;
         _hitCount++;
-        Debug.Log($"[Combo] Treffer {_hitCount}/{comboThreshold}");
+        Debug.Log($"[Combo] Hit {_hitCount}/{comboThreshold}");
 
         if (_hitCount >= comboThreshold)
         {
@@ -45,6 +45,6 @@ public class ComboAttacker : MonoBehaviour
         horizontal.y = 0f;
 
         rb.AddForce(horizontal * knockbackForce + Vector3.up * knockUpForce, ForceMode.Impulse);
-        Debug.Log($"[Combo] JUGGLE! {target.name} – KB:{knockbackForce} KnockUp:{knockUpForce}");
+        Debug.Log($"[Combo] JUGGLERONI! {target.name} KB:{knockbackForce} KnockUp:{knockUpForce}");
     }
 }
