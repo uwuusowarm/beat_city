@@ -1,30 +1,25 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(BoxCollider))]
 public class Arena : MonoBehaviour
 {
-    [SerializeField] private List<Health> enemies;
-    [SerializeField] private string enemyTag = "Enemy";
+    [SerializeField] private GameObject enemyPrefab;
+    [SerializeField] private int enemyCount = 3;
+    [SerializeField] private float spawnDelay = 1.5f;
 
+    private List<Transform> _spawnPoints = new();
     private bool _activated;
     private int _aliveCount;
+    private int _spawnedCount;
 
     private void Awake()
     {
-        if (enemies == null || enemies.Count == 0)
-        {
-            enemies = new List<Health>();
-            foreach (var go in GameObject.FindGameObjectsWithTag(enemyTag))
-            {
-                if (go.TryGetComponent<Health>(out var h))
-                    enemies.Add(h);
-            }
-        }
+        GetComponent<BoxCollider>().isTrigger = true;
 
-        _aliveCount = enemies.Count;
-
-        foreach (var enemy in enemies)
-            enemy.OnDeath += OnEnemyDied;
+        foreach (Transform child in transform)
+            _spawnPoints.Add(child);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -34,15 +29,43 @@ public class Arena : MonoBehaviour
 
         _activated = true;
         CameraFollow.Instance?.Lock();
-        Debug.Log($"[Arena] {gameObject.name} activated. {_aliveCount} enemies remaining");
+        Debug.Log($"[Arena] {gameObject.name} activated. Spawning {enemyCount} enemies");
+        StartCoroutine(SpawnRoutine());
+    }
+
+    private IEnumerator SpawnRoutine()
+    {
+        for (int i = 0; i < enemyCount; i++)
+        {
+            SpawnEnemy(i);
+            yield return new WaitForSeconds(spawnDelay);
+        }
+    }
+
+    private void SpawnEnemy(int index)
+    {
+        if (enemyPrefab == null) return;
+
+        var spawnPos = _spawnPoints.Count > 0
+            ? _spawnPoints[index % _spawnPoints.Count].position
+            : transform.position + Vector3.right * (index * 2f);
+
+        var go = Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
+        _aliveCount++;
+        _spawnedCount++;
+
+        if (go.TryGetComponent<Health>(out var health))
+            health.OnDeath += OnEnemyDied;
+
+        Debug.Log($"[Arena] enemy {_spawnedCount}/{enemyCount} spawned at {spawnPos}");
     }
 
     private void OnEnemyDied()
     {
         _aliveCount--;
-        Debug.Log($"[Arena] enemy defeated. {_aliveCount} remaining");
+        Debug.Log($"[Arena] enemies defeated. {_aliveCount} remaining");
 
-        if (_aliveCount <= 0)
+        if (_aliveCount <= 0 && _spawnedCount >= enemyCount)
         {
             CameraFollow.Instance?.Unlock();
             Debug.Log($"[Arena] {gameObject.name} done. Camera unlocked");
@@ -54,11 +77,19 @@ public class Arena : MonoBehaviour
         if (!TryGetComponent<BoxCollider>(out var col)) return;
 
         Gizmos.matrix = transform.localToWorldMatrix;
-        Gizmos.color = _activated
-            ? new Color(1f, 0f, 0f, 0.1f)
-            : new Color(0f, 1f, 0f, 0.1f);
+        bool locked = Application.isPlaying && CameraFollow.Instance != null && CameraFollow.Instance.IsLocked;
+
+        Gizmos.color = locked ? new Color(1f, 0f, 0f, 0.1f) : new Color(0f, 1f, 0f, 0.1f);
         Gizmos.DrawCube(col.center, col.size);
-        Gizmos.color = _activated ? Color.red : Color.green;
+        Gizmos.color = locked ? Color.red : Color.green;
         Gizmos.DrawWireCube(col.center, col.size);
+
+        Gizmos.matrix = Matrix4x4.identity;
+        Gizmos.color = Color.cyan;
+        foreach (Transform child in transform)
+        {
+            Gizmos.DrawSphere(child.position, 0.2f);
+            Gizmos.DrawLine(transform.position, child.position);
+        }
     }
 }

@@ -2,35 +2,42 @@ using UnityEngine;
 
 public class EnemyMovement : MonoBehaviour
 {
-    [SerializeField] private Transform targetPos;
-    [SerializeField] private float moveSpeed = 3f;
-    [SerializeField] private float stopDistance = 1.5f;
-    
-    void Start()
+    [Header("Movement")]
+    public float moveSpeed = 3f;
+    public float stopDistance = 1.5f;
+
+    [Header("Visuals")]
+    public Transform characterModel;
+
+    private Transform _target;
+
+    private void Start()
     {
-        
+        var player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+            _target = player.transform;
+        else
+            Debug.LogWarning("[EnemyMovement] No GameObject with tag 'Player' found.");
     }
 
-
-    void Update()
+    private void Update()
     {
         MoveTowardsPlayer();
     }
 
     private void MoveTowardsPlayer()
     {
-        if (targetPos == null)
-        {
-            Debug.LogWarning("targetPos is missing in Inspector!");
-            this.enabled = false;
-            return;
-        }
+        if (_target == null) return;
 
-        float dist = Vector3.Distance(targetPos.position, transform.position);
+        float dist = Vector3.Distance(_target.position, transform.position);
+        if (dist <= stopDistance) return;
 
-        if (dist > stopDistance)
-        {
-            transform.position = Vector3.MoveTowards(this.transform.position, targetPos.position, moveSpeed * Time.deltaTime);
-        }
+        var dir = (_target.position - transform.position).normalized;
+        dir.y = 0f;
+
+        transform.position = Vector3.MoveTowards(transform.position, _target.position, moveSpeed * Time.deltaTime);
+
+        if (characterModel != null && dir != Vector3.zero)
+            characterModel.rotation = Quaternion.LookRotation(new Vector3(dir.x, 0f, dir.z));
     }
 }

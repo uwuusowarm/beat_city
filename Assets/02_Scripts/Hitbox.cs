@@ -46,12 +46,12 @@ public class Hitbox : MonoBehaviour
         {
             if (!col.TryGetComponent<Hurtbox>(out var hurtbox))
             {
-                Debug.Log($"[Hitbox] → {col.gameObject.name}: no Hurtbox-Component");
+                Debug.Log($"[Hitbox] -> {col.gameObject.name}: No Hurtbox-Component");
                 continue;
             }
             if (hurtbox.Owner == owner)
             {
-                Debug.Log($"[Hitbox] → Self-Hit ignored ({owner.name})");
+                Debug.Log($"[Hitbox] -> Self-Hit ignored ({owner.name})");
                 continue;
             }
 
