@@ -250,6 +250,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HitboxTest
   hitbox: {fileID: 7255837457443035459}
   activeTime: 0.2
+  fist1: {fileID: 2947551889045250521}
+  fist2: {fileID: 1551072990592845800}
+  punchDistance: 0.4
+  punchSpeed: 12
 --- !u!65 &2540516612215301295
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -382,7 +386,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 44f0b52e8c85513499a6909501adaa7d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -547,7 +551,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 44f0b52e8c85513499a6909501adaa7d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
