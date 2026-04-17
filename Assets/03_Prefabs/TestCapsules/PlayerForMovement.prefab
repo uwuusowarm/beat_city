@@ -103,11 +103,11 @@ GameObject:
   - component: {fileID: 6408876330552325129}
   - component: {fileID: 4850563744316324283}
   - component: {fileID: 8307816738274517906}
-  - component: {fileID: 4729670155351195996}
   - component: {fileID: 2540516612215301295}
   - component: {fileID: 5847414795683444959}
   - component: {fileID: 4120568060040060487}
   - component: {fileID: 4882652899380410262}
+  - component: {fileID: 1908867706107061876}
   m_Layer: 0
   m_Name: PlayerForMovement
   m_TagString: Player
@@ -236,24 +236,6 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &4729670155351195996
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1662536712636653983}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 719a3600369c4eb49a4faf114d877eab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HitboxTest
-  hitbox: {fileID: 7255837457443035459}
-  activeTime: 0.2
-  fist1: {fileID: 2947551889045250521}
-  fist2: {fileID: 1551072990592845800}
-  punchDistance: 0.4
-  punchSpeed: 12
 --- !u!65 &2540516612215301295
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -319,6 +301,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerBoundsConstraint
   margin: -15
+--- !u!114 &1908867706107061876
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1662536712636653983}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c90a008bb54b674cb6371fbbf1ede7b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerCombat
+  hitbox: {fileID: 7255837457443035459}
+  activeTime: 0.2
+  attackAction: {fileID: 1120369429361536294, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  fist1: {fileID: 2947551889045250521}
+  fist2: {fileID: 1551072990592845800}
+  punchDistance: 0.8
+  punchSpeed: 20
 --- !u!1 &2045495061708834596
 GameObject:
   m_ObjectHideFlags: 0
