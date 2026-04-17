@@ -13,6 +13,7 @@ public class Settings : MonoBehaviour
     private int[] fpsOptions = { 30, 60, 120, 165 };
     private bool vsyncEnabled = true;
 
+
     void Start()
     {
         AudioManager.Instance.PlayMusic(MusicType.MainMenu);
@@ -81,4 +82,6 @@ public class Settings : MonoBehaviour
         SceneManager.LoadScene("Alihan_Scene");
         AudioManager.Instance.PlayMusic(MusicType.Stage1);
     }
+
+
 }

@@ -40,6 +40,10 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private MusicEntry[] musicEntries;
     [SerializeField] private SfxEntry[] sfxEntries;
 
+    private float masterVolume = 1f;
+    private float musicVolume = 1f;
+    private float sfxVolume = 1f;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -113,5 +117,29 @@ public class AudioManager : MonoBehaviour
         }
 
         Debug.LogWarning("No MusicEntry found for: " + type);
+    }
+
+    private void UpdateVolume()
+    {
+        musicSource.volume = masterVolume * musicVolume;
+        sfxSource.volume = masterVolume * sfxVolume;
+    }
+
+    public void SetMasterVolume(float value)
+    {
+        masterVolume = value;
+        UpdateVolume();
+    }
+
+    public void SetMusicVolume(float value)
+    {
+        musicVolume = value;
+        UpdateVolume();
+    }
+
+    public void SetSfxVolume(float value)
+    {
+        sfxVolume = value;
+        UpdateVolume();
     }
 }
