@@ -46,7 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f745816580663c41a9e61675af2b7b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AudioManager
-  musicSource: {fileID: 4667260958754158351}
+  musicSource: {fileID: 4850821595043226066}
   sfxSource: {fileID: 4667260958754158351}
   musicEntries:
   - musicType: 0
