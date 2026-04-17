@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,6 +10,9 @@ public class Hitbox : MonoBehaviour
     [SerializeField] private int damage = 10;
     [SerializeField] private float knockbackForce = 5f;
     [SerializeField] private float hitStunDuration = 0.3f;
+    [SerializeField] private float hitStopDuration = 0.08f;
+
+    public event Action<GameObject> OnHitLanded;
 
     private readonly HashSet<IDamageable> _hitTargets = new();
     private bool _isActive;
@@ -42,12 +46,12 @@ public class Hitbox : MonoBehaviour
         {
             if (!col.TryGetComponent<Hurtbox>(out var hurtbox))
             {
-                Debug.Log($"[Hitbox] → {col.gameObject.name}: no Hurtbox-Component");
+                Debug.Log($"[Hitbox] -> {col.gameObject.name}: No Hurtbox-Component");
                 continue;
             }
             if (hurtbox.Owner == owner)
             {
-                Debug.Log($"[Hitbox] → Self-Hit ignored ({owner.name})");
+                Debug.Log($"[Hitbox] -> Self-Hit ignored ({owner.name})");
                 continue;
             }
 
@@ -65,6 +69,9 @@ public class Hitbox : MonoBehaviour
                 HitStunDuration = hitStunDuration,
                 Source = owner
             });
+
+            OnHitLanded?.Invoke(hurtbox.Owner);
+            HitStop.Instance?.Do(hitStopDuration);
         }
     }
 
