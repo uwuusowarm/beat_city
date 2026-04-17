@@ -42,7 +42,18 @@ public class HitCounter : MonoBehaviour
 
     private void UpdateUI()
     {
-        
+        if (hitText != null)
+        {
+            Debug.Log($"[HitCounter] Hit Text: {hitText.text}");
+            if (_currentHits > 5)
+            {
+                hitText.text = _currentHits > 0 ? $" HITS<align=center>" + $"<color=red><align=center><br>{_currentHits}" : string.Empty;
+            }
+            else
+            {
+                hitText.text = _currentHits > 0 ? $"<color=white><align=center>HITS <br> {_currentHits}" : string.Empty;
+            }
+        }
     }
     
     public int GetCurrentHits() => _currentHits;
