@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 public class Settings : MonoBehaviour
 {
@@ -14,8 +15,9 @@ public class Settings : MonoBehaviour
 
     void Start()
     {
-        resolutions = Screen.resolutions.Select(res => new Resolution { width = res.width, height = res.height }).Distinct().ToArray();
+        AudioManager.Instance.PlayMusic(MusicType.MainMenu);
 
+        resolutions = Screen.resolutions.Select(res => new Resolution { width = res.width, height = res.height }).Distinct().ToArray();
         resolutionDropdown.ClearOptions();
 
         var options = resolutions.Select(r => r.width + " x " + r.height).ToList();
@@ -72,5 +74,11 @@ public class Settings : MonoBehaviour
             UnityEditor.EditorApplication.isPlaying = false;
         #endif
         Application.Quit();
+    }
+
+    public void Play()
+    {
+        SceneManager.LoadScene("Alihan_Scene");
+        AudioManager.Instance.PlayMusic(MusicType.Stage1);
     }
 }
