@@ -1044,6 +1044,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerForMovement
       objectReference: {fileID: 0}
+    - target: {fileID: 1908867706107061876, guid: dabb5cb82a3ef3849a2797b9fae3dc3d, type: 3}
+      propertyPath: cooldown
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1908867706107061876, guid: dabb5cb82a3ef3849a2797b9fae3dc3d, type: 3}
+      propertyPath: activeTime
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 4120568060040060487, guid: dabb5cb82a3ef3849a2797b9fae3dc3d, type: 3}
       propertyPath: comboThreshold
       value: 2
@@ -1051,34 +1059,6 @@ PrefabInstance:
     - target: {fileID: 4120568060040060487, guid: dabb5cb82a3ef3849a2797b9fae3dc3d, type: 3}
       propertyPath: knockbackForce
       value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4729670155351195996, guid: dabb5cb82a3ef3849a2797b9fae3dc3d, type: 3}
-      propertyPath: punchSpeed
-      value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 4729670155351195996, guid: dabb5cb82a3ef3849a2797b9fae3dc3d, type: 3}
-      propertyPath: punchDistance
-      value: 0.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 4729670155351195996, guid: dabb5cb82a3ef3849a2797b9fae3dc3d, type: 3}
-      propertyPath: attackAction.m_Action.m_Name
-      value: Attack
-      objectReference: {fileID: 0}
-    - target: {fileID: 4729670155351195996, guid: dabb5cb82a3ef3849a2797b9fae3dc3d, type: 3}
-      propertyPath: attackAction.m_Action.m_SingletonActionBindings.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4729670155351195996, guid: dabb5cb82a3ef3849a2797b9fae3dc3d, type: 3}
-      propertyPath: attackAction.m_Action.m_SingletonActionBindings.Array.data[0].m_Id
-      value: db01da05-84e5-4f9a-b625-a062fecf20bf
-      objectReference: {fileID: 0}
-    - target: {fileID: 4729670155351195996, guid: dabb5cb82a3ef3849a2797b9fae3dc3d, type: 3}
-      propertyPath: attackAction.m_Action.m_SingletonActionBindings.Array.data[0].m_Path
-      value: <Gamepad>/buttonWest
-      objectReference: {fileID: 0}
-    - target: {fileID: 4729670155351195996, guid: dabb5cb82a3ef3849a2797b9fae3dc3d, type: 3}
-      propertyPath: attackAction.m_Action.m_SingletonActionBindings.Array.data[0].m_Action
-      value: Attack
       objectReference: {fileID: 0}
     - target: {fileID: 4799275800366551407, guid: dabb5cb82a3ef3849a2797b9fae3dc3d, type: 3}
       propertyPath: m_LocalPosition.x

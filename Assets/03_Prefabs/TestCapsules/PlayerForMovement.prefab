@@ -108,6 +108,7 @@ GameObject:
   - component: {fileID: 4120568060040060487}
   - component: {fileID: 4882652899380410262}
   - component: {fileID: 1908867706107061876}
+  - component: {fileID: -3982840628395845413}
   m_Layer: 0
   m_Name: PlayerForMovement
   m_TagString: Player
@@ -320,6 +321,20 @@ MonoBehaviour:
   fist2: {fileID: 1551072990592845800}
   punchDistance: 0.8
   punchSpeed: 20
+--- !u!114 &-3982840628395845413
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1662536712636653983}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d79aaa1f7e1b4321808728f6aca93c2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HitCounter
+  hitText: {fileID: 0}
+  prefix: 'HITS: '
 --- !u!1 &2045495061708834596
 GameObject:
   m_ObjectHideFlags: 0
