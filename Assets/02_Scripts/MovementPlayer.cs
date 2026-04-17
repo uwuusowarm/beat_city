@@ -49,16 +49,36 @@ public class MovementPlayer : MonoBehaviour
     {
         float moveX = 0f;
         float moveZ = 0f;
-
+        
         if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed) moveX = 1f;
         if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed) moveX = -1f;
         if (Keyboard.current.wKey.isPressed || Keyboard.current.upArrowKey.isPressed) moveZ = 1f;
         if (Keyboard.current.sKey.isPressed || Keyboard.current.downArrowKey.isPressed) moveZ = -1f;
 
+        if (Gamepad.current != null)
+        {
+            Vector2 stickInput = Gamepad.current.leftStick.ReadValue();
+            Vector3 dpadInput = Gamepad.current.dpad.ReadValue();
+
+            if (stickInput.magnitude > 0.1f)
+            {
+                moveX = stickInput.x;
+                moveZ = stickInput.y;
+            }
+            else if (dpadInput.magnitude > 0.1f)
+            {
+                moveX = dpadInput.x;
+                moveZ = dpadInput.y;
+            }
+        }
+
         Vector3 inputDirection = new Vector3(moveX, 0f, moveZ).normalized;
 
         // Optional: Run mechanic (can be activated)
-        //float currentSpeed = Keyboard.current.leftShiftKey.isPressed ? runSpeed : walkSpeed;
+        // bool isRunning = false;
+        // if (Keyboard.current != null && Keyboard.current.leftShiftKey.isPressed) isRunning = true;
+        // if (Gamepad.current != null && Gamepad.current.rightTrigger.isPressed) isRunning = true;
+        // float currentSpeed = isRunning ? runSpeed : walkSpeed;
         float currentSpeed = walkSpeed;
         
         moveDirection = inputDirection * currentSpeed;
@@ -73,7 +93,11 @@ public class MovementPlayer : MonoBehaviour
         {
             verticalVelocity = -0.5f; 
 
-            if (Keyboard.current.spaceKey.wasPressedThisFrame)
+            bool jumpPressed = false;
+            if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame) jumpPressed = true;
+            if (Gamepad.current != null && Gamepad.current.buttonSouth.wasPressedThisFrame) jumpPressed = true;
+
+            if (jumpPressed)
             {
                 verticalVelocity = jumpForce;
             }
