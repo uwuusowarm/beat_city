@@ -16,8 +16,6 @@ public class Settings : MonoBehaviour
 
     void Start()
     {
-        AudioManager.Instance.PlayMusic(MusicType.MainMenu);
-
         resolutions = Screen.resolutions.Select(res => new Resolution { width = res.width, height = res.height }).Distinct().ToArray();
         resolutionDropdown.ClearOptions();
 
@@ -80,7 +78,6 @@ public class Settings : MonoBehaviour
     public void Play()
     {
         SceneManager.LoadScene("Alihan_Scene");
-        AudioManager.Instance.PlayMusic(MusicType.Stage1);
     }
 
 
