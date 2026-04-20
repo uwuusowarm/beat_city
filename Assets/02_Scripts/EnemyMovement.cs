@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[RequireComponent(typeof(CharacterController))]
 public class EnemyMovement : MonoBehaviour
 {
     [Header("Movement")]
@@ -22,8 +23,12 @@ public class EnemyMovement : MonoBehaviour
     private bool isFlanking;
     private Vector3 currentFlankOffset;
 
+    private CharacterController controller;
+    private float verticalVelocity;
+
     private void Start()
     {
+        controller = GetComponent<CharacterController>();
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         
         if (playerObj != null)
@@ -75,11 +80,24 @@ public class EnemyMovement : MonoBehaviour
             targetPosition = player.position + (dirToPlayer * attackDistance);
         }
 
-        targetPosition.y = transform.position.y;
+        Vector3 directionToTarget = targetPosition - transform.position;
+        directionToTarget.y = 0f;
+        float distance = directionToTarget.magnitude;
 
-        if (Vector3.Distance(transform.position, targetPosition) > 0.1f)
+        if (distance > 0.1f)
         {
-            transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
+            Vector3 moveVelocity = directionToTarget.normalized * moveSpeed;
+            if (controller.isGrounded)
+            {
+                verticalVelocity = -0.5f;
+            }
+            else
+            {
+                verticalVelocity -= 20f * Time.deltaTime; 
+            }
+            
+            moveVelocity.y = verticalVelocity;
+            controller.Move(moveVelocity * Time.deltaTime);
         }
     }
 
