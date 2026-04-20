@@ -5,6 +5,7 @@ using UnityEngine;
 public class CustomGravity : MonoBehaviour
 {
     [SerializeField] private float gravityScale = 2f;
+    [SerializeField] private float horizontalDrag = 5f;
     [SerializeField] private Vector3 groundCheckOffset = new Vector3(0f, -0.9f, 0f);
     [SerializeField] private float groundCheckRadius = 0.2f;
     [SerializeField] private LayerMask groundLayers = ~0;
@@ -29,6 +30,14 @@ public class CustomGravity : MonoBehaviour
     {
         if (hitData.HitStunDuration > 0f)
             Pause(hitData.HitStunDuration);
+
+        if (hitData.KnockbackForce > 0f)
+        {
+            _rb.linearVelocity = Vector3.zero;
+            Vector3 force = hitData.KnockbackDirection * hitData.KnockbackForce;
+            if (hitData.KnockUpForce > 0f) force += Vector3.up * hitData.KnockUpForce;
+            _rb.AddForce(force, ForceMode.Impulse);
+        }
     }
 
     public void Pause(float duration)
@@ -69,8 +78,27 @@ public class CustomGravity : MonoBehaviour
         else
         {
             if (!_wasGrounded)
+            {
                 _rb.linearVelocity = Vector3.zero;
-            else if (_rb.linearVelocity.y < 0f)
+            }
+            else
+            {
+                Vector3 horizontalVel = _rb.linearVelocity;
+                horizontalVel.y = 0f;
+                
+                if (horizontalVel.magnitude > 0.1f)
+                {
+                    _rb.AddForce(-horizontalVel * horizontalDrag, ForceMode.Acceleration);
+                }
+                else if (horizontalVel.magnitude > 0f)
+                {
+                    horizontalVel = Vector3.zero;
+                    horizontalVel.y = _rb.linearVelocity.y;
+                    _rb.linearVelocity = horizontalVel;
+                }
+            }
+
+            if (_rb.linearVelocity.y < 0f)
             {
                 var v = _rb.linearVelocity;
                 v.y = 0f;

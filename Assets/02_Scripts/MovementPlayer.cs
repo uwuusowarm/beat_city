@@ -17,6 +17,7 @@ public class MovementPlayer : MonoBehaviour
     public KeyCode dashKey = KeyCode.LeftAlt;
 
     [Header("Visuals")]
+    [SerializeField] private InputActionReference moveAction;
     public Transform characterModel; 
 
     private CharacterController controller;
@@ -45,34 +46,56 @@ public class MovementPlayer : MonoBehaviour
         //HandleDashInput();
     }
 
-    private void HandleMovementAndJump()
+    public Vector3 GetInputDirection()
     {
         float moveX = 0f;
         float moveZ = 0f;
-        
-        if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed) moveX = 1f;
-        if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed) moveX = -1f;
-        if (Keyboard.current.wKey.isPressed || Keyboard.current.upArrowKey.isPressed) moveZ = 1f;
-        if (Keyboard.current.sKey.isPressed || Keyboard.current.downArrowKey.isPressed) moveZ = -1f;
 
-        if (Gamepad.current != null)
+        if (moveAction != null && moveAction.action.enabled)
         {
-            Vector2 stickInput = Gamepad.current.leftStick.ReadValue();
-            Vector3 dpadInput = Gamepad.current.dpad.ReadValue();
+            Vector2 input = moveAction.action.ReadValue<Vector2>();
+            moveX = input.x;
+            moveZ = input.y;
+        }
+        else
+        {
+            if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed) moveX = 1f;
+            if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed) moveX = -1f;
+            if (Keyboard.current.wKey.isPressed || Keyboard.current.upArrowKey.isPressed) moveZ = 1f;
+            if (Keyboard.current.sKey.isPressed || Keyboard.current.downArrowKey.isPressed) moveZ = -1f;
 
-            if (stickInput.magnitude > 0.1f)
+            if (Gamepad.current != null)
             {
-                moveX = stickInput.x;
-                moveZ = stickInput.y;
-            }
-            else if (dpadInput.magnitude > 0.1f)
-            {
-                moveX = dpadInput.x;
-                moveZ = dpadInput.y;
+                Vector2 stickInput = Gamepad.current.leftStick.ReadValue();
+                if (stickInput.magnitude > 0.1f)
+                {
+                    moveX = stickInput.x;
+                    moveZ = stickInput.y;
+                }
             }
         }
 
-        Vector3 inputDirection = new Vector3(moveX, 0f, moveZ).normalized;
+        return new Vector3(moveX, 0f, moveZ).normalized;
+    }
+
+    private void HandleMovementAndJump()
+    {
+        Vector3 inputDirection = GetInputDirection();
+        
+        if (!PlayerStateManager.Instance.CanPerformAction())
+        {
+            moveDirection = Vector3.zero;
+            if (!controller.isGrounded)
+            {
+                verticalVelocity -= gravity * Time.deltaTime;
+                moveDirection.y = verticalVelocity;
+                controller.Move(moveDirection * Time.deltaTime);
+            }
+            return;
+        }
+
+        float moveX = inputDirection.x;
+        float moveZ = inputDirection.z;
 
         // Optional: Run mechanic (can be activated)
         // bool isRunning = false;
