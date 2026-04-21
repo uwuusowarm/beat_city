@@ -119,6 +119,21 @@ public class AudioManager : MonoBehaviour
         Debug.LogWarning("No MusicEntry found for: " + type);
     }
 
+    public void PauseMusic()
+    {
+        musicSource.Pause();
+    }
+
+    public void UnPauseMusic()
+    {
+        musicSource.UnPause();
+    }
+
+    public void StopMusic()
+    {
+        musicSource.Stop();
+    }
+
     private void UpdateVolume()
     {
         musicSource.volume = masterVolume * musicVolume;
