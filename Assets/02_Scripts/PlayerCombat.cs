@@ -25,9 +25,15 @@ public class PlayerCombat : MonoBehaviour
     
     private int _punchIndex;
 
+    private float _fist1InitialZ;
+    private float _fist2InitialZ;
+
     private void Awake()
     {
         hitbox.OnHitLanded += target => OnHitLanded?.Invoke(target);
+        
+        if (fist1 != null) _fist1InitialZ = fist1.localPosition.z;
+        if (fist2 != null) _fist2InitialZ = fist2.localPosition.z;
     }
 
     private void OnEnable()
@@ -40,17 +46,32 @@ public class PlayerCombat : MonoBehaviour
     {
         attackAction.action.performed -= OnAttackInput;
         attackAction.action.Disable();
+        if (_isAttacking && PlayerStateManager.Instance != null) PlayerStateManager.Instance.ResetToIdle();
     }
 
-    private void OnAttackInput(InputAction.CallbackContext _)
+    private void OnAttackInput(InputAction.CallbackContext context)
     {
-        if (!_isAttacking)
+        Debug.Log($"[PlayerCombat] Attack Input received from action: {context.action.name}");
+        if (!_isAttacking && PlayerStateManager.Instance.CanPerformAction())
             StartCoroutine(DoAttack());
+    }
+
+    public void ExtendFists(bool extend)
+    {
+        Vector3 localPos1 = fist1.localPosition;
+        Vector3 localPos2 = fist2.localPosition;
+        
+        localPos1.z = extend ? _fist1InitialZ + punchDistance : _fist1InitialZ;
+        localPos2.z = extend ? _fist2InitialZ + punchDistance : _fist2InitialZ;
+        
+        fist1.localPosition = localPos1;
+        fist2.localPosition = localPos2;
     }
 
     private IEnumerator DoAttack()
     {
         _isAttacking = true;
+        PlayerStateManager.Instance.SetState(PlayerState.Attacking);
         hitbox.Activate();
         OnAttackStarted?.Invoke();
         
@@ -64,12 +85,15 @@ public class PlayerCombat : MonoBehaviour
         hitbox.Deactivate();
         OnAttackEnded?.Invoke();
         _isAttacking = false;
+        PlayerStateManager.Instance.ResetToIdle();
     }
     
     private IEnumerator PunchFist(Transform fist)
     {
+        float initialZ = (fist == fist1) ? _fist1InitialZ : _fist2InitialZ;
         var origin = fist.localPosition;
-        var forward = origin + Vector3.forward * punchDistance;
+        var forward = origin;
+        forward.z = initialZ + punchDistance;
 
         float t = 0f;
         while (t < 1f)

@@ -109,6 +109,7 @@ GameObject:
   - component: {fileID: 4882652899380410262}
   - component: {fileID: 1908867706107061876}
   - component: {fileID: -3982840628395845413}
+  - component: {fileID: -3002893363729806011}
   m_Layer: 0
   m_Name: PlayerForMovement
   m_TagString: Player
@@ -131,6 +132,7 @@ Transform:
   m_Children:
   - {fileID: 7557122176001111321}
   - {fileID: 2987007214813234445}
+  - {fileID: 76619158109293888}
   - {fileID: 2947551889045250521}
   - {fileID: 1551072990592845800}
   m_Father: {fileID: 0}
@@ -211,6 +213,7 @@ MonoBehaviour:
   dashSpeed: 15
   dashDuration: 0.2
   dashKey: 308
+  moveAction: {fileID: -1680190386980627800, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   characterModel: {fileID: 4799275800366551407}
 --- !u!143 &8307816738274517906
 CharacterController:
@@ -334,7 +337,35 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HitCounter
   hitText: {fileID: 0}
-  prefix: 'HITS: '
+--- !u!114 &-3002893363729806011
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1662536712636653983}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0d7d4bfdaf047be9a93cf3b6216ef30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerGrapple
+  grappleHitbox: {fileID: 2707581671062939215}
+  grappleAction: {fileID: 7040659881675835329, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  grappleActiveTime: 0.2
+  grappleDamage: 15
+  throwDistance: 2
+  throwHeight: 1.5
+  throwDuration: 0.4
+  cooldown: 0.5
+  holdOffset: 1.2
+  projectileDamage: 10
+  projectileKnockback: 3
+  projectileKnockUp: 3
+  projectileRadius: 2.5
+  impactKnockback: 0
+  impactKnockUp: 0
+  characterModel: {fileID: 4799275800366551407}
+  showProjectileGizmos: 1
 --- !u!1 &2045495061708834596
 GameObject:
   m_ObjectHideFlags: 0
@@ -449,6 +480,58 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &3322999798816249773
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 76619158109293888}
+  - component: {fileID: 2707581671062939215}
+  m_Layer: 0
+  m_Name: Hitbox_Grapple
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &76619158109293888
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3322999798816249773}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4799275800366551407}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2707581671062939215
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3322999798816249773}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be482ebd44724597b3eafc3cd25745a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Hitbox
+  owner: {fileID: 0}
+  size: {x: 1, y: 1, z: 1}
+  offset: {x: 0, y: 0, z: 0.8}
+  damage: 10
+  knockbackForce: 5
+  knockUpForce: 0
+  hitStunDuration: 0.08
+  hitStopDuration: 0.08
 --- !u!1 &3532854947990041198
 GameObject:
   m_ObjectHideFlags: 0
@@ -498,6 +581,7 @@ MonoBehaviour:
   offset: {x: 0, y: 0, z: 0.8}
   damage: 10
   knockbackForce: 5
+  knockUpForce: 0
   hitStunDuration: 0.08
   hitStopDuration: 0.08
 --- !u!1 &5744745961531439141

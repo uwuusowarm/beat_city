@@ -9,6 +9,7 @@ public class Hitbox : MonoBehaviour
     [SerializeField] private Vector3 offset = Vector3.zero;
     [SerializeField] private int damage = 10;
     [SerializeField] private float knockbackForce = 5f;
+    [SerializeField] private float knockUpForce = 0f;
     [SerializeField] private float hitStunDuration = 0.3f;
     [SerializeField] private float hitStopDuration = 0.08f;
 
@@ -66,6 +67,7 @@ public class Hitbox : MonoBehaviour
                 Damage = damage,
                 KnockbackDirection = knockbackDir,
                 KnockbackForce = knockbackForce,
+                KnockUpForce = knockUpForce,
                 HitStunDuration = hitStunDuration,
                 Source = owner
             });
