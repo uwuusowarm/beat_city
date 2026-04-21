@@ -45,14 +45,8 @@ public class HitCounter : MonoBehaviour
         if (hitText != null)
         {
             Debug.Log($"[HitCounter] Hit Text: {hitText.text}");
-            if (_currentHits > 5)
-            {
-                hitText.text = _currentHits > 0 ? $" HITS<align=center>" + $"<color=red><align=center><br>{_currentHits}" : string.Empty;
-            }
-            else
-            {
-                hitText.text = _currentHits > 0 ? $"<color=white><align=center>HITS <br> {_currentHits}" : string.Empty;
-            }
+            string color = _currentHits > 5 ? "red" : "white";
+            hitText.text = _currentHits > 0 ? $"<color={color}><align=center>HITS<br>{_currentHits}" : string.Empty;
         }
     }
     
