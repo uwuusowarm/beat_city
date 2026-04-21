@@ -36,6 +36,7 @@ public class ESCMenu : MonoBehaviour
     public void Resume()
     {
         escMenuUI.SetActive(false);
+        AudioManager.Instance.UnPauseMusic();
         Time.timeScale = 1f;
         isPaused = false;
     }
@@ -43,6 +44,7 @@ public class ESCMenu : MonoBehaviour
     public void Pause()
     {
         escMenuUI.SetActive(true);
+        AudioManager.Instance.PauseMusic();
         Time.timeScale = 0f;
         isPaused = true;
     }
