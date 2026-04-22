@@ -400,6 +400,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Settings
   resolutionDropdown: {fileID: 7769936357885187077}
   fpsDropdown: {fileID: 5486115301076524872}
+  firstSelectedButton: {fileID: 4711309225491082831}
 --- !u!1 &949444502061872633
 GameObject:
   m_ObjectHideFlags: 0

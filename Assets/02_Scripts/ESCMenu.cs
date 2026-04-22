@@ -1,11 +1,13 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 
 public class ESCMenu : MonoBehaviour
 {
     public GameObject escMenuUI;
     public static bool isPaused = false;
+    public GameObject firstSelectedButton;
 
 
     void Start()
@@ -39,6 +41,7 @@ public class ESCMenu : MonoBehaviour
         AudioManager.Instance.UnPauseMusic();
         Time.timeScale = 1f;
         isPaused = false;
+        EventSystem.current.SetSelectedGameObject(null);
     }
 
     public void Pause()
@@ -47,6 +50,8 @@ public class ESCMenu : MonoBehaviour
         AudioManager.Instance.PauseMusic();
         Time.timeScale = 0f;
         isPaused = true;
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(firstSelectedButton);
     }
 
     public void LoadMainMenu()

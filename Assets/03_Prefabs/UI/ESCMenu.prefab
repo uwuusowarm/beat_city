@@ -1921,6 +1921,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ESCMenu
   escMenuUI: {fileID: 1182558498333725032}
+  firstSelectedButton: {fileID: 429418243891067550}
 --- !u!1 &8411156955575987856
 GameObject:
   m_ObjectHideFlags: 0

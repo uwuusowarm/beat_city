@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Linq;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 
 public class Settings : MonoBehaviour
 {
@@ -12,10 +13,14 @@ public class Settings : MonoBehaviour
     public TMP_Dropdown fpsDropdown;
     private int[] fpsOptions = { 30, 60, 120, 165 };
     private bool vsyncEnabled = true;
+    public GameObject firstSelectedButton;
 
 
     void Start()
     {
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(firstSelectedButton);
+        
         resolutions = Screen.resolutions.Select(res => new Resolution { width = res.width, height = res.height }).Distinct().ToArray();
         resolutionDropdown.ClearOptions();
 
