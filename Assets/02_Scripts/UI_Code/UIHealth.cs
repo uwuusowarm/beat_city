@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Events;
 
 public class UIHealth : MonoBehaviour
 {
@@ -42,5 +41,5 @@ public class UIHealth : MonoBehaviour
             slider.value = (float)health.Current / health.Max;
         }
     }
-    public void Refresh() => UpdateSlider();
+    public void RefreshHealth() => UpdateSlider();
 }

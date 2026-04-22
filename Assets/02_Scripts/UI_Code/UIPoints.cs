@@ -1,16 +1,38 @@
 using UnityEngine;
+using TMPro;
 
 public class UIPoints : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [SerializeField] private Points points;
+    [SerializeField] private TextMeshProUGUI pointsText;
+
+    private void OnEnable() //post awake from hitcounter
     {
-        
+        if (points == null) return;
+
+        points.OnPointsChanged += HandlePointsChanged;
+        UpdatePoints();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnDisable()
     {
-        
+        if (points == null) return;
+
+        points.OnPointsChanged -= HandlePointsChanged;
     }
+
+    private void HandlePointsChanged(int newTotal)
+    {
+        UpdatePoints();
+    }
+
+    private void UpdatePoints()
+    {
+        if (pointsText != null && points != null)
+        {
+            pointsText.text = $"Points: {points.Current:D7}";
+        }
+    }
+
+    public void RefreshPoints() => UpdatePoints();
 }
