@@ -48,6 +48,7 @@ public class PlayerGrapple : MonoBehaviour
         if (grappleHitbox != null)
         {
             grappleHitbox.OnHitLanded += HandleGrappleHit;
+            grappleHitbox.ApplyDamage = false;
         }
         else
         {
@@ -88,7 +89,6 @@ public class PlayerGrapple : MonoBehaviour
         _isGrappling = true;
         PlayerStateManager.Instance.SetState(PlayerState.Grappling);
         
-        // Fäuste ausstrecken
         if (_combat != null) _combat.ExtendFists(true);
         
         grappleHitbox.Activate();
@@ -119,6 +119,12 @@ public class PlayerGrapple : MonoBehaviour
         if (hitObject.TryGetComponent<Hurtbox>(out var hurtbox))
         {
             target = hurtbox.Owner;
+        }
+
+        if (target.TryGetComponent<Health>(out var health) && health.Current <= 0)
+        {
+            Debug.Log($"[PlayerGrapple] Target {target.name} is already dead, cannot grapple.");
+            return;
         }
 
         _heldTarget = target;
@@ -164,21 +170,23 @@ public class PlayerGrapple : MonoBehaviour
 
         yield return StartCoroutine(AnimateThrow(target, throwDir));
 
-        // Fäuste wieder einziehen
         if (_combat != null) _combat.ExtendFists(false);
 
-        var damageable = target.GetComponent<IDamageable>();
-        if (damageable != null)
+        if (target != null)
         {
-            damageable.TakeDamage(new HitData
+            var damageable = target.GetComponent<IDamageable>();
+            if (damageable != null)
             {
-                Damage = grappleDamage,
-                KnockbackDirection = throwDir,
-                KnockbackForce = impactKnockback, 
-                KnockUpForce = impactKnockUp,
-                HitStunDuration = 0.5f,
-                Source = gameObject
-            });
+                damageable.TakeDamage(new HitData
+                {
+                    Damage = grappleDamage,
+                    KnockbackDirection = throwDir,
+                    KnockbackForce = impactKnockback, 
+                    KnockUpForce = impactKnockUp,
+                    HitStunDuration = 0.5f,
+                    Source = gameObject
+                });
+            }
         }
 
         PlayerStateManager.Instance.ResetToIdle();
@@ -187,6 +195,8 @@ public class PlayerGrapple : MonoBehaviour
 
     private IEnumerator AnimateThrow(GameObject target, Vector3 throwDir)
     {
+        if (target == null) yield break;
+
         Vector3 startPos = target.transform.position;
         Vector3 targetPos = startPos + throwDir * throwDistance;
         
@@ -200,6 +210,8 @@ public class PlayerGrapple : MonoBehaviour
         float elapsed = 0f;
         while (elapsed < throwDuration)
         {
+            if (target == null) yield break;
+
             elapsed += Time.deltaTime;
             float t = elapsed / throwDuration;
 
@@ -213,16 +225,18 @@ public class PlayerGrapple : MonoBehaviour
             Collider[] hits = Physics.OverlapSphere(currentPos, projectileRadius);
             foreach (var hit in hits)
             {
+                if (hit == null) continue;
                 if (hit.TryGetComponent<Hurtbox>(out var hurtbox))
                 {
                     GameObject otherEnemy = hurtbox.Owner;
 
-                    if (otherEnemy == target || otherEnemy == gameObject) continue;
+                    if (otherEnemy == null || otherEnemy == target || otherEnemy == gameObject) continue;
 
                     if (otherEnemy.TryGetComponent<IDamageable>(out var damageable))
                     {
                         if (hitTargetsDuringFlight.Add(damageable))
                         {
+                            if (target == null) break; 
                             Vector3 knockbackDir = (otherEnemy.transform.position - target.transform.position).normalized;
                             knockbackDir.y = 0f;
                             if (knockbackDir == Vector3.zero) knockbackDir = throwDir;
@@ -247,8 +261,17 @@ public class PlayerGrapple : MonoBehaviour
             yield return null;
         }
 
-        target.transform.position = targetPos;
-        if (cc != null) cc.enabled = true;
+        if (target != null)
+        {
+            target.transform.position = targetPos;
+            if (cc != null) cc.enabled = true;
+
+            if (target.TryGetComponent<EnemyMovement>(out var em))
+            {
+                em.ApplyImpulse(impactKnockUp, throwDir * impactKnockback);
+            }
+        }
+
         _currentProjectile = null;
     }
 

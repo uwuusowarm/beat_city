@@ -25,10 +25,16 @@ public class EnemyMovement : MonoBehaviour
 
     private CharacterController controller;
     private float verticalVelocity;
+    private float hitStunTimer;
+    private Vector3 externalForce;
+    private float horizontalDrag = 5f;
+
+    private Health _health;
 
     private void Start()
     {
         controller = GetComponent<CharacterController>();
+        _health = GetComponent<Health>();
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         
         if (playerObj != null)
@@ -37,11 +43,48 @@ public class EnemyMovement : MonoBehaviour
             Debug.LogWarning("[EnemyMovement] No GameObject with tag 'Player' found.");
 
         PickNewTactic();
+
+        if (TryGetComponent<Health>(out var health))
+        {
+            health.OnHit += OnHit;
+        }
+    }
+
+    public void ApplyImpulse(float knockUpForce, Vector3 knockbackForce)
+    {
+        if (knockUpForce > 0f) verticalVelocity = knockUpForce;
+        if (knockbackForce != Vector3.zero) externalForce = knockbackForce;
+    }
+
+    private void OnHit(HitData hitData)
+    {
+        if (hitData.KnockUpForce > 0f)
+        {
+            verticalVelocity = hitData.KnockUpForce;
+        }
+
+        if (hitData.HitStunDuration > 0f)
+        {
+            hitStunTimer = hitData.HitStunDuration;
+        }
+
+        if (hitData.KnockbackForce > 0f && hitData.KnockbackDirection != Vector3.zero)
+        {
+            externalForce = hitData.KnockbackDirection * hitData.KnockbackForce;
+        }
     }
 
     private void Update()
     {
         if (player == null) return;
+        if (_health != null && _health.Current <= 0) return;
+
+        if (hitStunTimer > 0f)
+        {
+            hitStunTimer -= Time.deltaTime;
+            ApplyGravityAndMove(Vector3.zero);
+            return;
+        }
 
         tacticTimer -= Time.deltaTime;
         if (tacticTimer <= 0f)
@@ -84,20 +127,38 @@ public class EnemyMovement : MonoBehaviour
         directionToTarget.y = 0f;
         float distance = directionToTarget.magnitude;
 
+        Vector3 moveVelocity = Vector3.zero;
         if (distance > 0.1f)
         {
-            Vector3 moveVelocity = directionToTarget.normalized * moveSpeed;
-            if (controller.isGrounded)
-            {
-                verticalVelocity = -0.5f;
-            }
-            else
-            {
-                verticalVelocity -= 20f * Time.deltaTime; 
-            }
-            
-            moveVelocity.y = verticalVelocity;
-            controller.Move(moveVelocity * Time.deltaTime);
+            moveVelocity = directionToTarget.normalized * moveSpeed;
+        }
+        
+        ApplyGravityAndMove(moveVelocity);
+    }
+
+    private void ApplyGravityAndMove(Vector3 moveVelocity)
+    {
+        if (controller.isGrounded && verticalVelocity <= 0f)
+        {
+            verticalVelocity = -0.5f;
+        }
+        else
+        {
+            verticalVelocity -= 20f * Time.deltaTime;
+        }
+
+        Vector3 totalMovement = moveVelocity + externalForce;
+        totalMovement.y = verticalVelocity;
+        
+        controller.Move(totalMovement * Time.deltaTime);
+
+        if (externalForce.magnitude > 0.01f)
+        {
+            externalForce -= externalForce * horizontalDrag * Time.deltaTime;
+        }
+        else
+        {
+            externalForce = Vector3.zero;
         }
     }
 

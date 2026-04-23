@@ -82,7 +82,7 @@ public class Settings : MonoBehaviour
 
     public void Play()
     {
-        SceneManager.LoadScene("Alihan_Scene");
+        SceneManager.LoadScene("01_Scenes/MainScenes/Level01Pitch");
     }
 
 

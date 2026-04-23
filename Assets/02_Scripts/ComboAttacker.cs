@@ -45,6 +45,23 @@ public class ComboAttacker : MonoBehaviour
         horizontal.y = 0f;
 
         rb.AddForce(horizontal * knockbackForce + Vector3.up * knockUpForce, ForceMode.Impulse);
+
+        if (target.TryGetComponent<EnemyMovement>(out var em))
+        {
+            em.ApplyImpulse(knockUpForce, horizontal * knockbackForce);
+        }
+
+        if (target.TryGetComponent<Health>(out var health))
+        {
+            health.TakeDamage(new HitData
+            {
+                Damage = 0,
+                KnockbackDirection = horizontal,
+                KnockbackForce = knockbackForce,
+                KnockUpForce = knockUpForce,
+                Source = gameObject
+            });
+        }
         Debug.Log($"[Combo] JUGGLERONI! {target.name} KB:{knockbackForce} KnockUp:{knockUpForce}");
     }
 }

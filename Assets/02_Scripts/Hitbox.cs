@@ -12,6 +12,9 @@ public class Hitbox : MonoBehaviour
     [SerializeField] private float knockUpForce = 0f;
     [SerializeField] private float hitStunDuration = 0.3f;
     [SerializeField] private float hitStopDuration = 0.08f;
+    [SerializeField] private bool applyDamage = true;
+
+    public bool ApplyDamage { get => applyDamage; set => applyDamage = value; }
 
     public event Action<GameObject> OnHitLanded;
 
@@ -59,18 +62,21 @@ public class Hitbox : MonoBehaviour
             var damageable = hurtbox.Owner.GetComponent<IDamageable>();
             if (damageable == null || !_hitTargets.Add(damageable)) continue;
 
-            var knockbackDir = (hurtbox.Owner.transform.position - owner.transform.position).normalized;
-            knockbackDir.y = 0f;
-
-            damageable.TakeDamage(new HitData
+            if (applyDamage)
             {
-                Damage = damage,
-                KnockbackDirection = knockbackDir,
-                KnockbackForce = knockbackForce,
-                KnockUpForce = knockUpForce,
-                HitStunDuration = hitStunDuration,
-                Source = owner
-            });
+                var knockbackDir = (hurtbox.Owner.transform.position - owner.transform.position).normalized;
+                knockbackDir.y = 0f;
+
+                damageable.TakeDamage(new HitData
+                {
+                    Damage = damage,
+                    KnockbackDirection = knockbackDir,
+                    KnockbackForce = knockbackForce,
+                    KnockUpForce = knockUpForce,
+                    HitStunDuration = hitStunDuration,
+                    Source = owner
+                });
+            }
 
             OnHitLanded?.Invoke(hurtbox.Owner);
             HitStop.Instance?.Do(hitStopDuration);
