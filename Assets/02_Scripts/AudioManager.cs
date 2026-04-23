@@ -53,6 +53,7 @@ public class AudioManager : MonoBehaviour
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        UpdateVolume();
     }
     
     public void PlaySfx(SfxType type, int index)
