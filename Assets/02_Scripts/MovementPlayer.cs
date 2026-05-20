@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using TouchPhase = UnityEngine.TouchPhase;
 
 public class MovementPlayer : MonoBehaviour
 {
@@ -51,18 +52,25 @@ public class MovementPlayer : MonoBehaviour
         float moveX = 0f;
         float moveZ = 0f;
 
-        if (moveAction != null && moveAction.action.enabled)
+        if (moveAction != null && moveAction.action != null && moveAction.action.enabled)
         {
             Vector2 input = moveAction.action.ReadValue<Vector2>();
-            moveX = input.x;
-            moveZ = input.y;
+            
+            if (input.magnitude > 0.05f)
+            {
+                moveX = input.x;
+                moveZ = input.y;
+            }
         }
         else
         {
-            if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed) moveX = 1f;
-            if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed) moveX = -1f;
-            if (Keyboard.current.wKey.isPressed || Keyboard.current.upArrowKey.isPressed) moveZ = 1f;
-            if (Keyboard.current.sKey.isPressed || Keyboard.current.downArrowKey.isPressed) moveZ = -1f;
+            if (Keyboard.current != null)
+            {
+                if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed) moveX = 1f;
+                if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed) moveX = -1f;
+                if (Keyboard.current.wKey.isPressed || Keyboard.current.upArrowKey.isPressed) moveZ = 1f;
+                if (Keyboard.current.sKey.isPressed || Keyboard.current.downArrowKey.isPressed) moveZ = -1f;
+            }
 
             if (Gamepad.current != null)
             {
@@ -106,9 +114,9 @@ public class MovementPlayer : MonoBehaviour
         
         moveDirection = inputDirection * currentSpeed;
 
-        if (moveX != 0)
+        if (moveX != 0 || moveZ != 0)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(new Vector3(moveX, 0, 0));
+            Quaternion targetRotation = Quaternion.LookRotation(new Vector3(moveX, 0, moveZ));
             characterModel.rotation = targetRotation;
         }
 
