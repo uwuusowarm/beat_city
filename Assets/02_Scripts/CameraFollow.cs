@@ -13,12 +13,20 @@ public class CameraFollow : MonoBehaviour
 
     public bool IsLocked { get; private set; }
     private float _lockedX;
+    private Camera _cam;
+    private Camera _camera;
+
+    private void Start()
+    {
+        _camera = Camera.main;
+        _cam = GetComponent<Camera>();
+    }
 
     private void Awake() => Instance = this;
 
     private void LateUpdate()
     {
-        if (target == null) return;
+        if (!target) return;
 
         float targetX = IsLocked
             ? _lockedX
@@ -46,13 +54,13 @@ public class CameraFollow : MonoBehaviour
         _maxX = maxX;
     }
 
-    public (float min, float max) GetVisibleWorldBoundsX(float worldY = 0f)
+    public (float min, float max) GetVisibleWorldBoundsX(float distanceToCamera)
     {
-        var cam = Camera.main;
-        if (cam == null) return (float.NegativeInfinity, float.PositiveInfinity);
+        if (!_cam) _cam = _camera;
+        if (!_cam) return (float.NegativeInfinity, float.PositiveInfinity);
 
-        var left  = cam.ViewportToWorldPoint(new Vector3(0f, 0.5f, cam.nearClipPlane));
-        var right = cam.ViewportToWorldPoint(new Vector3(1f, 0.5f, cam.nearClipPlane));
+        var left  = _cam.ViewportToWorldPoint(new Vector3(0f, 0.5f, distanceToCamera));
+        var right = _cam.ViewportToWorldPoint(new Vector3(1f, 0.5f, distanceToCamera));
         return (left.x, right.x);
     }
 }
