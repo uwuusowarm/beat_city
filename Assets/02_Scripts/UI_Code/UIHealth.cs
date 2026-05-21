@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,12 +18,16 @@ public class UIHealth : MonoBehaviour
  
         health.OnHit += HandleHit;
         health.OnDeath += HandleDeath;
-        UpdateSlider();
 
         if (trailSlider != null)
             trailSlider.value = healthSlider.value;
     }
- 
+
+    private void Start()
+    {
+        UpdateSlider();
+    }
+
     private void OnDisable()
     {
         if (health == null) return;
