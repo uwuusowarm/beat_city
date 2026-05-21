@@ -656,9 +656,41 @@ PrefabInstance:
       propertyPath: projectileKnockback
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: -3002893363729806011, guid: dabb5cb82a3ef3849a2797b9fae3dc3d, type: 3}
+      propertyPath: showProjectileGizmos
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3002893363729806011, guid: dabb5cb82a3ef3849a2797b9fae3dc3d, type: 3}
+      propertyPath: throwActions.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -3002893363729806011, guid: dabb5cb82a3ef3849a2797b9fae3dc3d, type: 3}
+      propertyPath: 'throwActions.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1120369429361536294, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    - target: {fileID: -3002893363729806011, guid: dabb5cb82a3ef3849a2797b9fae3dc3d, type: 3}
+      propertyPath: 'throwActions.Array.data[1]'
+      value: 
+      objectReference: {fileID: 7040659881675835329, guid: 052faaac586de48259a63d0c4782560b, type: 3}
     - target: {fileID: 1662536712636653983, guid: dabb5cb82a3ef3849a2797b9fae3dc3d, type: 3}
       propertyPath: m_Name
       value: PlayerForMovement
+      objectReference: {fileID: 0}
+    - target: {fileID: 2707581671062939215, guid: dabb5cb82a3ef3849a2797b9fae3dc3d, type: 3}
+      propertyPath: size.x
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2707581671062939215, guid: dabb5cb82a3ef3849a2797b9fae3dc3d, type: 3}
+      propertyPath: size.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2707581671062939215, guid: dabb5cb82a3ef3849a2797b9fae3dc3d, type: 3}
+      propertyPath: size.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2707581671062939215, guid: dabb5cb82a3ef3849a2797b9fae3dc3d, type: 3}
+      propertyPath: offset.z
+      value: 0.16
       objectReference: {fileID: 0}
     - target: {fileID: 3120836381415646570, guid: dabb5cb82a3ef3849a2797b9fae3dc3d, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -720,6 +752,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: e494c7442ad8061499c252c2df842218, type: 2}
+    - target: {fileID: 7255837457443035459, guid: dabb5cb82a3ef3849a2797b9fae3dc3d, type: 3}
+      propertyPath: size.x
+      value: 1.2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:

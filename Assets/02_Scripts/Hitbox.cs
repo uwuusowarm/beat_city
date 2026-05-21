@@ -13,8 +13,11 @@ public class Hitbox : MonoBehaviour
     [SerializeField] private float hitStunDuration = 0.3f;
     [SerializeField] private float hitStopDuration = 0.08f;
     [SerializeField] private bool applyDamage = true;
+    [SerializeField] private LayerMask targetLayer = ~0;
 
     public bool ApplyDamage { get => applyDamage; set => applyDamage = value; }
+    public Vector3 Size => size;
+    public Vector3 Offset => offset;
 
     public event Action<GameObject> OnHitLanded;
 
