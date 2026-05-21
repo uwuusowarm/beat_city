@@ -1188,7 +1188,7 @@ MonoBehaviour:
   - Name: Damage Up
     Cost: 50
     CostMod: 0
-    MaxLevel: 0
+    MaxLevel: 3
     Button: {fileID: 192660054}
     Label: {fileID: 930133834}
     Level: 0
@@ -1198,11 +1198,11 @@ MonoBehaviour:
     MaxLevel: 0
     Button: {fileID: 896977404}
     Label: {fileID: 960031928}
-    Level: 0
+    Level: 2
   - Name: Max Health
     Cost: 0
     CostMod: 0
-    MaxLevel: 0
+    MaxLevel: 6
     Button: {fileID: 731051192}
     Label: {fileID: 971471970}
     Level: 0
@@ -1233,33 +1233,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8841d3237c544a542a4623e8d5e1e665, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Dojo
-  shopAction: {fileID: 0}
+  shopAction: {fileID: 1292525245084948248, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   playerMoney: {fileID: 615819927}
   shopPanel: {fileID: 377138447}
   pauseWhenOpen: 1
   skills:
-  - Name: Test1
-    Description: test
+  - Name: Calvados
+    Description: Very Powerful DP, so cool so fresh, combos into rekka
     Cost: 5
     CostMod: 5
     MaxLevel: 5
     Button: {fileID: 2028013384}
     Level: 0
-  - Name: Test2
-    Description: gshshedsh
+  - Name: Mortobato
+    Description: Invincible Reversal, immune to oki
     Cost: 10
     CostMod: 5
     MaxLevel: 5
     Button: {fileID: 413795032}
     Level: 0
-  - Name: Test2
+  - Name: Erarlumo
     Description: gshshedsh
     Cost: 10
     CostMod: 5
     MaxLevel: 5
     Button: {fileID: 1365091714}
     Level: 0
-  - Name: Test2
+  - Name: Dauro
     Description: gshshedsh
     Cost: 10
     CostMod: 5
