@@ -3366,7 +3366,7 @@ PrefabInstance:
     - target: {fileID: 5644881235989190228, guid: baf3767a1d15826409e2908c20bddf38, type: 3}
       propertyPath: health
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1002496777}
     - target: {fileID: 5644881235989190228, guid: baf3767a1d15826409e2908c20bddf38, type: 3}
       propertyPath: slider
       value: 

@@ -18,6 +18,9 @@ public class EnemyMovement : MonoBehaviour
     public float minRepositionTime = 1.0f;
     public float maxRepositionTime = 3.0f;
 
+
+    public bool IsStunned => hitStunTimer > 0f;
+
     private Transform player;
     private float tacticTimer;
     private bool isFlanking;

@@ -14,6 +14,11 @@ public class ComboAttacker : MonoBehaviour
     {
         foreach (var hitbox in GetComponentsInChildren<Hitbox>(includeInactive: true))
             hitbox.OnHitLanded += OnHitLanded;
+
+        if (TryGetComponent<Health>(out var myHealth))
+        {
+            myHealth.OnHit += OnReceivedDamage;
+        }
     }
 
     private void OnHitLanded(GameObject target)
@@ -63,5 +68,13 @@ public class ComboAttacker : MonoBehaviour
             });
         }
         Debug.Log($"[Combo] JUGGLERONI! {target.name} KB:{knockbackForce} KnockUp:{knockUpForce}");
+    }
+
+    private void OnReceivedDamage(HitData data)
+    {
+        if (_hitCount > 0)
+        {
+            _hitCount = 0;
+        }
     }
 }
