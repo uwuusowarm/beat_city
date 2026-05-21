@@ -20,6 +20,8 @@ public class EnemyCombat : MonoBehaviour
     private Renderer[] _renderers;
     private Color[] _originalColors;
 
+    public bool IsReadyToAttack => Time.time >= _lastAttackTime + attackCooldown;
+
     private void Start()
     {
         _movement = GetComponent<EnemyMovement>();
@@ -44,6 +46,15 @@ public class EnemyCombat : MonoBehaviour
         if (BeatEmUpDirector.Instance != null) BeatEmUpDirector.Instance.ReleaseToken(this);
     }
 
+    private void OnDisable()
+    {
+        if (BeatEmUpDirector.Instance != null)
+        {
+            BeatEmUpDirector.Instance.ReleaseToken(this);
+            BeatEmUpDirector.Instance.ReleaseFlankSlot(this);
+        }
+    }
+
     private void HandleHit(HitData data)
     {
         if (_isTelegraphing)
@@ -53,6 +64,8 @@ public class EnemyCombat : MonoBehaviour
             ResetVisuals();
         }
         if (BeatEmUpDirector.Instance != null) BeatEmUpDirector.Instance.ReleaseToken(this);
+
+        if (_movement != null) _movement.ForceRecalculateTactic();
     }
 
     private void Update()
@@ -92,6 +105,9 @@ public class EnemyCombat : MonoBehaviour
         _isTelegraphing = false;
         _lastAttackTime = Time.time;
         if (BeatEmUpDirector.Instance != null) BeatEmUpDirector.Instance.ReleaseToken(this);
+
+        if (BeatEmUpDirector.Instance != null) BeatEmUpDirector.Instance.ReleaseToken(this);
+        if (_movement != null) _movement.ForceRecalculateTactic();
     }
 
     private void Attack()
