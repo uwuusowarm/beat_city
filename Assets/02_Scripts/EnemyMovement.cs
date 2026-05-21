@@ -12,15 +12,20 @@ public class EnemyMovement : MonoBehaviour
 
     [Header("Distances")]
     public float attackDistance = 1.5f;
-    public float flankDistance = 3.5f;
+    //public float flankDistance = 3.5f;
 
     [Header("AI Tactics")]
     public float minRepositionTime = 1.0f;
     public float maxRepositionTime = 3.0f;
 
+
+    public bool IsStunned => hitStunTimer > 0f;
+
     private Transform player;
     private float tacticTimer;
     private bool isFlanking;
+    private float flankAngle;
+    private float flankDirection = 1f;
     private Vector3 currentFlankOffset;
 
     private CharacterController controller;
@@ -30,11 +35,13 @@ public class EnemyMovement : MonoBehaviour
     private float horizontalDrag = 5f;
 
     private Health _health;
+    private EnemyCombat _combat;
 
     private void Start()
     {
         controller = GetComponent<CharacterController>();
         _health = GetComponent<Health>();
+        _combat = GetComponent<EnemyCombat>();
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         
         if (playerObj != null)
@@ -74,6 +81,11 @@ public class EnemyMovement : MonoBehaviour
         }
     }
 
+    public void ForceRecalculateTactic()
+    {
+        tacticTimer = 0f;
+    }
+
     private void Update()
     {
         if (player == null) return;
@@ -87,6 +99,12 @@ public class EnemyMovement : MonoBehaviour
         }
 
         tacticTimer -= Time.deltaTime;
+
+        if (!isFlanking && BeatEmUpDirector.Instance != null && !BeatEmUpDirector.Instance.HasToken(_combat))
+        {
+            ForceRecalculateTactic();
+        }
+
         if (tacticTimer <= 0f)
         {
             PickNewTactic();
@@ -100,12 +118,21 @@ public class EnemyMovement : MonoBehaviour
     {
         tacticTimer = Random.Range(minRepositionTime, maxRepositionTime);
 
-        isFlanking = Random.value > 0.5f; 
-
-        if (isFlanking)
+        if (_combat != null && BeatEmUpDirector.Instance != null)
         {
-            float randomAngle = Random.Range(0f, 360f);
-            currentFlankOffset = new Vector3(Mathf.Sin(randomAngle * Mathf.Deg2Rad), 0f, Mathf.Cos(randomAngle * Mathf.Deg2Rad)) * flankDistance;
+            if (_combat.IsReadyToAttack)
+            {
+                isFlanking = !BeatEmUpDirector.Instance.RequestAttackToken(_combat);
+            }
+            else
+            {
+                isFlanking = true;
+                BeatEmUpDirector.Instance.ReleaseToken(_combat);
+            }
+        }
+        else
+        {
+            isFlanking = Random.value > 0.5f;
         }
     }
 
@@ -115,12 +142,20 @@ public class EnemyMovement : MonoBehaviour
 
         if (isFlanking)
         {
-            targetPosition = player.position + currentFlankOffset;
+            if (BeatEmUpDirector.Instance != null && _combat != null)
+            {
+                targetPosition = BeatEmUpDirector.Instance.GetFlankSlotPosition(_combat);
+            }
+            else
+            {
+                targetPosition = player.position + Vector3.right * 4f; 
+            }
         }
         else
         {
-            Vector3 dirToPlayer = (transform.position - player.position).normalized;
-            targetPosition = player.position + (dirToPlayer * attackDistance);
+            float dirX = (transform.position.x >= player.position.x) ? 1f : -1f;
+            
+            targetPosition = player.position + new Vector3(dirX * attackDistance, 0f, 0f);
         }
 
         Vector3 directionToTarget = targetPosition - transform.position;
