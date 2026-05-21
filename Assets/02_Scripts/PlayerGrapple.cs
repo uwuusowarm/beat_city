@@ -251,6 +251,9 @@ public class PlayerGrapple : MonoBehaviour
         
         CharacterController cc = target.GetComponent<CharacterController>();
         Rigidbody rb = target.GetComponent<Rigidbody>();
+        EnemyMovement em = target.GetComponent<EnemyMovement>();
+        if (em != null) em.IsInThrowState = true;
+
         if (cc != null) cc.enabled = false;
 
         _currentProjectile = target;
@@ -260,6 +263,7 @@ public class PlayerGrapple : MonoBehaviour
         while (elapsed < throwDuration)
         {
             if (target == null) yield break;
+            if (em != null && !em.IsInThrowState) break;
 
             elapsed += Time.deltaTime;
             float t = elapsed / throwDuration;
@@ -312,12 +316,22 @@ public class PlayerGrapple : MonoBehaviour
 
         if (target != null)
         {
-            target.transform.position = targetPos;
+            bool interrupted = em != null && !em.IsInThrowState;
+            
+            if (!interrupted)
+            {
+                target.transform.position = targetPos;
+            }
+
             if (cc != null) cc.enabled = true;
 
-            if (target.TryGetComponent<EnemyMovement>(out var em))
+            if (em != null)
             {
-                em.ApplyImpulse(impactKnockUp, throwDir * impactKnockback);
+                if (!interrupted)
+                {
+                    em.ApplyImpulse(impactKnockUp, throwDir * impactKnockback);
+                }
+                em.IsInThrowState = false;
             }
         }
 
