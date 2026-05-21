@@ -24,6 +24,8 @@ public class EnemyMovement : MonoBehaviour
     private Transform player;
     private float tacticTimer;
     private bool isFlanking;
+    private float flankAngle;
+    private float flankDirection = 1f;
     private Vector3 currentFlankOffset;
 
     private CharacterController controller;
@@ -103,13 +105,20 @@ public class EnemyMovement : MonoBehaviour
     {
         tacticTimer = Random.Range(minRepositionTime, maxRepositionTime);
 
-        isFlanking = Random.value > 0.5f; 
-
-        if (isFlanking)
+        EnemyCombat combat = GetComponent<EnemyCombat>();
+        if (combat != null && BeatEmUpDirector.Instance != null)
         {
-            float randomAngle = Random.Range(0f, 360f);
-            currentFlankOffset = new Vector3(Mathf.Sin(randomAngle * Mathf.Deg2Rad), 0f, Mathf.Cos(randomAngle * Mathf.Deg2Rad)) * flankDistance;
+            isFlanking = !BeatEmUpDirector.Instance.RequestAttackToken(combat);
         }
+        else
+        {
+            isFlanking = Random.value > 0.5f; 
+        }
+        
+        flankDirection = Random.value > 0.5f ? 1f : -1f;
+        
+        Vector3 dir = transform.position - player.position;
+        flankAngle = Mathf.Atan2(dir.z, dir.x);
     }
 
     private void MoveBasedOnTactic()
@@ -118,7 +127,9 @@ public class EnemyMovement : MonoBehaviour
 
         if (isFlanking)
         {
-            targetPosition = player.position + currentFlankOffset;
+            flankAngle += flankDirection * (moveSpeed * 0.5f) * Time.deltaTime;
+            Vector3 offset = new Vector3(Mathf.Cos(flankAngle), 0f, Mathf.Sin(flankAngle)) * flankDistance;
+            targetPosition = player.position + offset;
         }
         else
         {
