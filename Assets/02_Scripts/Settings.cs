@@ -21,6 +21,16 @@ public class Settings : MonoBehaviour
         EventSystem.current.SetSelectedGameObject(null);
         EventSystem.current.SetSelectedGameObject(firstSelectedButton);
         
+    #if UNITY_ANDROID || UNITY_IOS
+        if (resolutionDropdown != null) 
+        {
+            resolutionDropdown.interactable = false;
+            resolutionDropdown.ClearOptions();
+            resolutionDropdown.AddOptions(new System.Collections.Generic.List<string> { 
+                Screen.width + " x " + Screen.height + " (Native)" 
+            });
+        }
+    #else
         resolutions = Screen.resolutions.Select(res => new Resolution { width = res.width, height = res.height }).Distinct().ToArray();
         resolutionDropdown.ClearOptions();
 
@@ -31,6 +41,7 @@ public class Settings : MonoBehaviour
         resolutionDropdown.RefreshShownValue();
 
         SetVSync(true);
+    #endif
     }
 
     public void SetResolution(int index)
@@ -82,7 +93,7 @@ public class Settings : MonoBehaviour
 
     public void Play()
     {
-        SceneManager.LoadScene("Alihan_Scene");
+        SceneManager.LoadScene("01_Scenes/MainScenes/Level01Pitch");
     }
 
 
