@@ -32,8 +32,11 @@ public class EnemyMovement : MonoBehaviour
     private float verticalVelocity;
     private float hitStunTimer;
     private Vector3 externalForce;
+    public Vector3 ExternalForce { get => externalForce; set => externalForce = value; }
     private float horizontalDrag = 5f;
 
+    public bool IsInThrowState { get; set; }
+    
     private Health _health;
     private EnemyCombat _combat;
 
@@ -57,10 +60,10 @@ public class EnemyMovement : MonoBehaviour
         }
     }
 
-    public void ApplyImpulse(float knockUpForce, Vector3 knockbackForce)
-    {
+    public void ApplyImpulse(float knockUpForce, Vector3 knockbackForce, float hitStunReset = 0f)    {
         if (knockUpForce > 0f) verticalVelocity = knockUpForce;
         if (knockbackForce != Vector3.zero) externalForce = knockbackForce;
+        if (hitStunReset > 0f) hitStunTimer = hitStunReset;
     }
 
     private void OnHit(HitData hitData)
