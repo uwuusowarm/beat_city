@@ -157,8 +157,8 @@ public class Dojo : MonoBehaviour
     {
         switch (skill.Name)
         {
-             /*case "Double Jump":
-                playerAbilities.DoubleJumpUnlocked = true;
+             /*case "DP":
+                playerAbilities.DP = true;
                 break;
                 and so on*/
 

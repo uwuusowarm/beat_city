@@ -25,6 +25,8 @@ public class UpgradeShop : MonoBehaviour
     [SerializeField] private GameObject shopPanel;
     [SerializeField] private bool pauseWhenOpen = true;
     [SerializeField] private UpgradeData[] upgrades;
+    
+    [SerializeField] private Health health;
 
     private bool _isOpen;
 
@@ -38,6 +40,7 @@ public class UpgradeShop : MonoBehaviour
             UpdateLabel(upgrade);
         }
     }
+    
 
     private void OnEnable()
     {
@@ -112,11 +115,12 @@ public class UpgradeShop : MonoBehaviour
     {
         switch (upgrade.Name)
         {
-            /*case "Max Health":
-                playerStats.MaxHealth += 10;
+            case "Max Health":
+                health.Max += 10;
+                Debug.Log($"[UpgradeShop] apply effect for '{upgrade.Name}' at level {upgrade.Level}. PlayerHealth now {health.Max}");
+                UIManager.Instance.PlayerHealthUI.RefreshHealth();
                 break;
- 
-            and so on */
+            
             default:
                 Debug.Log($"[UpgradeShop] apply effect for '{upgrade.Name}' at level {upgrade.Level}.");
                 break;
