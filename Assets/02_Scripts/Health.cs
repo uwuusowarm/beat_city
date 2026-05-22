@@ -6,14 +6,22 @@ public class Health : MonoBehaviour, IDamageable
     [SerializeField] private int maxHealth;
 
     public int Current { get; private set; }
-    public int Max => maxHealth;
+    public int Max
+    {
+        get => maxHealth;
+        set => maxHealth = value;
+    }
+
+    private UIHealth UIHealth;
 
     public event Action<HitData> OnHit;
     public event Action OnDeath;
 
     private void Awake()
     {
+        UIHealth = GetComponent<UIHealth>();
         Current = maxHealth;
+        UIHealth.RefreshHealth();
     }
 
     public void TakeDamage(HitData hitData)
@@ -34,5 +42,6 @@ public class Health : MonoBehaviour, IDamageable
     public void Heal(int amount)
     {
         Current = Mathf.Min(maxHealth, Current + amount);
+        UIHealth.RefreshHealth();
     }
 }
