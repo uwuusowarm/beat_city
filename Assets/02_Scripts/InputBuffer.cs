@@ -79,6 +79,7 @@ public class InputBuffer : MonoBehaviour
 
     private void OnPunch(InputAction.CallbackContext context)
     {
+        if (!context.ReadValueAsButton()) return;
         Buffer(CombatInputType.Punch);
     }
 

@@ -4,6 +4,7 @@ using UnityEngine;
 public class Health : MonoBehaviour, IDamageable
 {
     [SerializeField] private int maxHealth;
+    [SerializeField] private UIHealth uiHealth;
 
     public int Current { get; private set; }
     public int Max
@@ -19,9 +20,13 @@ public class Health : MonoBehaviour, IDamageable
 
     private void Awake()
     {
-        UIHealth = GetComponent<UIHealth>();
         Current = maxHealth;
-        UIHealth.RefreshHealth();
+        if (uiHealth == null)
+        {
+            Debug.LogError("UIHealth reference is missing. Assign the UIHealth component in the Inspector.");
+            return;
+        }
+        uiHealth.RefreshHealth();
     }
 
     public void TakeDamage(HitData hitData)
