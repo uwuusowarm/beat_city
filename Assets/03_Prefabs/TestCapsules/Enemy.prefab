@@ -17,6 +17,8 @@ GameObject:
   - component: {fileID: 2756672636755149574}
   - component: {fileID: 4303618723420802442}
   - component: {fileID: 1482522927499175716}
+  - component: {fileID: 5880786750169601833}
+  - component: {fileID: 8462979821413393436}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Enemy
@@ -172,7 +174,6 @@ MonoBehaviour:
   stopDistance: 1.5
   characterModel: {fileID: 0}
   attackDistance: 1.5
-  flankDistance: 3.5
   minRepositionTime: 1
   maxRepositionTime: 3
 --- !u!114 &4303618723420802442
@@ -213,6 +214,43 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &5880786750169601833
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1577849195809885492}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8806c84e6b0f2614eb4b83baa6efe34c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyCombat
+  attackDamage: 10
+  attackCooldown: 1.5
+  attackRange: 2
+  knockbackForce: 5
+  hitStunDuration: 0.5
+  telegraphDuration: 0.35
+--- !u!114 &8462979821413393436
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1577849195809885492}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: afa69384fc1e4987b0702fc0ed086b19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyWallBounce
+  bounceFactor: 1
+  extraBounceImpulse: 4
+  bounceKnockUpForce: 8
+  bounceHitStun: 0.5
+  margin: 0.5
+  minBounceVelocity: 1
+  bounceDamage: 0
 --- !u!1 &3280674439306157934
 GameObject:
   m_ObjectHideFlags: 0

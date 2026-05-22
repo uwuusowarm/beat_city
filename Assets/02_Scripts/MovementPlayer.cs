@@ -114,9 +114,9 @@ public class MovementPlayer : MonoBehaviour
         
         moveDirection = inputDirection * currentSpeed;
 
-        if (moveX != 0 || moveZ != 0)
+        if (moveX != 0)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(new Vector3(moveX, 0, moveZ));
+            Quaternion targetRotation = Quaternion.LookRotation(new Vector3(moveX, 0, 0));
             characterModel.rotation = targetRotation;
         }
 

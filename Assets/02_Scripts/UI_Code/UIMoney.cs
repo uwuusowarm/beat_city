@@ -1,16 +1,36 @@
 using UnityEngine;
-
+using TMPro;
+ 
 public class UIMoney : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [SerializeField] private Money money;
+    [SerializeField] private TextMeshProUGUI moneyText;
+ 
+    private void OnEnable()
     {
-        
+        if (money == null) return;
+ 
+        money.OnMoneyChanged += HandleMoneyChanged;
+        UpdateDisplay();
     }
-
-    // Update is called once per frame
-    void Update()
+ 
+    private void OnDisable()
     {
-        
+        if (money == null) return;
+ 
+        money.OnMoneyChanged -= HandleMoneyChanged;
+    }
+ 
+    private void HandleMoneyChanged(int newTotal)
+    {
+        UpdateDisplay();
+    }
+ 
+    private void UpdateDisplay()
+    {
+        if (moneyText != null && money != null)
+        {
+            moneyText.text = $"${money.Current}";
+        }
     }
 }

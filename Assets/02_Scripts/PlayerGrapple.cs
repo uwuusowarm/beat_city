@@ -3,12 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 public class PlayerGrapple : MonoBehaviour
 {
     [Header("Settings")]
     [SerializeField] private Hitbox grappleHitbox;
-    [SerializeField] private InputActionReference grappleAction;
+    [FormerlySerializedAs("grappleAction")]
+    [SerializeField] private InputActionReference[] throwActions;
     [SerializeField] private float grappleActiveTime = 0.2f;
     [SerializeField] private int grappleDamage = 15;
     [SerializeField] private float throwDistance = 2f;
@@ -58,29 +60,71 @@ public class PlayerGrapple : MonoBehaviour
 
     private void OnEnable()
     {
-        grappleAction.action.performed += OnGrappleInput;
-        grappleAction.action.Enable();
+        foreach (var actionRef in throwActions)
+        {
+            if (actionRef != null && actionRef.action != null)
+            {
+                actionRef.action.performed += OnThrowInput;
+                actionRef.action.Enable();
+            }
+        }
     }
 
     private void OnDisable()
     {
-        grappleAction.action.performed -= OnGrappleInput;
-        grappleAction.action.Disable();
+        foreach (var actionRef in throwActions)
+        {
+            if (actionRef != null && actionRef.action != null)
+            {
+                actionRef.action.performed -= OnThrowInput;
+                actionRef.action.Disable();
+            }
+        }
         if (_isGrappling && PlayerStateManager.Instance != null) PlayerStateManager.Instance.ResetToIdle();
     }
 
-    private void OnGrappleInput(InputAction.CallbackContext context)
+    private void FixedUpdate()
+    {
+        if (PlayerStateManager.Instance == null) return;
+
+        if (PlayerStateManager.Instance.CurrentState == PlayerState.Idle && Time.time >= _nextGrappleTime && !_isGrappling)
+        {
+            if (IsEnemyInGrappleRange())
+            {
+                StartCoroutine(DoGrapple());
+            }
+        }
+    }
+
+    private bool IsEnemyInGrappleRange()
+    {
+        if (grappleHitbox == null) return false;
+
+        Vector3 worldCenter = transform.TransformPoint(grappleHitbox.Offset);
+        Collider[] hits = Physics.OverlapBox(worldCenter, grappleHitbox.Size * 0.5f, transform.rotation);
+
+        foreach (var col in hits)
+        {
+            if (col == null) continue;
+            
+            if (col.TryGetComponent<Hurtbox>(out var hurtbox))
+            {
+                if (hurtbox.Owner == gameObject) continue;
+
+                if (hurtbox.Owner.TryGetComponent<Health>(out var health) && health.Current > 0)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private void OnThrowInput(InputAction.CallbackContext context)
     {
         if (PlayerStateManager.Instance.CurrentState == PlayerState.Holding && _heldTarget != null)
         {
             StartCoroutine(PerformThrow(_heldTarget));
-            return;
-        }
-
-        if (!_isGrappling && Time.time >= _nextGrappleTime)
-        {
-            if (!PlayerStateManager.Instance.CanPerformAction()) return;
-            StartCoroutine(DoGrapple());
         }
     }
 
@@ -162,9 +206,14 @@ public class PlayerGrapple : MonoBehaviour
             Vector3 inputDir = _movement.GetInputDirection();
             if (inputDir.magnitude > 0.1f)
             {
-                throwDir = inputDir;
-
-                characterModel.rotation = Quaternion.LookRotation(throwDir);
+                if (Vector3.Dot(characterModel.forward, inputDir) < -0.5f)
+                {
+                    throwDir = inputDir;
+                }
+                else
+                {
+                    throwDir = characterModel.forward;
+                }
             }
         }
 
@@ -202,6 +251,9 @@ public class PlayerGrapple : MonoBehaviour
         
         CharacterController cc = target.GetComponent<CharacterController>();
         Rigidbody rb = target.GetComponent<Rigidbody>();
+        EnemyMovement em = target.GetComponent<EnemyMovement>();
+        if (em != null) em.IsInThrowState = true;
+
         if (cc != null) cc.enabled = false;
 
         _currentProjectile = target;
@@ -211,6 +263,7 @@ public class PlayerGrapple : MonoBehaviour
         while (elapsed < throwDuration)
         {
             if (target == null) yield break;
+            if (em != null && !em.IsInThrowState) break;
 
             elapsed += Time.deltaTime;
             float t = elapsed / throwDuration;
@@ -263,12 +316,22 @@ public class PlayerGrapple : MonoBehaviour
 
         if (target != null)
         {
-            target.transform.position = targetPos;
+            bool interrupted = em != null && !em.IsInThrowState;
+            
+            if (!interrupted)
+            {
+                target.transform.position = targetPos;
+            }
+
             if (cc != null) cc.enabled = true;
 
-            if (target.TryGetComponent<EnemyMovement>(out var em))
+            if (em != null)
             {
-                em.ApplyImpulse(impactKnockUp, throwDir * impactKnockback);
+                if (!interrupted)
+                {
+                    em.ApplyImpulse(impactKnockUp, throwDir * impactKnockback);
+                }
+                em.IsInThrowState = false;
             }
         }
 
