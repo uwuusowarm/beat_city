@@ -7,7 +7,8 @@ public class PlayerCombat : MonoBehaviour
 {
     [SerializeField] private Hitbox hitbox;
     [SerializeField] private float activeTime = 0.2f;
-    [SerializeField] private InputActionReference attackAction;
+    //[SerializeField] private InputActionReference attackAction;
+    [SerializeField] private InputBuffer inputBuffer;
 
     [Header("Fist Animation")]
     [SerializeField] private Transform fist1;
@@ -36,25 +37,41 @@ public class PlayerCombat : MonoBehaviour
         if (fist2 != null) _fist2InitialZ = fist2.localPosition.z;
     }
 
-    private void OnEnable()
+    //private void OnEnable()
+    //{
+    //    attackAction.action.performed += OnAttackInput;
+    //    attackAction.action.Enable();
+    //}
+
+    //private void OnDisable()
+    //{
+    //    attackAction.action.performed -= OnAttackInput;
+    //    attackAction.action.Disable();
+    //    if (_isAttacking && PlayerStateManager.Instance != null) PlayerStateManager.Instance.ResetToIdle();
+    //}
+
+    private void Update()
     {
-        attackAction.action.performed += OnAttackInput;
-        attackAction.action.Enable();
+        if (_isAttacking) return;
+        if (!PlayerStateManager.Instance.CanPerformAction()) return;
+
+        if (inputBuffer.TryConsume(out CombatInputType input))
+        {
+            switch (input)
+            {
+                case CombatInputType.Punch:
+                    StartCoroutine(DoAttack());
+                    break;
+            }
+        }
     }
 
-    private void OnDisable()
-    {
-        attackAction.action.performed -= OnAttackInput;
-        attackAction.action.Disable();
-        if (_isAttacking && PlayerStateManager.Instance != null) PlayerStateManager.Instance.ResetToIdle();
-    }
-
-    private void OnAttackInput(InputAction.CallbackContext context)
-    {
-        Debug.Log($"[PlayerCombat] Attack Input received from action: {context.action.name}");
-        if (!_isAttacking && PlayerStateManager.Instance.CanPerformAction())
-            StartCoroutine(DoAttack());
-    }
+    //private void OnAttackInput(InputAction.CallbackContext context)
+    //{
+    //    Debug.Log($"[PlayerCombat] Attack Input received from action: {context.action.name}");
+    //    if (!_isAttacking && PlayerStateManager.Instance.CanPerformAction())
+    //        StartCoroutine(DoAttack());
+    //}
 
     public void ExtendFists(bool extend)
     {
