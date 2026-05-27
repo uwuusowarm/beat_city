@@ -15,6 +15,9 @@ public class EndlessManager : MonoBehaviour
     
     [SerializeField] private Transform player;
 
+    [SerializeField] private float startSpawnX = 25f;
+    [SerializeField] private float spawnZ = 20f;
+
     [Header("Score UI (Meter)")]
     [SerializeField] private TextMeshProUGUI distanceText;
     [SerializeField] private TextMeshProUGUI highscoreText;
@@ -32,6 +35,8 @@ public class EndlessManager : MonoBehaviour
 
     private void Start()
     {
+        _spawnX = startSpawnX;
+
         if (player == null) 
         {
             var p = GameObject.FindGameObjectWithTag("Player");
@@ -64,7 +69,7 @@ public class EndlessManager : MonoBehaviour
         int currentMeters = Mathf.Max(0, Mathf.FloorToInt(player.position.x - _startX));
 
         if (distanceText != null)
-            distanceText.text = $"Distanz: {currentMeters}m";
+            distanceText.text = $"Distance: {currentMeters}m";
 
         if (currentMeters > _highscore)
         {
@@ -94,7 +99,7 @@ public class EndlessManager : MonoBehaviour
         int randomIndex = Random.Range(0, chunkPrefabs.Length);
         GameObject chunkToSpawn = chunkPrefabs[randomIndex];
         Quaternion spawnRotation = Quaternion.Euler(0f, 180f, 0f);
-        GameObject newChunk = Instantiate(chunkToSpawn, new Vector3(_spawnX, 0f, 0f), spawnRotation);
+        GameObject newChunk = Instantiate(chunkToSpawn, new Vector3(_spawnX, 0f, spawnZ), spawnRotation);
         _activeChunks.Enqueue(newChunk);
         _spawnX += chunkWidth;
     }
