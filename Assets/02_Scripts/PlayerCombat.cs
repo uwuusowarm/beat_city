@@ -97,6 +97,8 @@ public class PlayerCombat : MonoBehaviour
         hitbox.Activate();
         OnAttackStarted?.Invoke();
         
+        animator.SetTrigger("Punch");
+        
         var fist = _punchIndex % 2 == 0 ? fist1 : fist2;
         _punchIndex++;
         if (fist != null)
