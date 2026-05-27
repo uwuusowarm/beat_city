@@ -4,9 +4,16 @@ using UnityEngine;
 public class Health : MonoBehaviour, IDamageable
 {
     [SerializeField] private int maxHealth;
+    [SerializeField] private UIHealth uiHealth;
 
     public int Current { get; private set; }
-    public int Max => maxHealth;
+    public int Max
+    {
+        get => maxHealth;
+        set => maxHealth = value;
+    }
+
+    private UIHealth UIHealth;
 
     public event Action<HitData> OnHit;
     public event Action OnDeath;
@@ -14,6 +21,12 @@ public class Health : MonoBehaviour, IDamageable
     private void Awake()
     {
         Current = maxHealth;
+        if (uiHealth == null)
+        {
+            Debug.LogError("UIHealth reference is missing. Assign the UIHealth component in the Inspector.");
+            return;
+        }
+        uiHealth.RefreshHealth();
     }
 
     public void TakeDamage(HitData hitData)
@@ -34,5 +47,6 @@ public class Health : MonoBehaviour, IDamageable
     public void Heal(int amount)
     {
         Current = Mathf.Min(maxHealth, Current + amount);
+        UIHealth.RefreshHealth();
     }
 }
