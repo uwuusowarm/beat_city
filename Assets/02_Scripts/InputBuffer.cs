@@ -14,8 +14,8 @@ public class InputBuffer : MonoBehaviour
 {
     [Header("Input Actions")]
     [SerializeField] private InputActionReference punchAction;
-    //[SerializeField] private InputActionReference kickAction;
-    //[SerializeField] private InputActionReference specialAction;
+    [SerializeField] private InputActionReference kickAction;
+    [SerializeField] private InputActionReference specialAction;
 
     [Header("Buffer")]
     [SerializeField] private float bufferTime = 0.5f;
@@ -31,17 +31,17 @@ public class InputBuffer : MonoBehaviour
             punchAction.action.Enable();
         }
 
-        //if (kickAction != null)
-        //{
-        //    kickAction.action.performed += OnKick;
-        //    kickAction.action.Enable();
-        //}
+        if (kickAction != null)
+        {
+            kickAction.action.performed += OnKick;
+            kickAction.action.Enable();
+        }
 
-        //if (specialAction != null)
-        //{
-        //    specialAction.action.performed += OnSpecial;
-        //    specialAction.action.Enable();
-        //}
+        if (specialAction != null)
+        {
+            specialAction.action.performed += OnSpecial;
+            specialAction.action.Enable();
+        }
     }
 
     private void OnDisable()
@@ -52,17 +52,17 @@ public class InputBuffer : MonoBehaviour
             punchAction.action.Disable();
         }
 
-        //if (kickAction != null)
-        //{
-        //    kickAction.action.performed -= OnKick;
-        //    kickAction.action.Disable();
-        //}
+        if (kickAction != null)
+        {
+            kickAction.action.performed -= OnKick;
+            kickAction.action.Disable();
+        }
 
-        //if (specialAction != null)
-        //{
-        //    specialAction.action.performed -= OnSpecial;
-        //    specialAction.action.Disable();
-        //}
+        if (specialAction != null)
+        {
+            specialAction.action.performed -= OnSpecial;
+            specialAction.action.Disable();
+        }
     }
 
     private void Update()
@@ -83,10 +83,17 @@ public class InputBuffer : MonoBehaviour
         Buffer(CombatInputType.Punch);
     }
 
-    //private void OnKick(InputAction.CallbackContext context)
-    //{
-    //    Buffer(CombatInputType.Kick);
-    //}
+    private void OnKick(InputAction.CallbackContext context)
+    {
+        if (!context.ReadValueAsButton()) return;
+        Buffer(CombatInputType.Kick);
+    }
+
+    private void OnSpecial(InputAction.CallbackContext context)
+    {
+        if (!context.ReadValueAsButton()) return;
+        Buffer(CombatInputType.Special);
+    }
 
     private void Buffer(CombatInputType input)
     {
