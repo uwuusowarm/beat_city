@@ -18,6 +18,7 @@ public class MovementPlayer : MonoBehaviour
     public KeyCode dashKey = KeyCode.LeftAlt;
 
     [Header("Visuals")]
+    [SerializeField] private Animator animator;
     [SerializeField] private InputActionReference moveAction;
     public Transform characterModel; 
 
@@ -31,6 +32,8 @@ public class MovementPlayer : MonoBehaviour
     
     void Start()
     {
+        if (animator == null)
+            animator = GetComponentInChildren<Animator>();
         controller = GetComponent<CharacterController>();
     }
 
@@ -93,6 +96,7 @@ public class MovementPlayer : MonoBehaviour
         if (!PlayerStateManager.Instance.CanPerformAction())
         {
             moveDirection = Vector3.zero;
+            animator.SetFloat("Speed", 0f);
             if (!controller.isGrounded)
             {
                 verticalVelocity -= gravity * Time.deltaTime;
@@ -113,6 +117,7 @@ public class MovementPlayer : MonoBehaviour
         float currentSpeed = walkSpeed;
         
         moveDirection = inputDirection * currentSpeed;
+        animator.SetFloat("Speed", inputDirection.magnitude);
 
         if (moveX != 0)
         {
