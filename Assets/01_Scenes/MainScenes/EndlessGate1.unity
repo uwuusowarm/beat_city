@@ -217,6 +217,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TriggerAndSpawnerArena
       objectReference: {fileID: 0}
+    - target: {fileID: 3057446087763476901, guid: 95fc71c59fb12ab488868e64ea2ceebb, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3619542099398464621, guid: 95fc71c59fb12ab488868e64ea2ceebb, type: 3}
       propertyPath: m_Size.y
       value: 11.402143
@@ -1292,6 +1296,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TriggerAndSpawnerArena (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 3057446087763476901, guid: 95fc71c59fb12ab488868e64ea2ceebb, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3619542099398464621, guid: 95fc71c59fb12ab488868e64ea2ceebb, type: 3}
       propertyPath: m_Size.y
       value: 11.402143
@@ -1547,6 +1555,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
   maxHealth: 100
+  uiHealth: {fileID: 0}
 --- !u!114 &1031366241 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3375258719077053111, guid: 657481147422a37418123f320e560f25, type: 3}
