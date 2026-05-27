@@ -62,6 +62,12 @@ public class PlayerCombat : MonoBehaviour
                 case CombatInputType.Punch:
                     StartCoroutine(DoAttack());
                     break;
+                case CombatInputType.Kick:
+                    //StartCoroutineKick - Need to be implemented yet
+                    break;
+                case CombatInputType.Special:
+                    //StartCoroutineSpecial - Need to be implemented yet
+                    break;
             }
         }
     }
