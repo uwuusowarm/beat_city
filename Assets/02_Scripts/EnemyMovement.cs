@@ -62,7 +62,14 @@ public class EnemyMovement : MonoBehaviour
 
     public void ApplyImpulse(float knockUpForce, Vector3 knockbackForce, float hitStunReset = 0f)    {
         if (knockUpForce > 0f) verticalVelocity = knockUpForce;
-        if (knockbackForce != Vector3.zero) externalForce = knockbackForce;
+        if (knockbackForce != Vector3.zero)
+        {
+            externalForce = knockbackForce;
+            if (knockbackForce.magnitude > moveSpeed * 1.5f)
+            {
+                IsInThrowState = true;
+            }
+        }
         if (hitStunReset > 0f) hitStunTimer = hitStunReset;
     }
 
@@ -81,6 +88,10 @@ public class EnemyMovement : MonoBehaviour
         if (hitData.KnockbackForce > 0f && hitData.KnockbackDirection != Vector3.zero)
         {
             externalForce = hitData.KnockbackDirection * hitData.KnockbackForce;
+            if (hitData.KnockbackForce > moveSpeed * 1.5f)
+            {
+                IsInThrowState = true;
+            }
         }
     }
 

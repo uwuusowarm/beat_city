@@ -133,7 +133,6 @@ public class PlayerGrapple : MonoBehaviour
         _isGrappling = true;
         PlayerStateManager.Instance.SetState(PlayerState.Grappling);
         
-        if (_combat != null) _combat.ExtendFists(true);
         
         grappleHitbox.Activate();
         
@@ -145,7 +144,6 @@ public class PlayerGrapple : MonoBehaviour
         
         if (PlayerStateManager.Instance.CurrentState == PlayerState.Grappling)
         {
-            if (_combat != null) _combat.ExtendFists(false);
             PlayerStateManager.Instance.ResetToIdle();
             _nextGrappleTime = Time.time + cooldown;
         }
@@ -219,7 +217,6 @@ public class PlayerGrapple : MonoBehaviour
 
         yield return StartCoroutine(AnimateThrow(target, throwDir));
 
-        if (_combat != null) _combat.ExtendFists(false);
 
         if (target != null)
         {
