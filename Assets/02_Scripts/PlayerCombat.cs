@@ -7,14 +7,16 @@ public class PlayerCombat : MonoBehaviour
 {
     [SerializeField] private Hitbox hitbox;
     [SerializeField] private float activeTime = 0.2f;
-    //[SerializeField] private InputActionReference attackAction;
     [SerializeField] private InputBuffer inputBuffer;
 
     [Header("Fist Animation")]
     [SerializeField] private Transform fist1;
     [SerializeField] private Transform fist2;
-    [SerializeField] private float punchDistance = 0.4f;  
-    [SerializeField] private float punchSpeed = 12f;      
+    [SerializeField] private float punchDistance = 0.4f;
+    [SerializeField] private float punchSpeed = 12f;
+
+    [Header("Combo")]
+    [SerializeField] private float comboResetTime = 1.0f;
     
     public event Action OnAttackStarted;
 
@@ -22,7 +24,14 @@ public class PlayerCombat : MonoBehaviour
 
     public event Action<GameObject> OnHitLanded;
 
+    public CombatInputType CurrentAttackType {  get; private set; }
+    public int CurrentComboStep => _comboStep;
+
     private bool _isAttacking;
+
+    private int _comboStep;
+
+    private float _lastAttackTime;
     
     private int _punchIndex;
 
@@ -37,19 +46,6 @@ public class PlayerCombat : MonoBehaviour
         if (fist2 != null) _fist2InitialZ = fist2.localPosition.z;
     }
 
-    //private void OnEnable()
-    //{
-    //    attackAction.action.performed += OnAttackInput;
-    //    attackAction.action.Enable();
-    //}
-
-    //private void OnDisable()
-    //{
-    //    attackAction.action.performed -= OnAttackInput;
-    //    attackAction.action.Disable();
-    //    if (_isAttacking && PlayerStateManager.Instance != null) PlayerStateManager.Instance.ResetToIdle();
-    //}
-
     private void Update()
     {
         if (_isAttacking) return;
@@ -60,10 +56,10 @@ public class PlayerCombat : MonoBehaviour
             switch (input)
             {
                 case CombatInputType.Punch:
-                    StartCoroutine(DoAttack());
+                    StartCoroutine(DoPunch());
                     break;
                 case CombatInputType.Kick:
-                    //StartCoroutineKick - Need to be implemented yet
+                    StartCoroutine(DoKick());
                     break;
                 case CombatInputType.Special:
                     //StartCoroutineSpecial - Need to be implemented yet
@@ -72,12 +68,25 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
-    //private void OnAttackInput(InputAction.CallbackContext context)
-    //{
-    //    Debug.Log($"[PlayerCombat] Attack Input received from action: {context.action.name}");
-    //    if (!_isAttacking && PlayerStateManager.Instance.CanPerformAction())
-    //        StartCoroutine(DoAttack());
-    //}
+    private void AdvanceCombo(CombatInputType input)
+    {
+        if (Time.time - _lastAttackTime > comboResetTime)
+        {
+            _comboStep = 0;
+        }
+
+        _comboStep++;
+
+        if (_comboStep > 3)
+        {
+            _comboStep = 1;
+        }
+
+        _lastAttackTime = Time.time;
+        CurrentAttackType = input;
+
+        Debug.Log($"[PlayerCombat] Combo Step: {_comboStep}/3 Attack: {input}");
+    }
 
     public void ExtendFists(bool extend)
     {
@@ -91,10 +100,13 @@ public class PlayerCombat : MonoBehaviour
         fist2.localPosition = localPos2;
     }
 
-    private IEnumerator DoAttack()
+    private IEnumerator DoPunch()
     {
         _isAttacking = true;
         PlayerStateManager.Instance.SetState(PlayerState.Attacking);
+
+        AdvanceCombo(CombatInputType.Punch);
+
         hitbox.Activate();
         OnAttackStarted?.Invoke();
         
@@ -109,6 +121,33 @@ public class PlayerCombat : MonoBehaviour
         OnAttackEnded?.Invoke();
         _isAttacking = false;
         PlayerStateManager.Instance.ResetToIdle();
+    }
+
+    private IEnumerator DoKick()
+    {
+        _isAttacking = true;
+        PlayerStateManager.Instance.SetState(PlayerState.Attacking);
+
+        AdvanceCombo(CombatInputType.Kick);
+
+        hitbox.Activate();
+        OnAttackStarted?.Invoke();
+
+        yield return new WaitForSeconds(activeTime);
+
+        hitbox.Deactivate();
+        OnAttackEnded?.Invoke();
+        _isAttacking = false;
+        PlayerStateManager.Instance.ResetToIdle();
+    }
+
+    public void ResetCombo()
+    {
+        _comboStep = 0;
+        _lastAttackTime = 0f;
+        CurrentAttackType = CombatInputType.None;
+
+        Debug.Log("[PlayerCombat] Combo reset");
     }
     
     private IEnumerator PunchFist(Transform fist)
