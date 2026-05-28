@@ -6,6 +6,7 @@ public class ComboAttacker : MonoBehaviour
     [SerializeField] private float knockbackForce = 5f; 
     [SerializeField] private float knockUpForce = 6f;   
     [SerializeField] private float comboResetTime = 2f;
+    [SerializeField] private PlayerCombat playerCombat;
 
     private int _hitCount;
     private float _lastHitTime;
@@ -15,6 +16,11 @@ public class ComboAttacker : MonoBehaviour
         foreach (var hitbox in GetComponentsInChildren<Hitbox>(includeInactive: true))
             hitbox.OnHitLanded += OnHitLanded;
 
+        if (playerCombat == null)
+        {
+            playerCombat = GetComponent<PlayerCombat>();
+        }
+
         if (TryGetComponent<Health>(out var myHealth))
         {
             myHealth.OnHit += OnReceivedDamage;
@@ -23,24 +29,35 @@ public class ComboAttacker : MonoBehaviour
 
     private void OnHitLanded(GameObject target)
     {
-        if (Time.time - _lastHitTime > comboResetTime)
+        if (playerCombat == null) return;
+
+        Debug.Log($"[Combo] Step {playerCombat.CurrentComboStep}/{comboThreshold}, Type: {playerCombat.CurrentAttackType}");
+
+        if (playerCombat.CurrentComboStep < comboThreshold) return;
+
+        if (playerCombat.CurrentAttackType == CombatInputType.Punch)
         {
-            _hitCount = 0;
-            Debug.Log("[Combo] Reset");
+            KnockUp(target);
         }
-
-        _lastHitTime = Time.time;
-        _hitCount++;
-        Debug.Log($"[Combo] Hit {_hitCount}/{comboThreshold}");
-
-        if (_hitCount >= comboThreshold)
+        else if (playerCombat.CurrentAttackType == CombatInputType.Kick)
         {
-            _hitCount = 0;
-            Juggle(target);
+            KnockBack(target);
         }
     }
 
-    private void Juggle(GameObject target)
+    private void KnockUp(GameObject target)
+    {
+        ComboFinisher(target, 0f, knockUpForce);
+        Debug.Log($"[Combo] Punch finisher KnockUp: {target.name}");
+    }
+
+    private void KnockBack(GameObject target)
+    {
+        ComboFinisher(target, knockbackForce , 0f);
+        Debug.Log($"[Combo] Kick finisher KnockBack: {target.name}");
+    }
+
+    private void ComboFinisher(GameObject target, float horizontalForce, float verticalForce)
     {
         if (!target.TryGetComponent<Rigidbody>(out var rb)) return;
 
@@ -49,11 +66,16 @@ public class ComboAttacker : MonoBehaviour
         var horizontal = (target.transform.position - transform.position).normalized;
         horizontal.y = 0f;
 
-        rb.AddForce(horizontal * knockbackForce + Vector3.up * knockUpForce, ForceMode.Impulse);
+        if (horizontal.sqrMagnitude > 0.001f)
+            horizontal.Normalize();
+        else
+            horizontal = transform.forward;
+
+        rb.AddForce(horizontal * horizontalForce + Vector3.up * verticalForce, ForceMode.Impulse);
 
         if (target.TryGetComponent<EnemyMovement>(out var em))
         {
-            em.ApplyImpulse(knockUpForce, horizontal * knockbackForce);
+            em.ApplyImpulse(verticalForce, horizontal * horizontalForce);
         }
 
         if (target.TryGetComponent<Health>(out var health))
@@ -62,19 +84,18 @@ public class ComboAttacker : MonoBehaviour
             {
                 Damage = 0,
                 KnockbackDirection = horizontal,
-                KnockbackForce = knockbackForce,
-                KnockUpForce = knockUpForce,
+                KnockbackForce = horizontalForce,
+                KnockUpForce = verticalForce,
                 Source = gameObject
             });
         }
-        Debug.Log($"[Combo] JUGGLERONI! {target.name} KB:{knockbackForce} KnockUp:{knockUpForce}");
     }
 
     private void OnReceivedDamage(HitData data)
     {
-        if (_hitCount > 0)
+        if (playerCombat != null && playerCombat.CurrentComboStep > 0)
         {
-            _hitCount = 0;
+            playerCombat.ResetCombo();
         }
     }
 }
