@@ -168,10 +168,37 @@ public class EnemyMovement : MonoBehaviour
         Vector3 moveVelocity = Vector3.zero;
         if (distance > 0.1f)
         {
+            Vector3 desiredDirection = directionToTarget.normalized;
+            Vector3 avoidance = CalculateAvoidance();
+            Vector3 finalDirection = (desiredDirection + avoidance).normalized;
             moveVelocity = directionToTarget.normalized * moveSpeed;
         }
         
         ApplyGravityAndMove(moveVelocity);
+    }
+
+    private Vector3 CalculateAvoidance()
+    {
+        Vector3 avoidance = Vector3.zero;
+        
+        Collider[] nearby = Physics.OverlapSphere(transform.position, 1.5f);
+        
+        foreach (var col in nearby)
+        {
+            if (col.gameObject != gameObject && col.CompareTag("Enemy"))
+            {
+                float zDiff = transform.position.z - col.transform.position.z;
+                
+                if (Mathf.Abs(zDiff) < 0.1f)
+                {
+                    zDiff = (gameObject.GetInstanceID() > col.gameObject.GetInstanceID()) ? 1f : -1f;
+                }
+                
+                avoidance.z += Mathf.Sign(zDiff) * 1.5f; 
+            }
+        }
+        
+        return avoidance;
     }
 
     private void ApplyGravityAndMove(Vector3 moveVelocity)
