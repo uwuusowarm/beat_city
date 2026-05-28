@@ -8,26 +8,10 @@ using UnityEngine.Serialization;
 public class PlayerGrapple : MonoBehaviour
 {
     [Header("Settings")]
+    [SerializeField] private PlayerSettings settings;
     [SerializeField] private Hitbox grappleHitbox;
     [FormerlySerializedAs("grappleAction")]
     [SerializeField] private InputActionReference[] throwActions;
-    [SerializeField] private float grappleActiveTime = 0.2f;
-    [SerializeField] private int grappleDamage = 15;
-    [SerializeField] private float throwDistance = 2f;
-    [SerializeField] private float throwHeight = 1.5f;
-    [SerializeField] private float throwDuration = 0.4f;
-    [SerializeField] private float cooldown = 0.5f;
-    [SerializeField] private float holdOffset = 1.2f;
-
-    [Header("Projectile Damage")]
-    [SerializeField] private int projectileDamage = 10;
-    [SerializeField] private float projectileKnockback = 3f;
-    [SerializeField] private float projectileKnockUp = 3f;
-    [SerializeField] private float projectileRadius = 1f;
-
-    [Header("Impact Settings")]
-    [SerializeField] private float impactKnockback = 0f;
-    [SerializeField] private float impactKnockUp = 0f;
 
     [Header("Visuals")]
     [SerializeField] private Transform characterModel;
@@ -42,6 +26,9 @@ public class PlayerGrapple : MonoBehaviour
 
     private void Awake()
     {
+        if (settings == null)
+            settings = Resources.Load<PlayerSettings>("PlayerSettings");
+
         _movement = GetComponent<MovementPlayer>();
         _combat = GetComponent<PlayerCombat>();
         if (characterModel == null)
@@ -136,7 +123,7 @@ public class PlayerGrapple : MonoBehaviour
         
         grappleHitbox.Activate();
         
-        yield return new WaitForSeconds(grappleActiveTime);
+        yield return new WaitForSeconds(settings.grappleActiveTime);
         
         grappleHitbox.Deactivate();
         
@@ -145,7 +132,7 @@ public class PlayerGrapple : MonoBehaviour
         if (PlayerStateManager.Instance.CurrentState == PlayerState.Grappling)
         {
             PlayerStateManager.Instance.ResetToIdle();
-            _nextGrappleTime = Time.time + cooldown;
+            _nextGrappleTime = Time.time + settings.grappleCooldown;
         }
     }
 
@@ -184,7 +171,7 @@ public class PlayerGrapple : MonoBehaviour
 
         while (PlayerStateManager.Instance.CurrentState == PlayerState.Holding && _heldTarget == target)
         {
-            Vector3 targetPos = transform.position + characterModel.forward * holdOffset;
+            Vector3 targetPos = transform.position + characterModel.forward * settings.holdOffset;
             target.transform.position = targetPos;
             
             target.transform.LookAt(transform.position);
@@ -225,10 +212,10 @@ public class PlayerGrapple : MonoBehaviour
             {
                 damageable.TakeDamage(new HitData
                 {
-                    Damage = grappleDamage,
+                    Damage = settings.grappleDamage,
                     KnockbackDirection = throwDir,
-                    KnockbackForce = impactKnockback, 
-                    KnockUpForce = impactKnockUp,
+                    KnockbackForce = settings.impactKnockback, 
+                    KnockUpForce = settings.impactKnockUp,
                     HitStunDuration = 0.5f,
                     Source = gameObject
                 });
@@ -236,7 +223,7 @@ public class PlayerGrapple : MonoBehaviour
         }
 
         PlayerStateManager.Instance.ResetToIdle();
-        _nextGrappleTime = Time.time + cooldown;
+        _nextGrappleTime = Time.time + settings.grappleCooldown;
     }
 
     private IEnumerator AnimateThrow(GameObject target, Vector3 throwDir)
@@ -244,7 +231,7 @@ public class PlayerGrapple : MonoBehaviour
         if (target == null) yield break;
 
         Vector3 startPos = target.transform.position;
-        Vector3 targetPos = startPos + throwDir * throwDistance;
+        Vector3 targetPos = startPos + throwDir * settings.throwDistance;
         
         CharacterController cc = target.GetComponent<CharacterController>();
         Rigidbody rb = target.GetComponent<Rigidbody>();
@@ -257,22 +244,22 @@ public class PlayerGrapple : MonoBehaviour
         HashSet<IDamageable> hitTargetsDuringFlight = new HashSet<IDamageable>();
 
         float elapsed = 0f;
-        while (elapsed < throwDuration)
+        while (elapsed < settings.throwDuration)
         {
             if (target == null) yield break;
             if (em != null && !em.IsInThrowState) break;
 
             elapsed += Time.deltaTime;
-            float t = elapsed / throwDuration;
+            float t = elapsed / settings.throwDuration;
 
             Vector3 currentPos = Vector3.Lerp(startPos, targetPos, t);
-            float heightOffset = 4 * throwHeight * t * (1 - t);
+            float heightOffset = 4 * settings.throwHeight * t * (1 - t);
             currentPos.y += heightOffset;
 
             if (rb != null) rb.position = currentPos;
             target.transform.position = currentPos;
 
-            Collider[] hits = Physics.OverlapSphere(currentPos, projectileRadius);
+            Collider[] hits = Physics.OverlapSphere(currentPos, settings.projectileRadius);
             foreach (var hit in hits)
             {
                 if (hit == null) continue;
@@ -293,10 +280,10 @@ public class PlayerGrapple : MonoBehaviour
 
                             damageable.TakeDamage(new HitData
                             {
-                                Damage = projectileDamage,
+                                Damage = settings.projectileDamage,
                                 KnockbackDirection = knockbackDir.normalized,
-                                KnockbackForce = projectileKnockback,
-                                KnockUpForce = projectileKnockUp, 
+                                KnockbackForce = settings.projectileKnockback,
+                                KnockUpForce = settings.projectileKnockUp,
                                 HitStunDuration = 0.3f,
                                 Source = target 
                             });
@@ -326,7 +313,7 @@ public class PlayerGrapple : MonoBehaviour
             {
                 if (!interrupted)
                 {
-                    em.ApplyImpulse(impactKnockUp, throwDir * impactKnockback);
+                    em.ApplyImpulse(settings.impactKnockUp, throwDir * settings.impactKnockback);
                 }
                 em.IsInThrowState = false;
             }
@@ -342,13 +329,13 @@ public class PlayerGrapple : MonoBehaviour
         if (_heldTarget != null)
         {
             Gizmos.color = new Color(0f, 1f, 0f, 0.3f);
-            Gizmos.DrawWireSphere(_heldTarget.transform.position, projectileRadius);
+            Gizmos.DrawWireSphere(_heldTarget.transform.position, settings.projectileRadius);
         }
 
         if (_currentProjectile != null)
         {
             Gizmos.color = new Color(1f, 0.5f, 0f, 0.5f);
-            Gizmos.DrawWireSphere(_currentProjectile.transform.position, projectileRadius);
+            Gizmos.DrawWireSphere(_currentProjectile.transform.position, settings.projectileRadius);
         }
     }
 }

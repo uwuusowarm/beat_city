@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f121a9749d042758eade5a1eeed5355, type: 3}
+  m_Name: PlayerSettings
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerSettings
+  walkSpeed: 5
+  runSpeed: 8
+  jumpForce: 8
+  gravity: 20
+  dashSpeed: 15
+  dashDuration: 0.2
+  attackActiveTime: 0.2
+  punchDamage: 10
+  punchBaseKnockback: 2
+  punchFinisherKnockup: 5
+  kickDamage: 15
+  kickBaseKnockback: 3
+  kickFinisherKnockback: 8
+  maxComboSteps: 3
+  comboResetTime: 0.8
+  grappleActiveTime: 0.2
+  grappleDamage: 15
+  throwDistance: 2
+  throwHeight: 1.5
+  throwDuration: 0.4
+  grappleCooldown: 0.5
+  holdOffset: 1.2
+  projectileDamage: 10
+  projectileKnockback: 3
+  projectileKnockUp: 3
+  projectileRadius: 1
+  impactKnockback: 0
+  impactKnockUp: 0

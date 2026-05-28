@@ -5,24 +5,10 @@ using UnityEngine.InputSystem;
 
 public class PlayerCombat : MonoBehaviour
 {
+    [SerializeField] private PlayerSettings settings;
     [SerializeField] private Hitbox hitbox;
-    [SerializeField] private float activeTime = 0.2f;
     [SerializeField] private InputBuffer inputBuffer;
 
-    [Header("Punch Settings")]
-    [SerializeField] private int punchDamage = 10;
-    [SerializeField] private float punchBaseKnockback = 2f;
-    [SerializeField] private float punchFinisherKnockup = 5f;
-
-    [Header("Kick Settings")]
-    [SerializeField] private int kickDamage = 15;
-    [SerializeField] private float kickBaseKnockback = 3f;
-    [SerializeField] private float kickFinisherKnockback = 8f;
-
-    [Header("Combo Settings")]
-    [SerializeField] private int maxComboSteps = 3;
-    [SerializeField] private float comboResetTime = 0.8f;
-    
     public event Action OnAttackStarted;
     public event Action OnAttackEnded;
     public event Action<GameObject> OnHitLanded;
@@ -37,6 +23,9 @@ public class PlayerCombat : MonoBehaviour
 
     private void Awake()
     {
+        if (settings == null)
+            settings = Resources.Load<PlayerSettings>("PlayerSettings");
+
         hitbox.OnHitLanded += target => OnHitLanded?.Invoke(target);
         
         if (animator == null)
@@ -63,7 +52,7 @@ public class PlayerCombat : MonoBehaviour
 
     private void Update()
     {
-        if (Time.time - _lastAttackTime > comboResetTime && !_isAttacking)
+        if (Time.time - _lastAttackTime > settings.comboResetTime && !_isAttacking)
         {
             _comboStep = 0;
             _usePunch2 = false;
@@ -99,20 +88,20 @@ public class PlayerCombat : MonoBehaviour
         
         hitbox.Deactivate();
         
-        bool isComboEnd = _comboStep >= maxComboSteps;
+        bool isComboEnd = _comboStep >= settings.maxComboSteps;
         
         if (type == CombatInputType.Punch)
         {
-            hitbox.Damage = punchDamage;
+            hitbox.Damage = settings.punchDamage;
             if (isComboEnd)
             {
                 hitbox.KnockbackForce = 0f;
-                hitbox.KnockUpForce = punchFinisherKnockup;
+                hitbox.KnockUpForce = settings.punchFinisherKnockup;
                 _comboStep = 0; 
             }
             else
             {
-                hitbox.KnockbackForce = punchBaseKnockback;
+                hitbox.KnockbackForce = settings.punchBaseKnockback;
                 hitbox.KnockUpForce = 0f;
             }
             
@@ -122,16 +111,16 @@ public class PlayerCombat : MonoBehaviour
         }
         else if (type == CombatInputType.Kick)
         {
-            hitbox.Damage = kickDamage;
+            hitbox.Damage = settings.kickDamage;
             if (isComboEnd)
             {
-                hitbox.KnockbackForce = kickFinisherKnockback;
+                hitbox.KnockbackForce = settings.kickFinisherKnockback;
                 hitbox.KnockUpForce = 0f;
                 _comboStep = 0;
             }
             else
             {
-                hitbox.KnockbackForce = kickBaseKnockback;
+                hitbox.KnockbackForce = settings.kickBaseKnockback;
                 hitbox.KnockUpForce = 0f;
             }
             
@@ -141,7 +130,7 @@ public class PlayerCombat : MonoBehaviour
         hitbox.Activate();
         OnAttackStarted?.Invoke();
         
-        yield return new WaitForSeconds(activeTime);
+        yield return new WaitForSeconds(settings.attackActiveTime);
 
         hitbox.Deactivate();
         OnAttackEnded?.Invoke();
