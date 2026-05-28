@@ -1683,6 +1683,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1316728911 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7640699848940071598, guid: 657481147422a37418123f320e560f25, type: 3}
+  m_PrefabInstance: {fileID: 737657283}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cebca41792993784d9be2af95ffeb031, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIHealth
 --- !u!1 &1327577480
 GameObject:
   m_ObjectHideFlags: 0
@@ -2209,6 +2220,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1616578582 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1662536712636653983, guid: 32f0f6bc2fe98e042b004af1bdbfa749, type: 3}
+  m_PrefabInstance: {fileID: 1981834729}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1616578593
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1616578582}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a8d1e53402ec17418391ed73f486df1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Health
+  maxHealth: 100
+  uiHealth: {fileID: 1316728911}
 --- !u!1001 &1660404754
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2252,9 +2282,13 @@ PrefabInstance:
     - target: {fileID: 5644881235989190228, guid: baf3767a1d15826409e2908c20bddf38, type: 3}
       propertyPath: health
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1616578593}
     - target: {fileID: 5644881235989190228, guid: baf3767a1d15826409e2908c20bddf38, type: 3}
       propertyPath: slider
+      value: 
+      objectReference: {fileID: 1107266825}
+    - target: {fileID: 5644881235989190228, guid: baf3767a1d15826409e2908c20bddf38, type: 3}
+      propertyPath: healthSlider
       value: 
       objectReference: {fileID: 1107266825}
     - target: {fileID: 6768009778025546446, guid: baf3767a1d15826409e2908c20bddf38, type: 3}
@@ -2480,7 +2514,10 @@ PrefabInstance:
     - {fileID: 2045495061708834596, guid: 32f0f6bc2fe98e042b004af1bdbfa749, type: 3}
     - {fileID: 1000007331890850435, guid: 32f0f6bc2fe98e042b004af1bdbfa749, type: 3}
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1662536712636653983, guid: 32f0f6bc2fe98e042b004af1bdbfa749, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1616578593}
   m_SourcePrefab: {fileID: 100100000, guid: 32f0f6bc2fe98e042b004af1bdbfa749, type: 3}
 --- !u!1 &1985756396
 GameObject:
