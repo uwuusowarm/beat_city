@@ -62,7 +62,14 @@ public class EnemyMovement : MonoBehaviour
 
     public void ApplyImpulse(float knockUpForce, Vector3 knockbackForce, float hitStunReset = 0f)    {
         if (knockUpForce > 0f) verticalVelocity = knockUpForce;
-        if (knockbackForce != Vector3.zero) externalForce = knockbackForce;
+        if (knockbackForce != Vector3.zero)
+        {
+            externalForce = knockbackForce;
+            if (knockbackForce.magnitude > moveSpeed * 1.5f)
+            {
+                IsInThrowState = true;
+            }
+        }
         if (hitStunReset > 0f) hitStunTimer = hitStunReset;
     }
 
@@ -81,6 +88,10 @@ public class EnemyMovement : MonoBehaviour
         if (hitData.KnockbackForce > 0f && hitData.KnockbackDirection != Vector3.zero)
         {
             externalForce = hitData.KnockbackDirection * hitData.KnockbackForce;
+            if (hitData.KnockbackForce > moveSpeed * 1.5f)
+            {
+                IsInThrowState = true;
+            }
         }
     }
 
@@ -168,10 +179,37 @@ public class EnemyMovement : MonoBehaviour
         Vector3 moveVelocity = Vector3.zero;
         if (distance > 0.1f)
         {
+            Vector3 desiredDirection = directionToTarget.normalized;
+            Vector3 avoidance = CalculateAvoidance();
+            Vector3 finalDirection = (desiredDirection + avoidance).normalized;
             moveVelocity = directionToTarget.normalized * moveSpeed;
         }
         
         ApplyGravityAndMove(moveVelocity);
+    }
+
+    private Vector3 CalculateAvoidance()
+    {
+        Vector3 avoidance = Vector3.zero;
+        
+        Collider[] nearby = Physics.OverlapSphere(transform.position, 1.5f);
+        
+        foreach (var col in nearby)
+        {
+            if (col.gameObject != gameObject && col.CompareTag("Enemy"))
+            {
+                float zDiff = transform.position.z - col.transform.position.z;
+                
+                if (Mathf.Abs(zDiff) < 0.1f)
+                {
+                    zDiff = (gameObject.GetInstanceID() > col.gameObject.GetInstanceID()) ? 1f : -1f;
+                }
+                
+                avoidance.z += Mathf.Sign(zDiff) * 1.5f; 
+            }
+        }
+        
+        return avoidance;
     }
 
     private void ApplyGravityAndMove(Vector3 moveVelocity)

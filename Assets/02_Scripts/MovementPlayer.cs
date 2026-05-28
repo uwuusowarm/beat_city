@@ -4,20 +4,10 @@ using TouchPhase = UnityEngine.TouchPhase;
 
 public class MovementPlayer : MonoBehaviour
 {
-    [Header("Movement (X/Z-Achse)")]
-    public float walkSpeed = 5f;
-    public float runSpeed = 8f;
-    
-    [Header("Jump (Y-Achse)")]
-    public float jumpForce = 8f;
-    public float gravity = 20f;
-    
-    [Header("Future maybe Dash")]
-    public float dashSpeed = 15f;
-    public float dashDuration = 0.2f;
-    public KeyCode dashKey = KeyCode.LeftAlt;
+    [SerializeField] private PlayerSettings settings;
 
     [Header("Visuals")]
+    [SerializeField] private Animator animator;
     [SerializeField] private InputActionReference moveAction;
     public Transform characterModel; 
 
@@ -29,8 +19,16 @@ public class MovementPlayer : MonoBehaviour
     private float dashTimer = 0f;
     private Vector3 currentDashDirection;
     
+    void Awake()
+    {
+        if (settings == null)
+            settings = Resources.Load<PlayerSettings>("PlayerSettings");
+    }
+
     void Start()
     {
+        if (animator == null)
+            animator = GetComponentInChildren<Animator>();
         controller = GetComponent<CharacterController>();
     }
 
@@ -93,9 +91,10 @@ public class MovementPlayer : MonoBehaviour
         if (!PlayerStateManager.Instance.CanPerformAction())
         {
             moveDirection = Vector3.zero;
+            animator.SetFloat("Speed", 0f);
             if (!controller.isGrounded)
             {
-                verticalVelocity -= gravity * Time.deltaTime;
+                verticalVelocity -= settings.gravity * Time.deltaTime;
                 moveDirection.y = verticalVelocity;
                 controller.Move(moveDirection * Time.deltaTime);
             }
@@ -110,9 +109,10 @@ public class MovementPlayer : MonoBehaviour
         // if (Keyboard.current != null && Keyboard.current.leftShiftKey.isPressed) isRunning = true;
         // if (Gamepad.current != null && Gamepad.current.rightTrigger.isPressed) isRunning = true;
         // float currentSpeed = isRunning ? runSpeed : walkSpeed;
-        float currentSpeed = walkSpeed;
+        float currentSpeed = settings.walkSpeed;
         
         moveDirection = inputDirection * currentSpeed;
+        animator.SetFloat("Speed", inputDirection.magnitude);
 
         if (moveX != 0)
         {
@@ -130,12 +130,12 @@ public class MovementPlayer : MonoBehaviour
 
             if (jumpPressed)
             {
-                verticalVelocity = jumpForce;
+                verticalVelocity = settings.jumpForce;
             }
         }
         else
         {
-            verticalVelocity -= gravity * Time.deltaTime;
+            verticalVelocity -= settings.gravity * Time.deltaTime;
         }
 
         moveDirection.y = verticalVelocity;

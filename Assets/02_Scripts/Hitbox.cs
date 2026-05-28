@@ -15,6 +15,10 @@ public class Hitbox : MonoBehaviour
     [SerializeField] private bool applyDamage = true;
     [SerializeField] private LayerMask targetLayer = ~0;
 
+    public int Damage { get => damage; set => damage = value; }
+    public float KnockbackForce { get => knockbackForce; set => knockbackForce = value; }
+    public float KnockUpForce { get => knockUpForce; set => knockUpForce = value; }
+
     public bool ApplyDamage { get => applyDamage; set => applyDamage = value; }
     public Vector3 Size => size;
     public Vector3 Offset => offset;

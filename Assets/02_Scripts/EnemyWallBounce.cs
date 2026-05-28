@@ -15,6 +15,7 @@ public class EnemyWallBounce : MonoBehaviour
     private Health _health;
     private Camera _cam;
     private Vector3 _lastPosition;
+    private bool _hasEnteredScreen = false;
 
     private void Start()
     {
@@ -39,6 +40,20 @@ public class EnemyWallBounce : MonoBehaviour
         float rightBound = maxX - margin;
 
         Vector3 pos = transform.position;
+
+        if (!_hasEnteredScreen)
+        {
+            if (pos.x >= leftBound && pos.x <= rightBound)
+            {
+                _hasEnteredScreen = true;
+            }
+            else
+            {
+                _lastPosition = pos;
+                return;
+            }
+        }
+
         Vector3 force = _enemyMovement.ExternalForce;
         Vector3 frameVelocity = Time.deltaTime > 0f ? (pos - _lastPosition) / Time.deltaTime : Vector3.zero;
 
@@ -51,10 +66,10 @@ public class EnemyWallBounce : MonoBehaviour
         {
             if (_lastPosition.x <= rightBound) 
             {
-                float incomingVelocityX = Mathf.Max(force.x, frameVelocity.x);
-                if (incomingVelocityX > minBounceVelocity)
+                float incomingVelocityX = force.x;
+                if (_enemyMovement.IsInThrowState || (incomingVelocityX > minBounceVelocity && incomingVelocityX > _enemyMovement.moveSpeed * 1.1f))
                 {
-                    force.x = -(incomingVelocityX * bounceFactor + extraBounceImpulse);
+                    force.x = -(Mathf.Max(incomingVelocityX, frameVelocity.x) * bounceFactor + extraBounceImpulse);
                     bounced = true;
                 }
                 else if (force.x > 0)
@@ -71,10 +86,10 @@ public class EnemyWallBounce : MonoBehaviour
         {
             if (_lastPosition.x >= leftBound) 
             {
-                float incomingVelocityX = Mathf.Min(force.x, frameVelocity.x);
-                if (incomingVelocityX < -minBounceVelocity)
+                float incomingVelocityX = force.x;
+                if (_enemyMovement.IsInThrowState || (incomingVelocityX < -minBounceVelocity && incomingVelocityX < -_enemyMovement.moveSpeed * 1.1f))
                 {
-                    force.x = -(incomingVelocityX * bounceFactor - extraBounceImpulse);
+                    force.x = -(Mathf.Min(incomingVelocityX, frameVelocity.x) * bounceFactor - extraBounceImpulse);
                     bounced = true;
                 }
                 else if (force.x < 0)
