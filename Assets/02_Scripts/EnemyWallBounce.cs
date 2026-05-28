@@ -15,6 +15,7 @@ public class EnemyWallBounce : MonoBehaviour
     private Health _health;
     private Camera _cam;
     private Vector3 _lastPosition;
+    private bool _hasEnteredScreen = false;
 
     private void Start()
     {
@@ -39,6 +40,20 @@ public class EnemyWallBounce : MonoBehaviour
         float rightBound = maxX - margin;
 
         Vector3 pos = transform.position;
+
+        if (!_hasEnteredScreen)
+        {
+            if (pos.x >= leftBound && pos.x <= rightBound)
+            {
+                _hasEnteredScreen = true;
+            }
+            else
+            {
+                _lastPosition = pos;
+                return;
+            }
+        }
+
         Vector3 force = _enemyMovement.ExternalForce;
         Vector3 frameVelocity = Time.deltaTime > 0f ? (pos - _lastPosition) / Time.deltaTime : Vector3.zero;
 
