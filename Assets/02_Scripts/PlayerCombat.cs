@@ -21,6 +21,8 @@ public class PlayerCombat : MonoBehaviour
     public event Action OnAttackEnded;
 
     public event Action<GameObject> OnHitLanded;
+    
+    public Animator animator;
 
     private bool _isAttacking;
     
@@ -35,6 +37,9 @@ public class PlayerCombat : MonoBehaviour
         
         if (fist1 != null) _fist1InitialZ = fist1.localPosition.z;
         if (fist2 != null) _fist2InitialZ = fist2.localPosition.z;
+        
+        if (animator == null)
+            animator = GetComponentInChildren<Animator>();
     }
 
     //private void OnEnable()
@@ -97,6 +102,8 @@ public class PlayerCombat : MonoBehaviour
         PlayerStateManager.Instance.SetState(PlayerState.Attacking);
         hitbox.Activate();
         OnAttackStarted?.Invoke();
+        
+        animator.SetTrigger("Punch");
         
         var fist = _punchIndex % 2 == 0 ? fist1 : fist2;
         _punchIndex++;
