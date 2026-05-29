@@ -5,7 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(BoxCollider))]
 public class Arena : MonoBehaviour
 {
-    [SerializeField] private GameObject enemyPrefab;
+    [SerializeField] private GameObject[] enemyGroupPrefabs;
     [SerializeField] private int enemyCount = 3;
     [SerializeField] private float spawnDelay = 1.5f;
 
@@ -44,6 +44,8 @@ public class Arena : MonoBehaviour
 
     private void SpawnEnemy(int index)
     {
+        GameObject enemyPrefab = GetRandomChar();
+
         if (enemyPrefab == null) return;
 
         var spawnPos = _spawnPoints.Count > 0
@@ -58,6 +60,17 @@ public class Arena : MonoBehaviour
             health.OnDeath += OnEnemyDied;
 
         Debug.Log($"[Arena] enemy {_spawnedCount}/{enemyCount} spawned at {spawnPos}");
+    }
+
+    private GameObject GetRandomChar()
+    {
+        int groupIndex = Random.Range(0, enemyGroupPrefabs.Length);
+
+        GameObject selectedGroup = enemyGroupPrefabs[groupIndex];
+
+        int childIndex = Random.Range(0, selectedGroup.transform.childCount);
+
+        return selectedGroup.transform.GetChild(childIndex).gameObject;
     }
 
     private void OnEnemyDied()
