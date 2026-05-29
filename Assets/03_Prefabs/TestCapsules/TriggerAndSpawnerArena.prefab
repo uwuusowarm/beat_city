@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 297884088248968290}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -25, y: 0, z: 0}
+  m_LocalPosition: {x: -50, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -78,8 +78,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cbae2416fd1b094c87ac742e411604b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Arena
-  enemyPrefab: {fileID: 1577849195809885492, guid: 2842d68f17cc6694fb341a55e7e2624c, type: 3}
-  enemyCount: 3
+  enemyGroupPrefabs:
+  - {fileID: 3997379080059053254, guid: 999bff7728f2cc14f8af07e2377f2e68, type: 3}
+  - {fileID: 7939260520453565481, guid: 3dce84b3b5bc34940a45e3e340961fa2, type: 3}
+  - {fileID: 4954771369318584920, guid: b7d45734ae34d374b833275371ea087b, type: 3}
+  enemyCount: 5
   spawnDelay: 1.5
 --- !u!65 &3619542099398464621
 BoxCollider:
@@ -100,8 +103,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.6005478, y: 6.368356, z: 15.655758}
-  m_Center: {x: -0.1997261, y: -0.42971778, z: -2.8206959}
+  m_Size: {x: 0.6005478, y: 11.402143, z: 52.373714}
+  m_Center: {x: -0.1997261, y: 2.0871763, z: -5.112253}
 --- !u!1 &9029780105105273813
 GameObject:
   m_ObjectHideFlags: 0
@@ -127,7 +130,7 @@ Transform:
   m_GameObject: {fileID: 9029780105105273813}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 25, y: 0, z: 0}
+  m_LocalPosition: {x: 50, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
