@@ -112,6 +112,19 @@ public class EnemyCombat : MonoBehaviour
 
     private void Attack()
     {
+        Animator animator = null;
+        if (_movement != null)
+        {
+            animator = _movement.GetComponentInChildren<Animator>();
+        }
+
+        if (animator != null)
+        {
+            string[] attacks = { "Punch1", "Punch2", "Kick" };
+            string randomAttack = attacks[Random.Range(0, attacks.Length)];
+            animator.Play(randomAttack, 0, 0f);
+        }
+
         if (_player.TryGetComponent<Health>(out var playerHealth))
         {
             Vector3 knockbackDir = (_player.position - transform.position).normalized;
