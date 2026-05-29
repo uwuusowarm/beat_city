@@ -50,6 +50,10 @@ public class EndlessManager : MonoBehaviour
 
         UpdateHighscoreUI();
 
+        _spawnX = startSpawnX - chunkWidth;
+
+        SpawnNextChunk();
+
         for (int i = 0; i < maxActiveChunks; i++)
         {
             SpawnNextChunk();
@@ -106,7 +110,7 @@ public class EndlessManager : MonoBehaviour
 
     private void DeleteOldestChunk()
     {
-        if (_activeChunks.Count > maxActiveChunks)
+        while (_activeChunks.Count > maxActiveChunks)
         {
             GameObject oldChunk = _activeChunks.Dequeue();
             Destroy(oldChunk);
