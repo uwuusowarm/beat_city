@@ -9,6 +9,7 @@ public class EnemyMovement : MonoBehaviour
 
     [Header("Visuals")]
     public Transform characterModel;
+    [SerializeField] private Animator animator;
 
     [Header("Distances")]
     public float attackDistance = 1.5f;
@@ -51,6 +52,9 @@ public class EnemyMovement : MonoBehaviour
             player = playerObj.transform; 
         else
             Debug.LogWarning("[EnemyMovement] No GameObject with tag 'Player' found.");
+
+        if (animator == null)
+            animator = GetComponentInChildren<Animator>();
 
         PickNewTactic();
 
@@ -103,12 +107,17 @@ public class EnemyMovement : MonoBehaviour
     private void Update()
     {
         if (player == null) return;
-        if (_health != null && _health.Current <= 0) return;
+        if (_health != null && _health.Current <= 0)
+        {
+            if (animator != null) animator.SetFloat("Speed", 0f);
+            return;
+        }
 
         if (hitStunTimer > 0f)
         {
             hitStunTimer -= Time.deltaTime;
             ApplyGravityAndMove(Vector3.zero);
+            if (animator != null) animator.SetFloat("Speed", 0f);
             return;
         }
 
@@ -177,15 +186,21 @@ public class EnemyMovement : MonoBehaviour
         float distance = directionToTarget.magnitude;
 
         Vector3 moveVelocity = Vector3.zero;
+        float normalizedSpeed = 0f;
         if (distance > 0.1f)
         {
             Vector3 desiredDirection = directionToTarget.normalized;
             Vector3 avoidance = CalculateAvoidance();
             Vector3 finalDirection = (desiredDirection + avoidance).normalized;
             moveVelocity = directionToTarget.normalized * moveSpeed;
+            normalizedSpeed = 1f;
         }
         
         ApplyGravityAndMove(moveVelocity);
+        if (animator != null)
+        {
+            animator.SetFloat("Speed", normalizedSpeed);
+        }
     }
 
     private Vector3 CalculateAvoidance()
