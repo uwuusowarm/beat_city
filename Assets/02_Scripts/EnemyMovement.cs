@@ -229,6 +229,11 @@ public class EnemyMovement : MonoBehaviour
 
     private void ApplyGravityAndMove(Vector3 moveVelocity)
     {
+        if (controller == null || !controller.enabled)
+        {
+            return;
+        }
+
         if (controller.isGrounded && verticalVelocity <= 0f)
         {
             verticalVelocity = -0.5f;

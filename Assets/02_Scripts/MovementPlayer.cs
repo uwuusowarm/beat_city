@@ -86,6 +86,11 @@ public class MovementPlayer : MonoBehaviour
 
     private void HandleMovementAndJump()
     {
+        if (controller == null || !controller.enabled)
+        {
+            return;
+        }
+
         Vector3 inputDirection = GetInputDirection();
         
         if (!PlayerStateManager.Instance.CanPerformAction())

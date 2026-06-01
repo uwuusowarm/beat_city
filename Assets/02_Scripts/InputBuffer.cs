@@ -17,8 +17,10 @@ public class InputBuffer : MonoBehaviour
     [SerializeField] private InputActionReference kickAction;
     [SerializeField] private InputActionReference specialAction;
 
+
     [Header("Buffer")]
     [SerializeField] private float bufferTime = 0.5f;
+
 
     private CombatInputType bufferedInput = CombatInputType.None;
     private float bufferTimer;
@@ -81,6 +83,7 @@ public class InputBuffer : MonoBehaviour
     {
         if (!context.ReadValueAsButton()) return;
         Buffer(CombatInputType.Punch);
+        
     }
 
     private void OnKick(InputAction.CallbackContext context)
