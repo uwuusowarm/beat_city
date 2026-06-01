@@ -79,9 +79,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Arena
   enemyGroupPrefabs:
-  - {fileID: 3997379080059053254, guid: 999bff7728f2cc14f8af07e2377f2e68, type: 3}
-  - {fileID: 7939260520453565481, guid: 3dce84b3b5bc34940a45e3e340961fa2, type: 3}
-  - {fileID: 4954771369318584920, guid: b7d45734ae34d374b833275371ea087b, type: 3}
+  - {fileID: 1455022229344683694, guid: 6e169e3a2fcd701429dab898f18ef4d9, type: 3}
+  - {fileID: 86603612472512833, guid: e24ef14a0058f084e9446a405616825a, type: 3}
+  - {fileID: 6219036811190547938, guid: cf2ca3e7e85a6b64babf65b557c0b563, type: 3}
   enemyCount: 5
   spawnDelay: 1.5
 --- !u!65 &3619542099398464621
