@@ -10,17 +10,18 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private float attackCooldown = 0.1f;
     [SerializeField] private InputBuffer inputBuffer;
     [SerializeField] private Animator animator;
-    
+    [SerializeField] private AudioManager audioManager;
+
     [Header("Combo")]
     [SerializeField] private float comboResetTime = 1.0f;
-    
+
     public event Action OnAttackStarted;
 
     public event Action OnAttackEnded;
 
     public event Action<GameObject> OnHitLanded;
 
-    public CombatInputType CurrentAttackType {  get; private set; }
+    public CombatInputType CurrentAttackType { get; private set; }
     public int CurrentComboStep => _comboStep;
 
     private bool _isAttacking;
@@ -28,7 +29,7 @@ public class PlayerCombat : MonoBehaviour
     private int _comboStep;
 
     private float _lastAttackTime;
-    
+
     private int _punchIndex;
 
     private float _fist1InitialZ;
@@ -36,7 +37,12 @@ public class PlayerCombat : MonoBehaviour
 
     private void Awake()
     {
+        if (audioManager == null)
+        {
+            audioManager = FindFirstObjectByType<AudioManager>();
+        }
         hitbox.OnHitLanded += target => OnHitLanded?.Invoke(target);
+
     }
 
     private void Update()
@@ -94,6 +100,7 @@ public class PlayerCombat : MonoBehaviour
         PlayerStateManager.Instance.SetState(PlayerState.Attacking);
 
         AdvanceCombo(CombatInputType.Punch);
+        PlayAttackSfx(CombatInputType.Punch);
 
         hitbox.Activate();
         OnAttackStarted?.Invoke();
@@ -102,9 +109,9 @@ public class PlayerCombat : MonoBehaviour
 
         hitbox.Deactivate();
         OnAttackEnded?.Invoke();
-        
+
         yield return new WaitForSeconds(attackCooldown);
-        
+
         _isAttacking = false;
         PlayerStateManager.Instance.ResetToIdle();
     }
@@ -115,6 +122,7 @@ public class PlayerCombat : MonoBehaviour
         PlayerStateManager.Instance.SetState(PlayerState.Attacking);
 
         AdvanceCombo(CombatInputType.Kick);
+        PlayAttackSfx(CombatInputType.Kick);
 
         hitbox.Activate();
         OnAttackStarted?.Invoke();
@@ -137,5 +145,23 @@ public class PlayerCombat : MonoBehaviour
         CurrentAttackType = CombatInputType.None;
 
         Debug.Log("[PlayerCombat] Combo reset");
+    }
+
+    private void PlayAttackSfx(CombatInputType input)
+    {
+        if (audioManager == null) return;
+
+        int index = _comboStep - 1;
+
+        switch (input)
+        {
+            case CombatInputType.Punch:
+                audioManager.PlaySfx(SfxType.Punch, index);
+                break;
+
+            case CombatInputType.Kick:
+                audioManager.PlaySfx(SfxType.Kick, index);
+                break;
+        }
     }
 }

@@ -51,6 +51,8 @@ GameObject:
   - component: {fileID: 6230549841718577859}
   - component: {fileID: 5239942357861324667}
   - component: {fileID: 1090865916532907376}
+  - component: {fileID: 6656804542050624544}
+  - component: {fileID: 7887967780279235466}
   m_Layer: 0
   m_Name: Enemy_Clerk_Green
   m_TagString: Enemy
@@ -228,6 +230,42 @@ MonoBehaviour:
   margin: 0.5
   minBounceVelocity: 1
   bounceDamage: 0
+--- !u!65 &6656804542050624544
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2336674374545229697}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 2, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7887967780279235466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2336674374545229697}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9d2133455e252e419fb7dc96b008617, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Hurtbox
+  owner: {fileID: 2336674374545229697}
+  size: {x: 1, y: 2, z: 1}
+  offset: {x: 0, y: 0, z: 0}
 --- !u!1 &4655223023946547876
 GameObject:
   m_ObjectHideFlags: 0
@@ -245,6 +283,8 @@ GameObject:
   - component: {fileID: 2213263406245777000}
   - component: {fileID: 1502186565801561330}
   - component: {fileID: 2764346044753830265}
+  - component: {fileID: 2225368458752613558}
+  - component: {fileID: 1781233701951839861}
   m_Layer: 0
   m_Name: Enemy_Clerk_Purple
   m_TagString: Enemy
@@ -422,6 +462,42 @@ MonoBehaviour:
   margin: 0.5
   minBounceVelocity: 1
   bounceDamage: 0
+--- !u!65 &2225368458752613558
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4655223023946547876}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 2, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1781233701951839861
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4655223023946547876}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9d2133455e252e419fb7dc96b008617, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Hurtbox
+  owner: {fileID: 4655223023946547876}
+  size: {x: 1, y: 2, z: 1}
+  offset: {x: 0, y: 0, z: 0}
 --- !u!1 &6021690092030721686
 GameObject:
   m_ObjectHideFlags: 0
@@ -439,6 +515,8 @@ GameObject:
   - component: {fileID: 5468975762695983989}
   - component: {fileID: 5239524883267682647}
   - component: {fileID: 7232115894334072915}
+  - component: {fileID: 4861793013207294915}
+  - component: {fileID: 8970979055086758525}
   m_Layer: 0
   m_Name: Enemy_Clerk_Red
   m_TagString: Enemy
@@ -616,6 +694,42 @@ MonoBehaviour:
   margin: 0.5
   minBounceVelocity: 1
   bounceDamage: 0
+--- !u!65 &4861793013207294915
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6021690092030721686}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 2, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &8970979055086758525
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6021690092030721686}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9d2133455e252e419fb7dc96b008617, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Hurtbox
+  owner: {fileID: 6021690092030721686}
+  size: {x: 1, y: 2, z: 1}
+  offset: {x: 0, y: 0, z: 0}
 --- !u!1001 &1700393430095983606
 PrefabInstance:
   m_ObjectHideFlags: 0

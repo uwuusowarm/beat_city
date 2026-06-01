@@ -51,6 +51,8 @@ GameObject:
   - component: {fileID: 7918181634591893009}
   - component: {fileID: 927609052574516398}
   - component: {fileID: 3491211979302437245}
+  - component: {fileID: 3179065876100757259}
+  - component: {fileID: 7522853543613000676}
   m_Layer: 0
   m_Name: Enemy_Bastard_Purple
   m_TagString: Enemy
@@ -228,6 +230,42 @@ MonoBehaviour:
   margin: 0.5
   minBounceVelocity: 1
   bounceDamage: 0
+--- !u!65 &3179065876100757259
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2341932926542406260}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 2, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7522853543613000676
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2341932926542406260}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9d2133455e252e419fb7dc96b008617, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Hurtbox
+  owner: {fileID: 2341932926542406260}
+  size: {x: 1, y: 2, z: 1}
+  offset: {x: 0, y: 0, z: 0}
 --- !u!1 &5993968919127322692
 GameObject:
   m_ObjectHideFlags: 0
@@ -245,6 +283,8 @@ GameObject:
   - component: {fileID: 5396851611655128706}
   - component: {fileID: 4874356665526052661}
   - component: {fileID: 3749036164731209299}
+  - component: {fileID: 8081174850741081342}
+  - component: {fileID: 3390125541619468304}
   m_Layer: 0
   m_Name: Enemy_Bastard_Red
   m_TagString: Enemy
@@ -422,6 +462,42 @@ MonoBehaviour:
   margin: 0.5
   minBounceVelocity: 1
   bounceDamage: 0
+--- !u!65 &8081174850741081342
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5993968919127322692}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 2, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &3390125541619468304
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5993968919127322692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9d2133455e252e419fb7dc96b008617, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Hurtbox
+  owner: {fileID: 5993968919127322692}
+  size: {x: 1, y: 2, z: 1}
+  offset: {x: 0, y: 0, z: 0}
 --- !u!1 &6431816695687519032
 GameObject:
   m_ObjectHideFlags: 0
@@ -439,6 +515,8 @@ GameObject:
   - component: {fileID: 4833180996534090380}
   - component: {fileID: 4285308478469377160}
   - component: {fileID: 1774888253067404212}
+  - component: {fileID: 8280926895975012122}
+  - component: {fileID: 7021295248373446994}
   m_Layer: 0
   m_Name: Enemy_Bastard_Green
   m_TagString: Enemy
@@ -616,6 +694,42 @@ MonoBehaviour:
   margin: 0.5
   minBounceVelocity: 1
   bounceDamage: 0
+--- !u!65 &8280926895975012122
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6431816695687519032}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 2, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7021295248373446994
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6431816695687519032}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9d2133455e252e419fb7dc96b008617, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Hurtbox
+  owner: {fileID: 6431816695687519032}
+  size: {x: 1, y: 2, z: 1}
+  offset: {x: 0, y: 0, z: 0}
 --- !u!1 &8558134004750198491
 GameObject:
   m_ObjectHideFlags: 0

@@ -2,7 +2,7 @@ using UnityEngine;
 
 public enum SfxType
 {
-    Hit,
+    Punch,
     Kick,
     Jump,
     EnemyDeath,
