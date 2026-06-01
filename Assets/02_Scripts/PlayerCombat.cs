@@ -7,7 +7,9 @@ public class PlayerCombat : MonoBehaviour
 {
     [SerializeField] private Hitbox hitbox;
     [SerializeField] private float activeTime = 0.2f;
+    [SerializeField] private float attackCooldown = 0.1f;
     [SerializeField] private InputBuffer inputBuffer;
+    [SerializeField] private Animator animator;
 
     [Header("Fist Animation")]
     [SerializeField] private Transform fist1;
@@ -86,6 +88,17 @@ public class PlayerCombat : MonoBehaviour
         CurrentAttackType = input;
 
         Debug.Log($"[PlayerCombat] Combo Step: {_comboStep}/3 Attack: {input}");
+
+        if (animator != null)
+        {
+            // Update Parameters for Animation Tree
+            animator.SetInteger("ComboStep", _comboStep);
+            animator.SetInteger("AttackType", (int)input);
+            animator.SetTrigger("Attack");
+
+            // string animationName = input.ToString() + _comboStep.ToString("D2");
+            // animator.Play(animationName, 0, 0f);
+        }
     }
 
     public void ExtendFists(bool extend)
@@ -110,15 +123,18 @@ public class PlayerCombat : MonoBehaviour
         hitbox.Activate();
         OnAttackStarted?.Invoke();
         
-        var fist = _punchIndex % 2 == 0 ? fist1 : fist2;
+        /*var fist = _punchIndex % 2 == 0 ? fist1 : fist2;
         _punchIndex++;
         if (fist != null)
-            StartCoroutine(PunchFist(fist));
+            StartCoroutine(PunchFist(fist));*/
 
         yield return new WaitForSeconds(activeTime);
 
         hitbox.Deactivate();
         OnAttackEnded?.Invoke();
+        
+        yield return new WaitForSeconds(attackCooldown);
+        
         _isAttacking = false;
         PlayerStateManager.Instance.ResetToIdle();
     }
@@ -137,6 +153,9 @@ public class PlayerCombat : MonoBehaviour
 
         hitbox.Deactivate();
         OnAttackEnded?.Invoke();
+
+        yield return new WaitForSeconds(attackCooldown);
+
         _isAttacking = false;
         PlayerStateManager.Instance.ResetToIdle();
     }
