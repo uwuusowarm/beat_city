@@ -7,14 +7,10 @@ public class PlayerCombat : MonoBehaviour
 {
     [SerializeField] private Hitbox hitbox;
     [SerializeField] private float activeTime = 0.2f;
+    [SerializeField] private float attackCooldown = 0.1f;
     [SerializeField] private InputBuffer inputBuffer;
-
-    [Header("Fist Animation")]
-    [SerializeField] private Transform fist1;
-    [SerializeField] private Transform fist2;
-    [SerializeField] private float punchDistance = 0.4f;
-    [SerializeField] private float punchSpeed = 12f;
-
+    [SerializeField] private Animator animator;
+    
     [Header("Combo")]
     [SerializeField] private float comboResetTime = 1.0f;
     
@@ -41,9 +37,6 @@ public class PlayerCombat : MonoBehaviour
     private void Awake()
     {
         hitbox.OnHitLanded += target => OnHitLanded?.Invoke(target);
-        
-        if (fist1 != null) _fist1InitialZ = fist1.localPosition.z;
-        if (fist2 != null) _fist2InitialZ = fist2.localPosition.z;
     }
 
     private void Update()
@@ -86,18 +79,13 @@ public class PlayerCombat : MonoBehaviour
         CurrentAttackType = input;
 
         Debug.Log($"[PlayerCombat] Combo Step: {_comboStep}/3 Attack: {input}");
-    }
 
-    public void ExtendFists(bool extend)
-    {
-        Vector3 localPos1 = fist1.localPosition;
-        Vector3 localPos2 = fist2.localPosition;
-        
-        localPos1.z = extend ? _fist1InitialZ + punchDistance : _fist1InitialZ;
-        localPos2.z = extend ? _fist2InitialZ + punchDistance : _fist2InitialZ;
-        
-        fist1.localPosition = localPos1;
-        fist2.localPosition = localPos2;
+        if (animator != null)
+        {
+            animator.SetInteger("ComboStep", _comboStep);
+            animator.SetInteger("AttackType", (int)input);
+            animator.SetTrigger("Attack");
+        }
     }
 
     private IEnumerator DoPunch()
@@ -109,16 +97,14 @@ public class PlayerCombat : MonoBehaviour
 
         hitbox.Activate();
         OnAttackStarted?.Invoke();
-        
-        var fist = _punchIndex % 2 == 0 ? fist1 : fist2;
-        _punchIndex++;
-        if (fist != null)
-            StartCoroutine(PunchFist(fist));
 
         yield return new WaitForSeconds(activeTime);
 
         hitbox.Deactivate();
         OnAttackEnded?.Invoke();
+        
+        yield return new WaitForSeconds(attackCooldown);
+        
         _isAttacking = false;
         PlayerStateManager.Instance.ResetToIdle();
     }
@@ -137,6 +123,9 @@ public class PlayerCombat : MonoBehaviour
 
         hitbox.Deactivate();
         OnAttackEnded?.Invoke();
+
+        yield return new WaitForSeconds(attackCooldown);
+
         _isAttacking = false;
         PlayerStateManager.Instance.ResetToIdle();
     }
@@ -148,31 +137,5 @@ public class PlayerCombat : MonoBehaviour
         CurrentAttackType = CombatInputType.None;
 
         Debug.Log("[PlayerCombat] Combo reset");
-    }
-    
-    private IEnumerator PunchFist(Transform fist)
-    {
-        float initialZ = (fist == fist1) ? _fist1InitialZ : _fist2InitialZ;
-        var origin = fist.localPosition;
-        var forward = origin;
-        forward.z = initialZ + punchDistance;
-
-        float t = 0f;
-        while (t < 1f)
-        {
-            t += Time.deltaTime * punchSpeed;
-            fist.localPosition = Vector3.Lerp(origin, forward, t);
-            yield return null;
-        }
-
-        t = 0f;
-        while (t < 1f)
-        {
-            t += Time.deltaTime * punchSpeed;
-            fist.localPosition = Vector3.Lerp(forward, origin, t);
-            yield return null;
-        }
-
-        fist.localPosition = origin;
     }
 }
