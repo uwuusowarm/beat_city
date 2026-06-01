@@ -41,8 +41,13 @@ public class PlayerCombat : MonoBehaviour
         {
             audioManager = FindFirstObjectByType<AudioManager>();
         }
-        hitbox.OnHitLanded += target => OnHitLanded?.Invoke(target);
+        hitbox.OnHitLanded += HandleHitLanded;
+    }
 
+    private void HandleHitLanded(GameObject target)
+    {
+        OnHitLanded?.Invoke(target);
+        PlayAttackSfx(CurrentAttackType);
     }
 
     private void Update()
@@ -100,7 +105,6 @@ public class PlayerCombat : MonoBehaviour
         PlayerStateManager.Instance.SetState(PlayerState.Attacking);
 
         AdvanceCombo(CombatInputType.Punch);
-        PlayAttackSfx(CombatInputType.Punch);
 
         hitbox.Activate();
         OnAttackStarted?.Invoke();
@@ -122,7 +126,6 @@ public class PlayerCombat : MonoBehaviour
         PlayerStateManager.Instance.SetState(PlayerState.Attacking);
 
         AdvanceCombo(CombatInputType.Kick);
-        PlayAttackSfx(CombatInputType.Kick);
 
         hitbox.Activate();
         OnAttackStarted?.Invoke();

@@ -54,18 +54,18 @@ MonoBehaviour:
     - {fileID: 8300000, guid: c7914612a3d9396438a78d01e920fcfd, type: 3}
   - musicType: 1
     musicClips:
-    - {fileID: 8300000, guid: a3de83ff7e9a3f54da94cb32e7cc6d09, type: 3}
+    - {fileID: 8300000, guid: a5502c37df586ce42a77ddc34ed0d4b3, type: 3}
   sfxEntries:
   - sfxType: 0
-    sfxClips: []
-  - sfxType: 0
-    sfxClips: []
-  - sfxType: 0
-    sfxClips: []
-  - sfxType: 0
-    sfxClips: []
-  - sfxType: 0
-    sfxClips: []
+    sfxClips:
+    - {fileID: 8300000, guid: 1cd9fbc4bb2c19749aa2e61afd72aaaa, type: 3}
+    - {fileID: 8300000, guid: faf53b5b59d41a14e97c8858f4664122, type: 3}
+    - {fileID: 8300000, guid: a715ddf00ff7f24469c72404e8df85e9, type: 3}
+  - sfxType: 1
+    sfxClips:
+    - {fileID: 8300000, guid: 482611fe6bc559142a00be6e726b4862, type: 3}
+    - {fileID: 8300000, guid: 482611fe6bc559142a00be6e726b4862, type: 3}
+    - {fileID: 8300000, guid: 4d4ef7516a431934681038a3dc391e55, type: 3}
 --- !u!82 &4667260958754158351
 AudioSource:
   m_ObjectHideFlags: 0
@@ -79,7 +79,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 0.000000009999999
+  m_Volume: 0
   m_Pitch: 1
   Loop: 0
   Mute: 0
