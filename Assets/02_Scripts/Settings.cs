@@ -90,11 +90,4 @@ public class Settings : MonoBehaviour
         #endif
         Application.Quit();
     }
-
-    public void Play()
-    {
-        SceneManager.LoadScene("01_Scenes/MainScenes/Level01Pitch");
-    }
-
-
 }
