@@ -9,7 +9,7 @@ EditorBuildSettings:
     path: Assets/01_Scenes/MainScenes/MainMenuPitch.unity
     guid: 7f83407d0a38a4b4a9f2f6dbe88e92f2
   - enabled: 1
-    path: Assets/01_Scenes/MainScenes/Level01Pitch.unity
+    path: Assets/01_Scenes/MainScenes/Old/Level01Pitch.unity
     guid: 2434c7180353d4a498e61f19881abe1a
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
