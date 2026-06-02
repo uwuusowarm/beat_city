@@ -83,6 +83,16 @@ public class Hitbox : MonoBehaviour
                     HitStunDuration = hitStunDuration,
                     Source = owner
                 });
+
+                if (owner.CompareTag("Player") && damageable is Health enemyHealth)
+                {
+                    Debug.Log($"[DEBUG_LOG] Hitbox: Player hit enemy {hurtbox.Owner.name}.");
+                    UIManager manager = UIManager.Instance;
+                    if (manager != null)
+                    {
+                        manager.UpdateEnemyHealthFocus(enemyHealth);
+                    }
+                }
             }
 
             OnHitLanded?.Invoke(hurtbox.Owner);
