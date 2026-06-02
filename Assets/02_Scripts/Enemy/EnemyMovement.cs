@@ -19,7 +19,8 @@ public class EnemyMovement : MonoBehaviour
     public float minRepositionTime = 1.0f;
     public float maxRepositionTime = 3.0f;
 
-
+    public float comboHitStun = 0.5f;
+    public float kickStunDuration = 1.5f;
     public bool IsStunned => hitStunTimer > 0f;
 
     private Transform player;
@@ -72,6 +73,7 @@ public class EnemyMovement : MonoBehaviour
             if (knockbackForce.magnitude > moveSpeed * 1.5f)
             {
                 IsInThrowState = true;
+                hitStunTimer = kickStunDuration;
             }
         }
         if (hitStunReset > 0f) hitStunTimer = hitStunReset;
@@ -95,6 +97,7 @@ public class EnemyMovement : MonoBehaviour
             if (hitData.KnockbackForce > moveSpeed * 1.5f)
             {
                 IsInThrowState = true;
+                hitStunTimer = kickStunDuration;
             }
         }
     }
@@ -113,9 +116,9 @@ public class EnemyMovement : MonoBehaviour
             return;
         }
 
-        if (hitStunTimer > 0f)
+        if (hitStunTimer > 0f || !controller.isGrounded)
         {
-            hitStunTimer -= Time.deltaTime;
+            if (hitStunTimer > 0f) hitStunTimer -= Time.deltaTime;
             ApplyGravityAndMove(Vector3.zero);
             if (animator != null) animator.SetFloat("Speed", 0f);
             return;
@@ -192,7 +195,7 @@ public class EnemyMovement : MonoBehaviour
             Vector3 desiredDirection = directionToTarget.normalized;
             Vector3 avoidance = CalculateAvoidance();
             Vector3 finalDirection = (desiredDirection + avoidance).normalized;
-            moveVelocity = directionToTarget.normalized * moveSpeed;
+            moveVelocity = finalDirection * moveSpeed; 
             normalizedSpeed = 1f;
         }
         
@@ -255,19 +258,17 @@ public class EnemyMovement : MonoBehaviour
         else
         {
             externalForce = Vector3.zero;
+            IsInThrowState = false;
         }
     }
 
     private void LookAtPlayer()
     {
         if (characterModel == null) return;
-        Vector3 dir = (player.position - transform.position).normalized;
-        dir.y = 0f;
+        float dirX = (player.position.x >= transform.position.x) ? 1f : -1f;
+        Vector3 strictDirection = new Vector3(dirX, 0f, 0f);
         
-        if (dir != Vector3.zero)
-        {
-            characterModel.rotation = Quaternion.LookRotation(new Vector3(dir.x, 0f, dir.z));
-        }
+        characterModel.rotation = Quaternion.LookRotation(strictDirection);
     }
 
     /*private void MoveTowardsPlayer()
