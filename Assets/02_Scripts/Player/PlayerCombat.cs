@@ -13,7 +13,7 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private AudioManager audioManager;
 
     [Header("Combo")]
-    [SerializeField] private float comboResetTime = 1.0f;
+    private PlayerSettings _settings;
 
     public event Action OnAttackStarted;
 
@@ -37,6 +37,8 @@ public class PlayerCombat : MonoBehaviour
 
     private void Awake()
     {
+        _settings = Resources.Load<PlayerSettings>("PlayerSettings");
+
         if (audioManager == null)
         {
             audioManager = FindFirstObjectByType<AudioManager>();
@@ -74,7 +76,8 @@ public class PlayerCombat : MonoBehaviour
 
     private void AdvanceCombo(CombatInputType input)
     {
-        if (Time.time - _lastAttackTime > comboResetTime)
+        float resetTime = _settings != null ? _settings.comboResetTime : 1.0f;
+        if (Time.time - _lastAttackTime > resetTime)
         {
             _comboStep = 0;
         }

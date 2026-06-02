@@ -225,6 +225,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -3982840628395845413, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
+      propertyPath: hitText
+      value: 
+      objectReference: {fileID: 1879985794}
     - target: {fileID: 1662536712636653983, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
       propertyPath: m_Name
       value: PlayerAnimGrey
@@ -282,6 +286,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
+--- !u!1 &357700555 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7391985797329135729, guid: 657481147422a37418123f320e560f25, type: 3}
+  m_PrefabInstance: {fileID: 737657283}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &437364901 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4848836257003392628, guid: 657481147422a37418123f320e560f25, type: 3}
@@ -298,12 +307,27 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 9104261876279779562, guid: 657481147422a37418123f320e560f25, type: 3}
   m_PrefabInstance: {fileID: 737657283}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 357700555}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider
+--- !u!114 &510086307
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 357700555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7edbbee83aea1045a05a5d59872019e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Meter
+  baseMeterPerHit: 1
+  playerCombat: {fileID: 1304769521}
+  hitCounter: {fileID: 1304769520}
 --- !u!114 &517442368 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5978393447553201622, guid: 7001616722f173d4bbfcfe0016bb9cad, type: 3}
@@ -315,6 +339,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae9275b9cab95b440af414aadc7fe918, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InputBuffer
+--- !u!1 &539587822 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1844997717827730229, guid: baf3767a1d15826409e2908c20bddf38, type: 3}
+  m_PrefabInstance: {fileID: 1660404754}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &539587829
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 539587822}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75e05982ee14544439e1d67159490d2b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIManager
+  playerHealthUI: {fileID: 1107266827}
+  enemyHealthUI: {fileID: 1369890858}
 --- !u!1 &570788976
 GameObject:
   m_ObjectHideFlags: 0
@@ -666,6 +709,18 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7640699848940071598, guid: 657481147422a37418123f320e560f25, type: 3}
+      propertyPath: health
+      value: 
+      objectReference: {fileID: 1304769519}
+    - target: {fileID: 7640699848940071598, guid: 657481147422a37418123f320e560f25, type: 3}
+      propertyPath: trailSlider
+      value: 
+      objectReference: {fileID: 1107266825}
+    - target: {fileID: 7640699848940071598, guid: 657481147422a37418123f320e560f25, type: 3}
+      propertyPath: healthSlider
+      value: 
+      objectReference: {fileID: 1107266825}
     - target: {fileID: 8837769699276860153, guid: 657481147422a37418123f320e560f25, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -704,6 +759,12 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1187549259}
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4226608717179071027, guid: 657481147422a37418123f320e560f25, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1369890858}
+    - targetCorrespondingSourceObject: {fileID: 7391985797329135729, guid: 657481147422a37418123f320e560f25, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 510086307}
     - targetCorrespondingSourceObject: {fileID: 4607655601569577572, guid: 657481147422a37418123f320e560f25, type: 3}
       insertIndex: -1
       addedObject: {fileID: 21394351}
@@ -849,7 +910,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3375258719077053111, guid: 657481147422a37418123f320e560f25, type: 3}
   m_PrefabInstance: {fileID: 737657283}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1369890856}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
@@ -866,6 +927,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider
+--- !u!114 &1107266827 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7640699848940071598, guid: 657481147422a37418123f320e560f25, type: 3}
+  m_PrefabInstance: {fileID: 737657283}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cebca41792993784d9be2af95ffeb031, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIHealth
 --- !u!4 &1179380062 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4799275800366551407, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
@@ -925,6 +997,39 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.OnScreen.OnScreenButton
   m_ControlPath: <Keyboard>/f
+--- !u!114 &1304769519 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8315422397030599102, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
+  m_PrefabInstance: {fileID: 341897364}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a8d1e53402ec17418391ed73f486df1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Health
+--- !u!114 &1304769520 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: -3982840628395845413, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
+  m_PrefabInstance: {fileID: 341897364}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d79aaa1f7e1b4321808728f6aca93c2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HitCounter
+--- !u!114 &1304769521 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1908867706107061876, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
+  m_PrefabInstance: {fileID: 341897364}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c90a008bb54b674cb6371fbbf1ede7b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerCombat
 --- !u!1 &1327577480
 GameObject:
   m_ObjectHideFlags: 0
@@ -1062,6 +1167,30 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 354}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1369890856 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4226608717179071027, guid: 657481147422a37418123f320e560f25, type: 3}
+  m_PrefabInstance: {fileID: 737657283}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1369890858
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1369890856}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cebca41792993784d9be2af95ffeb031, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIHealth
+  health: {fileID: 0}
+  healthSlider: {fileID: 1031366241}
+  trailSlider: {fileID: 1031366241}
+  trailDelay: 0.8
+  trailSpeed: 0.4
+  hideIfNoTarget: 1
+  visualRoot: {fileID: 1369890856}
 --- !u!114 &1477876670 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6708915056906236762, guid: 657481147422a37418123f320e560f25, type: 3}
@@ -1092,7 +1221,7 @@ PrefabInstance:
     - target: {fileID: 2576660663828252348, guid: baf3767a1d15826409e2908c20bddf38, type: 3}
       propertyPath: meter
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 510086307}
     - target: {fileID: 2576660663828252348, guid: baf3767a1d15826409e2908c20bddf38, type: 3}
       propertyPath: meterFill
       value: 
@@ -1116,9 +1245,17 @@ PrefabInstance:
     - target: {fileID: 5644881235989190228, guid: baf3767a1d15826409e2908c20bddf38, type: 3}
       propertyPath: health
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1304769519}
     - target: {fileID: 5644881235989190228, guid: baf3767a1d15826409e2908c20bddf38, type: 3}
       propertyPath: slider
+      value: 
+      objectReference: {fileID: 1107266825}
+    - target: {fileID: 5644881235989190228, guid: baf3767a1d15826409e2908c20bddf38, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5644881235989190228, guid: baf3767a1d15826409e2908c20bddf38, type: 3}
+      propertyPath: trailSlider
       value: 
       objectReference: {fileID: 1107266825}
     - target: {fileID: 5644881235989190228, guid: baf3767a1d15826409e2908c20bddf38, type: 3}
@@ -1127,6 +1264,18 @@ PrefabInstance:
       objectReference: {fileID: 1107266825}
     - target: {fileID: 6768009778025546446, guid: baf3767a1d15826409e2908c20bddf38, type: 3}
       propertyPath: slider
+      value: 
+      objectReference: {fileID: 1031366241}
+    - target: {fileID: 6768009778025546446, guid: baf3767a1d15826409e2908c20bddf38, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6768009778025546446, guid: baf3767a1d15826409e2908c20bddf38, type: 3}
+      propertyPath: trailSlider
+      value: 
+      objectReference: {fileID: 1031366241}
+    - target: {fileID: 6768009778025546446, guid: baf3767a1d15826409e2908c20bddf38, type: 3}
+      propertyPath: healthSlider
       value: 
       objectReference: {fileID: 1031366241}
     - target: {fileID: 8256368043293242126, guid: baf3767a1d15826409e2908c20bddf38, type: 3}
@@ -1169,10 +1318,15 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5644881235989190228, guid: baf3767a1d15826409e2908c20bddf38, type: 3}
+    - {fileID: 6768009778025546446, guid: baf3767a1d15826409e2908c20bddf38, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1844997717827730229, guid: baf3767a1d15826409e2908c20bddf38, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 539587829}
   m_SourcePrefab: {fileID: 100100000, guid: baf3767a1d15826409e2908c20bddf38, type: 3}
 --- !u!1001 &1813116928
 PrefabInstance:
@@ -1256,6 +1410,17 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 6646656480184890865, guid: 311615782f14f584e8ac69adb86147ad, type: 3}
   m_PrefabInstance: {fileID: 2122441115}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1879985794 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5068379119265941975, guid: 657481147422a37418123f320e560f25, type: 3}
+  m_PrefabInstance: {fileID: 737657283}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!114 &2059979841 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8148649508435627002, guid: 657481147422a37418123f320e560f25, type: 3}
@@ -1792,6 +1957,22 @@ PrefabInstance:
       propertyPath: target
       value: 
       objectReference: {fileID: 1179380062}
+    - target: {fileID: 4653235909103322249, guid: 59a0172bbcfcc424fb3ecddc59a92240, type: 3}
+      propertyPath: m_Antialiasing
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4653235909103322249, guid: 59a0172bbcfcc424fb3ecddc59a92240, type: 3}
+      propertyPath: m_RenderPostProcessing
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4653235909103322249, guid: 59a0172bbcfcc424fb3ecddc59a92240, type: 3}
+      propertyPath: m_TaaSettings.m_Quality
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4653235909103322249, guid: 59a0172bbcfcc424fb3ecddc59a92240, type: 3}
+      propertyPath: m_TaaSettings.m_ContrastAdaptiveSharpening
+      value: 0.602
+      objectReference: {fileID: 0}
     - target: {fileID: 8957796491338963788, guid: 59a0172bbcfcc424fb3ecddc59a92240, type: 3}
       propertyPath: m_Name
       value: Main Camera

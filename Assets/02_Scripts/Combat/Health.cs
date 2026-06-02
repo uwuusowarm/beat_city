@@ -13,7 +13,6 @@ public class Health : MonoBehaviour, IDamageable
         set => maxHealth = value;
     }
 
-    private UIHealth UIHealth;
 
     public event Action<HitData> OnHit;
     public event Action OnDeath;
@@ -21,12 +20,18 @@ public class Health : MonoBehaviour, IDamageable
     private void Awake()
     {
         Current = maxHealth;
-        if (uiHealth == null)
+    }
+
+    private void Start()
+    {
+        if (uiHealth == null && CompareTag("Player"))
         {
-            Debug.LogError("UIHealth reference is missing. Assign the UIHealth component in the Inspector.");
-            return;
+            uiHealth = UIManager.Instance?.PlayerHealthUI;
+            if (uiHealth != null)
+            {
+                uiHealth.RefreshHealth();
+            }
         }
-        uiHealth.RefreshHealth();
     }
 
     public void TakeDamage(HitData hitData)
@@ -34,7 +39,6 @@ public class Health : MonoBehaviour, IDamageable
         if (Current <= 0) return;
 
         Current = Mathf.Max(0, Current - hitData.Damage);
-        Debug.Log($"[Health] {gameObject.name} hit {hitData.Damage} damaged by {hitData.Source?.name} | HP: {Current}/{maxHealth}");
         OnHit?.Invoke(hitData);
 
         if (Current <= 0)
@@ -47,6 +51,9 @@ public class Health : MonoBehaviour, IDamageable
     public void Heal(int amount)
     {
         Current = Mathf.Min(maxHealth, Current + amount);
-        UIHealth.RefreshHealth();
+        if (uiHealth != null)
+        {
+            uiHealth.RefreshHealth();
+        }
     }
 }

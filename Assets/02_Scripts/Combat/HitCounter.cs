@@ -6,10 +6,14 @@ public class HitCounter : MonoBehaviour
     [Header("UI")]
     [SerializeField] private TextMeshProUGUI hitText;
     
+    private PlayerSettings _settings;
     private int _currentHits;
+    private float _lastHitTime;
 
     private void Awake()
     {
+        _settings = Resources.Load<PlayerSettings>("PlayerSettings");
+        
         foreach (var hitbox in GetComponentsInChildren<Hitbox>(includeInactive: true))
         {
             hitbox.OnHitLanded += OnHitLanded;
@@ -23,9 +27,19 @@ public class HitCounter : MonoBehaviour
         UpdateUI();
     }
 
+    private void Update()
+    {
+        float resetTime = _settings != null ? _settings.comboResetTime : 2.0f;
+        if (_currentHits > 0 && Time.time - _lastHitTime > resetTime)
+        {
+            ResetStreak();
+        }
+    }
+
     private void OnHitLanded(GameObject target)
     {
         _currentHits++;
+        _lastHitTime = Time.time;
         UpdateUI();
         Debug.Log($"[HitCounter] Total Hits: {_currentHits}");
     }
@@ -34,10 +48,15 @@ public class HitCounter : MonoBehaviour
     {
         if (_currentHits > 0)
         {
-            Debug.Log($"[HitCounter] Streak broken at {_currentHits} hits!");
-            _currentHits = 0;
-            UpdateUI();
+            ResetStreak();
         }
+    }
+
+    private void ResetStreak()
+    {
+        Debug.Log($"[HitCounter] Streak broken at {_currentHits} hits!");
+        _currentHits = 0;
+        UpdateUI();
     }
 
     private void UpdateUI()

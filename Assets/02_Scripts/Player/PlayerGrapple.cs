@@ -219,6 +219,11 @@ public class PlayerGrapple : MonoBehaviour
                     HitStunDuration = 0.5f,
                     Source = gameObject
                 });
+
+                if (damageable is Health enemyHealth)
+                {
+                    UIManager.Instance?.UpdateEnemyHealthFocus(enemyHealth);
+                }
             }
         }
 
