@@ -21,6 +21,7 @@ public class PlayerSettings : ScriptableObject
     public float kickFinisherKnockback = 8f;
     public int maxComboSteps = 3;
     public float comboResetTime = 0.8f;
+    public float jugglingForce = 3f;
 
     [Header("Grapple Settings")]
     public float grappleActiveTime = 0.2f;
