@@ -109,6 +109,13 @@ public class PlayerCombat : MonoBehaviour
 
         AdvanceCombo(CombatInputType.Punch);
 
+        if (_settings != null)
+        {
+            hitbox.Damage = _settings.punchDamage;
+            hitbox.KnockbackForce = _settings.punchBaseKnockback;
+            hitbox.KnockUpForce = _comboStep >= _settings.maxComboSteps ? _settings.punchFinisherKnockup : 0f;
+        }
+
         hitbox.Activate();
         OnAttackStarted?.Invoke();
 
@@ -129,6 +136,14 @@ public class PlayerCombat : MonoBehaviour
         PlayerStateManager.Instance.SetState(PlayerState.Attacking);
 
         AdvanceCombo(CombatInputType.Kick);
+
+        if (_settings != null)
+        {
+            hitbox.Damage = _settings.kickDamage;
+            bool isFinisher = _comboStep >= _settings.maxComboSteps;
+            hitbox.KnockbackForce = isFinisher ? _settings.kickFinisherKnockback : _settings.kickBaseKnockback;
+            hitbox.KnockUpForce = 0f;
+        }
 
         hitbox.Activate();
         OnAttackStarted?.Invoke();
