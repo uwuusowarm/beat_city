@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f121a9749d042758eade5a1eeed5355, type: 3}
   m_Name: PlayerSettings
   m_EditorClassIdentifier: Assembly-CSharp::PlayerSettings
-  walkSpeed: 5
+  walkSpeed: 3
   runSpeed: 8
   jumpForce: 8
   gravity: 20
@@ -20,10 +20,10 @@ MonoBehaviour:
   dashDuration: 0.2
   attackActiveTime: 0.2
   punchDamage: 10
-  punchBaseKnockback: 2
-  punchFinisherKnockup: 5
+  punchBaseKnockback: 0
+  punchFinisherKnockup: 3
   kickDamage: 15
-  kickBaseKnockback: 3
+  kickBaseKnockback: 0
   kickFinisherKnockback: 8
   maxComboSteps: 3
   comboResetTime: 0.8
