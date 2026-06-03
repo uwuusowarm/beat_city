@@ -82,20 +82,28 @@ public class EnemyMovement : MonoBehaviour
 
         if (knockUpForce > 0f)
         {
-            if (!controller.isGrounded)
+            bool wasGrounded = controller.isGrounded;
+            if (!wasGrounded || IsInThrowState)
             {
+                if (animator != null)
+                {
+                    animator.SetBool("IsFalling", true);
+                }
                 float effectiveForce = Mathf.Min(knockUpForce, maxIncomingJugglingForce);
                 float targetVelocity = Mathf.Max(verticalVelocity * 0.2f + effectiveForce, effectiveForce);
                 verticalVelocity = Mathf.Min(targetVelocity, maxJugglingVelocity);
             }
             else
             {
-                verticalVelocity = knockUpForce;
-            }
-
-            if (animator != null)
-            {
-                animator.SetBool("IsFalling", true);
+                if (knockUpForce > 3.5f) 
+                {
+                    verticalVelocity = knockUpForce;
+                    if (animator != null)
+                    {
+                        animator.SetBool("IsFalling", true);
+                    }
+                    IsInThrowState = true;
+                }
             }
         }
         if (knockbackForce != Vector3.zero)
@@ -119,20 +127,28 @@ public class EnemyMovement : MonoBehaviour
 
         if (hitData.KnockUpForce > 0f)
         {
-            if (!controller.isGrounded)
+            bool wasGrounded = controller.isGrounded;
+            if (!wasGrounded || IsInThrowState)
             {
+                if (animator != null)
+                {
+                    animator.SetBool("IsFalling", true);
+                }
                 float effectiveForce = Mathf.Min(hitData.KnockUpForce, maxIncomingJugglingForce);
                 float targetVelocity = Mathf.Max(verticalVelocity * 0.2f + effectiveForce, effectiveForce);
                 verticalVelocity = Mathf.Min(targetVelocity, maxJugglingVelocity);
             }
             else
             {
-                verticalVelocity = hitData.KnockUpForce;
-            }
-            
-            if (animator != null && verticalVelocity > 0.1f)
-            {
-                animator.SetBool("IsFalling", true);
+                if (hitData.KnockUpForce > 3.5f) 
+                {
+                    verticalVelocity = hitData.KnockUpForce;
+                    if (animator != null)
+                    {
+                        animator.SetBool("IsFalling", true);
+                    }
+                    IsInThrowState = true; 
+                }
             }
         }
 
@@ -168,7 +184,7 @@ public class EnemyMovement : MonoBehaviour
 
         bool grounded = controller.isGrounded;
 
-        if (hitStunTimer > 0f || !grounded || _isLyingDown || _isStandingUp)
+        if (hitStunTimer > 0f || !grounded || _isLyingDown || _isStandingUp || IsInThrowState)
         {
             if (hitStunTimer > 0f) hitStunTimer -= Time.deltaTime;
             
@@ -236,6 +252,10 @@ public class EnemyMovement : MonoBehaviour
         yield return new WaitForSeconds(1.0f); 
         _isStandingUp = false;
         IsInThrowState = false;
+        if (animator != null)
+        {
+            animator.SetBool("IsFalling", false);
+        }
     }
 
     private void PickNewTactic()
@@ -349,15 +369,14 @@ public class EnemyMovement : MonoBehaviour
         
         controller.Move(totalMovement * Time.deltaTime);
 
-        if (externalForce.magnitude > 0.01f)
-        {
-            externalForce -= externalForce * horizontalDrag * Time.deltaTime;
-        }
-        else
-        {
-            externalForce = Vector3.zero;
-            IsInThrowState = false;
-        }
+            if (externalForce.magnitude > 0.01f)
+            {
+                externalForce -= externalForce * horizontalDrag * Time.deltaTime;
+            }
+            else
+            {
+                externalForce = Vector3.zero;
+            }
     }
 
     private void LookAtPlayer()

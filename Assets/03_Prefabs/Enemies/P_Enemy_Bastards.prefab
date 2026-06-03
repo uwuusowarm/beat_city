@@ -150,11 +150,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
   moveSpeed: 3
   stopDistance: 1.5
+  gravity: 16
   characterModel: {fileID: 6416908574643148924}
   animator: {fileID: 1183336129507097573}
   attackDistance: 1.5
   minRepositionTime: 1
   maxRepositionTime: 3
+  comboHitStun: 0.5
+  kickStunDuration: 1.5
+  standUpDelay: 1
+  maxJugglingVelocity: 10
+  maxIncomingJugglingForce: 3
 --- !u!114 &3027897513508513937
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -228,7 +234,7 @@ MonoBehaviour:
   bounceKnockUpForce: 8
   bounceHitStun: 0.5
   margin: 0.5
-  minBounceVelocity: 1
+  minBounceVelocity: 4
   bounceDamage: 0
 --- !u!65 &3179065876100757259
 BoxCollider:
@@ -382,11 +388,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
   moveSpeed: 3
   stopDistance: 1.5
+  gravity: 16
   characterModel: {fileID: 2756358946490977613}
   animator: {fileID: 8608766749906657390}
   attackDistance: 1.5
   minRepositionTime: 1
   maxRepositionTime: 3
+  comboHitStun: 0.5
+  kickStunDuration: 1.5
+  standUpDelay: 1
+  maxJugglingVelocity: 10
+  maxIncomingJugglingForce: 3
 --- !u!114 &5070770694770862367
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -460,7 +472,7 @@ MonoBehaviour:
   bounceKnockUpForce: 8
   bounceHitStun: 0.5
   margin: 0.5
-  minBounceVelocity: 1
+  minBounceVelocity: 4
   bounceDamage: 0
 --- !u!65 &8081174850741081342
 BoxCollider:
@@ -614,11 +626,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
   moveSpeed: 3
   stopDistance: 1.5
+  gravity: 16
   characterModel: {fileID: 4743427245449753684}
   animator: {fileID: 8156910612733488613}
   attackDistance: 1.5
   minRepositionTime: 1
   maxRepositionTime: 3
+  comboHitStun: 0.5
+  kickStunDuration: 1.5
+  standUpDelay: 1
+  maxJugglingVelocity: 10
+  maxIncomingJugglingForce: 3
 --- !u!114 &6788778602643803874
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -692,7 +710,7 @@ MonoBehaviour:
   bounceKnockUpForce: 8
   bounceHitStun: 0.5
   margin: 0.5
-  minBounceVelocity: 1
+  minBounceVelocity: 4
   bounceDamage: 0
 --- !u!65 &8280926895975012122
 BoxCollider:
