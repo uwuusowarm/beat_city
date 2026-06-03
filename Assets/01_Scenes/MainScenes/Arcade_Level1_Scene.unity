@@ -151,6 +151,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c90a008bb54b674cb6371fbbf1ede7b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCombat
+--- !u!114 &131228860 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8315422397030599102, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
+  m_PrefabInstance: {fileID: 805857748}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 131228851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a8d1e53402ec17418391ed73f486df1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Health
+--- !u!114 &259242514 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7287515889560147752, guid: 657481147422a37418123f320e560f25, type: 3}
+  m_PrefabInstance: {fileID: 877091109}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
 --- !u!1001 &293028894
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -279,7 +301,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3595357148468659414, guid: 59a0172bbcfcc424fb3ecddc59a92240, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -37.8
+      value: -38.76
       objectReference: {fileID: 0}
     - target: {fileID: 3595357148468659414, guid: 59a0172bbcfcc424fb3ecddc59a92240, type: 3}
       propertyPath: m_LocalPosition.z
@@ -364,6 +386,10 @@ PrefabInstance:
       propertyPath: hitText
       value: 
       objectReference: {fileID: 1263395331}
+    - target: {fileID: 1035578852233614060, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
+      propertyPath: animator
+      value: 
+      objectReference: {fileID: 2114357452}
     - target: {fileID: 1662536712636653983, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
       propertyPath: m_Name
       value: PlayerAnimGrey
@@ -577,6 +603,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7640699848940071598, guid: 657481147422a37418123f320e560f25, type: 3}
+      propertyPath: health
+      value: 
+      objectReference: {fileID: 131228860}
     - target: {fileID: 7685847235185356452, guid: 657481147422a37418123f320e560f25, type: 3}
       propertyPath: hitCounter
       value: 
@@ -588,6 +618,10 @@ PrefabInstance:
     - target: {fileID: 7685847235185356452, guid: 657481147422a37418123f320e560f25, type: 3}
       propertyPath: baseMeterPerHit
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8348829553181449502, guid: 657481147422a37418123f320e560f25, type: 3}
+      propertyPath: showInEditor
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -685,6 +719,10 @@ PrefabInstance:
     - target: {fileID: 5614149394267284850, guid: 2094f68f6344f1142833362cc6a2a5bd, type: 3}
       propertyPath: m_Name
       value: WinScreen
+      objectReference: {fileID: 0}
+    - target: {fileID: 5614149394267284850, guid: 2094f68f6344f1142833362cc6a2a5bd, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -918,6 +956,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1101837419541651204, guid: baf3767a1d15826409e2908c20bddf38, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1844997717827730229, guid: baf3767a1d15826409e2908c20bddf38, type: 3}
       propertyPath: m_Name
       value: UIManager
@@ -926,6 +968,10 @@ PrefabInstance:
       propertyPath: meter
       value: 
       objectReference: {fileID: 1078076608}
+    - target: {fileID: 2576660663828252348, guid: baf3767a1d15826409e2908c20bddf38, type: 3}
+      propertyPath: meterFill
+      value: 
+      objectReference: {fileID: 259242514}
     - target: {fileID: 2576660663828252348, guid: baf3767a1d15826409e2908c20bddf38, type: 3}
       propertyPath: meterText
       value: 
@@ -1204,6 +1250,11 @@ PrefabInstance:
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5614149394267284850, guid: 2094f68f6344f1142833362cc6a2a5bd, type: 3}
   m_PrefabInstance: {fileID: 1007361349}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &2114357452 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 6014817348757299699, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
+  m_PrefabInstance: {fileID: 805857748}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2116010855
 PrefabInstance:
