@@ -342,6 +342,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2297753854652472394, guid: 657481147422a37418123f320e560f25, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3359803718243128718, guid: 657481147422a37418123f320e560f25, type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
@@ -466,8 +470,16 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5830578424697219527, guid: 657481147422a37418123f320e560f25, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6840806169637597630, guid: 657481147422a37418123f320e560f25, type: 3}
       propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7105004701856767610, guid: 657481147422a37418123f320e560f25, type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7640699848940071598, guid: 657481147422a37418123f320e560f25, type: 3}
