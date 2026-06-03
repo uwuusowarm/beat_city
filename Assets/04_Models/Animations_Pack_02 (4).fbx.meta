@@ -179,8 +179,8 @@ ModelImporter:
       name: rig|Main_Char_Idle.001
       takeName: rig|Main_Char_Idle.001
       internalID: 3251918926850929002
-      firstFrame: 0
-      lastFrame: 42
+      firstFrame: 1.6
+      lastFrame: 40
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -412,7 +412,7 @@ ModelImporter:
       takeName: rig|Main_Char_Walk
       internalID: 3477077189221843399
       firstFrame: 0
-      lastFrame: 30
+      lastFrame: 20.4
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -506,7 +506,7 @@ ModelImporter:
   autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 2
   humanoidOversampling: 1
-  avatarSetup: 0
+  avatarSetup: 1
   addHumanoidExtraRootOnlyWhenUsingAvatar: 1
   importBlendShapeDeformPercent: 1
   remapMaterialsIfMaterialImportModeIsNone: 0

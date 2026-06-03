@@ -95,14 +95,14 @@ public class EnemyMovement : MonoBehaviour
             }
             else
             {
-                if (knockUpForce > 4f)
+                if (knockUpForce > 3.5f) 
                 {
                     verticalVelocity = knockUpForce;
                     if (animator != null)
                     {
                         animator.SetBool("IsFalling", true);
                     }
-                    IsInThrowState = true; 
+                    IsInThrowState = true;
                 }
             }
         }
@@ -140,14 +140,14 @@ public class EnemyMovement : MonoBehaviour
             }
             else
             {
-                if (hitData.KnockUpForce > 4f)
+                if (hitData.KnockUpForce > 3.5f) 
                 {
                     verticalVelocity = hitData.KnockUpForce;
                     if (animator != null)
                     {
                         animator.SetBool("IsFalling", true);
                     }
-                    IsInThrowState = true;
+                    IsInThrowState = true; 
                 }
             }
         }
@@ -357,10 +357,6 @@ public class EnemyMovement : MonoBehaviour
 
         if (controller.isGrounded && verticalVelocity <= 0f)
         {
-            if (verticalVelocity < -1f && animator != null) 
-            {
-                 animator.SetBool("IsFalling", true); 
-            }
             verticalVelocity = -0.5f;
         }
         else
