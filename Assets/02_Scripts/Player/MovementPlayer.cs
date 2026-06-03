@@ -12,6 +12,7 @@ public class MovementPlayer : MonoBehaviour
     public Transform characterModel; 
 
     private CharacterController controller;
+    private Health health;
     private Vector3 moveDirection;
     private float verticalVelocity;
     
@@ -30,6 +31,28 @@ public class MovementPlayer : MonoBehaviour
         if (animator == null)
             animator = GetComponentInChildren<Animator>();
         controller = GetComponent<CharacterController>();
+        health = GetComponent<Health>();
+
+        if (health != null)
+        {
+            health.OnHit += HandleHit;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (health != null)
+        {
+            health.OnHit -= HandleHit;
+        }
+    }
+
+    private void HandleHit(HitData hitData)
+    {
+        if (animator != null)
+        {
+            animator.SetTrigger("Hit");
+        }
     }
 
     // Update is called once per frame
