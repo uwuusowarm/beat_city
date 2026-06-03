@@ -451,7 +451,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 9552e6ec070790b4caf851f3027dff43, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 3423583d04e00f24fa9e21554a22841a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -693,6 +693,14 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4804886897843462844, guid: 657481147422a37418123f320e560f25, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.0696222
+      objectReference: {fileID: 0}
+    - target: {fileID: 4804886897843462844, guid: 657481147422a37418123f320e560f25, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 4.6
+      objectReference: {fileID: 0}
     - target: {fileID: 5508267140030799048, guid: 657481147422a37418123f320e560f25, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -743,11 +751,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8837769699276860153, guid: 657481147422a37418123f320e560f25, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 658.917
+      value: 603.1
       objectReference: {fileID: 0}
     - target: {fileID: 8837769699276860153, guid: 657481147422a37418123f320e560f25, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -110
+      value: -175.9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1068,7 +1076,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: New Text
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1463,6 +1471,14 @@ PrefabInstance:
       propertyPath: m_Colors.m_SelectedColor.r
       value: 0.38679248
       objectReference: {fileID: 0}
+    - target: {fileID: 265324638163508360, guid: 311615782f14f584e8ac69adb86147ad, type: 3}
+      propertyPath: m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 265324638163508360, guid: 311615782f14f584e8ac69adb86147ad, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 91182fae2dd3f99428548c742fc5e02d, type: 3}
     - target: {fileID: 475651644366977498, guid: 311615782f14f584e8ac69adb86147ad, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -1639,6 +1655,14 @@ PrefabInstance:
       propertyPath: m_Colors.m_SelectedColor.r
       value: 0.3882353
       objectReference: {fileID: 0}
+    - target: {fileID: 5154632112764408645, guid: 311615782f14f584e8ac69adb86147ad, type: 3}
+      propertyPath: m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5154632112764408645, guid: 311615782f14f584e8ac69adb86147ad, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: f539505de98983b4bb3e441fec8f65b9, type: 3}
     - target: {fileID: 5604689545954956789, guid: 311615782f14f584e8ac69adb86147ad, type: 3}
       propertyPath: m_hasFontAssetChanged
       value: 0
@@ -1755,6 +1779,14 @@ PrefabInstance:
       propertyPath: m_Colors.m_SelectedColor.r
       value: 0.3882353
       objectReference: {fileID: 0}
+    - target: {fileID: 6122233106273979864, guid: 311615782f14f584e8ac69adb86147ad, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6575099589501521516, guid: 311615782f14f584e8ac69adb86147ad, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7014874153281259251, guid: 311615782f14f584e8ac69adb86147ad, type: 3}
       propertyPath: m_Colors.m_SelectedColor.b
       value: 0.3882353
@@ -1774,6 +1806,18 @@ PrefabInstance:
     - target: {fileID: 7014874153281259251, guid: 311615782f14f584e8ac69adb86147ad, type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: SetMusicVolume
+      objectReference: {fileID: 0}
+    - target: {fileID: 7299201917527838264, guid: 311615782f14f584e8ac69adb86147ad, type: 3}
+      propertyPath: m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7299201917527838264, guid: 311615782f14f584e8ac69adb86147ad, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 919b7989b4aa8ea4085062e196f575b7, type: 3}
+    - target: {fileID: 7479313493851542201, guid: 311615782f14f584e8ac69adb86147ad, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7721766046448531928, guid: 311615782f14f584e8ac69adb86147ad, type: 3}
       propertyPath: m_hasFontAssetChanged
