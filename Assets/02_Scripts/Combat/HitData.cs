@@ -7,5 +7,6 @@ public struct HitData
     public float KnockbackForce;       
     public float KnockUpForce;        
     public float HitStunDuration;
+    public bool ShouldKnockdown;
     public GameObject Source;
 }

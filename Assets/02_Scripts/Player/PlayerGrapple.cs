@@ -217,6 +217,7 @@ public class PlayerGrapple : MonoBehaviour
                     KnockbackForce = settings.impactKnockback, 
                     KnockUpForce = settings.impactKnockUp,
                     HitStunDuration = 0.5f,
+                    ShouldKnockdown = true,
                     Source = gameObject
                 });
 
@@ -290,6 +291,7 @@ public class PlayerGrapple : MonoBehaviour
                                 KnockbackForce = settings.projectileKnockback,
                                 KnockUpForce = settings.projectileKnockUp,
                                 HitStunDuration = 0.3f,
+                                ShouldKnockdown = true,
                                 Source = target 
                             });
                             
@@ -318,7 +320,7 @@ public class PlayerGrapple : MonoBehaviour
             {
                 if (!interrupted)
                 {
-                    em.ApplyImpulse(settings.impactKnockUp, throwDir * settings.impactKnockback);
+                    em.ApplyImpulse(settings.impactKnockUp, throwDir * settings.impactKnockback, 0f, true);
                 }
                 em.IsInThrowState = false;
             }

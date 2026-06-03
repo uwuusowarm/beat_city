@@ -137,6 +137,7 @@ public class EnemyCombat : MonoBehaviour
                 KnockbackForce = knockbackForce,
                 KnockUpForce = 0f,
                 HitStunDuration = hitStunDuration,
+                ShouldKnockdown = false,
                 Source = gameObject
             });
         }

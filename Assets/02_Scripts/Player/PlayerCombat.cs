@@ -114,8 +114,9 @@ public class PlayerCombat : MonoBehaviour
         {
             hitbox.Damage = _settings.punchDamage;
             bool isFinisher = _comboStep >= _settings.maxComboSteps;
-            hitbox.KnockbackForce = isFinisher ? _settings.punchBaseKnockback : _settings.punchBaseKnockback; 
+            hitbox.KnockbackForce = _settings.punchBaseKnockback; 
             hitbox.KnockUpForce = isFinisher ? _settings.punchFinisherKnockup : _settings.jugglingForce;
+            hitbox.ShouldKnockdown = isFinisher;
         }
 
         hitbox.Activate();
@@ -144,7 +145,8 @@ public class PlayerCombat : MonoBehaviour
             hitbox.Damage = _settings.kickDamage;
             bool isFinisher = _comboStep >= _settings.maxComboSteps;
             hitbox.KnockbackForce = isFinisher ? _settings.kickFinisherKnockback : _settings.kickBaseKnockback;
-            hitbox.KnockUpForce = _settings.jugglingForce;
+            hitbox.KnockUpForce = isFinisher ? _settings.jugglingForce * 1.5f : _settings.jugglingForce;
+            hitbox.ShouldKnockdown = isFinisher;
         }
 
         hitbox.Activate();

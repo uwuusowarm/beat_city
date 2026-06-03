@@ -29,6 +29,7 @@ public class ComboAttacker : MonoBehaviour
 
     private void OnHitLanded(GameObject target)
     {
+        /*
         if (playerCombat == null) return;
 
         Debug.Log($"[Combo] Step {playerCombat.CurrentComboStep}/{comboThreshold}, Type: {playerCombat.CurrentAttackType}");
@@ -43,6 +44,7 @@ public class ComboAttacker : MonoBehaviour
         {
             KnockBack(target);
         }
+        */
     }
 
     private void KnockUp(GameObject target)
