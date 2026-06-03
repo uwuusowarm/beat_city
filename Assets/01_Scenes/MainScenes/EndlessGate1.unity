@@ -313,6 +313,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UIManager
   playerHealthUI: {fileID: 1107266827}
   enemyHealthUI: {fileID: 1369890858}
+  mobileUIRoot: {fileID: 0}
 --- !u!1001 &737657283
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -437,6 +438,10 @@ PrefabInstance:
       propertyPath: playerCombat
       value: 
       objectReference: {fileID: 1304769521}
+    - target: {fileID: 8348829553181449502, guid: 657481147422a37418123f320e560f25, type: 3}
+      propertyPath: showInEditor
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
