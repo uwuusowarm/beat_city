@@ -1008,26 +1008,6 @@ PrefabInstance:
       propertyPath: target
       value: 
       objectReference: {fileID: 1179380062}
-    - target: {fileID: 4653235909103322249, guid: 59a0172bbcfcc424fb3ecddc59a92240, type: 3}
-      propertyPath: m_Antialiasing
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 4653235909103322249, guid: 59a0172bbcfcc424fb3ecddc59a92240, type: 3}
-      propertyPath: m_RenderPostProcessing
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4653235909103322249, guid: 59a0172bbcfcc424fb3ecddc59a92240, type: 3}
-      propertyPath: m_TaaSettings.m_Quality
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 4653235909103322249, guid: 59a0172bbcfcc424fb3ecddc59a92240, type: 3}
-      propertyPath: m_TaaSettings.m_ContrastAdaptiveSharpening
-      value: 0.602
-      objectReference: {fileID: 0}
-    - target: {fileID: 8425841467808385606, guid: 59a0172bbcfcc424fb3ecddc59a92240, type: 3}
-      propertyPath: field of view
-      value: 40
-      objectReference: {fileID: 0}
     - target: {fileID: 8957796491338963788, guid: 59a0172bbcfcc424fb3ecddc59a92240, type: 3}
       propertyPath: m_Name
       value: Main Camera
