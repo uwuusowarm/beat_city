@@ -84,7 +84,8 @@ public class PlayerCombat : MonoBehaviour
 
         _comboStep++;
 
-        if (_comboStep > 3)
+        int maxSteps = _settings != null ? _settings.maxComboSteps : 3;
+        if (_comboStep > maxSteps)
         {
             _comboStep = 1;
         }
@@ -92,7 +93,7 @@ public class PlayerCombat : MonoBehaviour
         _lastAttackTime = Time.time;
         CurrentAttackType = input;
 
-        Debug.Log($"[PlayerCombat] Combo Step: {_comboStep}/3 Attack: {input}");
+        Debug.Log($"[PlayerCombat] Combo Step: {_comboStep}/{maxSteps} Attack: {input}");
 
         if (animator != null)
         {
@@ -112,8 +113,9 @@ public class PlayerCombat : MonoBehaviour
         if (_settings != null)
         {
             hitbox.Damage = _settings.punchDamage;
-            hitbox.KnockbackForce = _settings.punchBaseKnockback;
-            hitbox.KnockUpForce = _comboStep >= _settings.maxComboSteps ? _settings.punchFinisherKnockup : 0f;
+            bool isFinisher = _comboStep >= _settings.maxComboSteps;
+            hitbox.KnockbackForce = isFinisher ? _settings.punchBaseKnockback : _settings.punchBaseKnockback; 
+            hitbox.KnockUpForce = isFinisher ? _settings.punchFinisherKnockup : _settings.jugglingForce;
         }
 
         hitbox.Activate();
@@ -142,7 +144,7 @@ public class PlayerCombat : MonoBehaviour
             hitbox.Damage = _settings.kickDamage;
             bool isFinisher = _comboStep >= _settings.maxComboSteps;
             hitbox.KnockbackForce = isFinisher ? _settings.kickFinisherKnockback : _settings.kickBaseKnockback;
-            hitbox.KnockUpForce = 0f;
+            hitbox.KnockUpForce = _settings.jugglingForce;
         }
 
         hitbox.Activate();

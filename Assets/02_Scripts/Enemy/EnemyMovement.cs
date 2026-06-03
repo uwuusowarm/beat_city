@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 [RequireComponent(typeof(CharacterController))]
 public class EnemyMovement : MonoBehaviour
@@ -6,6 +7,7 @@ public class EnemyMovement : MonoBehaviour
     [Header("Movement")]
     public float moveSpeed = 3f;
     public float stopDistance = 1.5f;
+    [SerializeField] private float gravity = 20f;
 
     [Header("Visuals")]
     public Transform characterModel;
@@ -19,9 +21,13 @@ public class EnemyMovement : MonoBehaviour
     public float minRepositionTime = 1.0f;
     public float maxRepositionTime = 3.0f;
 
+    [Header("Combat State")]
     public float comboHitStun = 0.5f;
     public float kickStunDuration = 1.5f;
-    public bool IsStunned => hitStunTimer > 0f;
+    [SerializeField] private float standUpDelay = 1.0f;
+    [SerializeField] private float maxJugglingVelocity = 10f;
+    [SerializeField] private float maxIncomingJugglingForce = 3f;
+    public bool IsStunned => hitStunTimer > 0f || _isStandingUp || _isLyingDown;
 
     private Transform player;
     private float tacticTimer;
@@ -33,6 +39,9 @@ public class EnemyMovement : MonoBehaviour
     private CharacterController controller;
     private float verticalVelocity;
     private float hitStunTimer;
+    private float _lieDownTimer;
+    private bool _isStandingUp;
+    private bool _isLyingDown;
     private Vector3 externalForce;
     public Vector3 ExternalForce { get => externalForce; set => externalForce = value; }
     private float horizontalDrag = 5f;
@@ -66,7 +75,29 @@ public class EnemyMovement : MonoBehaviour
     }
 
     public void ApplyImpulse(float knockUpForce, Vector3 knockbackForce, float hitStunReset = 0f)    {
-        if (knockUpForce > 0f) verticalVelocity = knockUpForce;
+        if (animator != null && !_isLyingDown && !_isStandingUp)
+        {
+            animator.SetTrigger("Hit");
+        }
+
+        if (knockUpForce > 0f)
+        {
+            if (!controller.isGrounded)
+            {
+                float effectiveForce = Mathf.Min(knockUpForce, maxIncomingJugglingForce);
+                float targetVelocity = Mathf.Max(verticalVelocity * 0.2f + effectiveForce, effectiveForce);
+                verticalVelocity = Mathf.Min(targetVelocity, maxJugglingVelocity);
+            }
+            else
+            {
+                verticalVelocity = knockUpForce;
+            }
+
+            if (animator != null)
+            {
+                animator.SetBool("IsFalling", true);
+            }
+        }
         if (knockbackForce != Vector3.zero)
         {
             externalForce = knockbackForce;
@@ -81,9 +112,28 @@ public class EnemyMovement : MonoBehaviour
 
     private void OnHit(HitData hitData)
     {
+        if (animator != null && !_isLyingDown && !_isStandingUp)
+        {
+            animator.SetTrigger("Hit");
+        }
+
         if (hitData.KnockUpForce > 0f)
         {
-            verticalVelocity = hitData.KnockUpForce;
+            if (!controller.isGrounded)
+            {
+                float effectiveForce = Mathf.Min(hitData.KnockUpForce, maxIncomingJugglingForce);
+                float targetVelocity = Mathf.Max(verticalVelocity * 0.2f + effectiveForce, effectiveForce);
+                verticalVelocity = Mathf.Min(targetVelocity, maxJugglingVelocity);
+            }
+            else
+            {
+                verticalVelocity = hitData.KnockUpForce;
+            }
+            
+            if (animator != null && verticalVelocity > 0.1f)
+            {
+                animator.SetBool("IsFalling", true);
+            }
         }
 
         if (hitData.HitStunDuration > 0f)
@@ -116,9 +166,50 @@ public class EnemyMovement : MonoBehaviour
             return;
         }
 
-        if (hitStunTimer > 0f || !controller.isGrounded)
+        bool grounded = controller.isGrounded;
+
+        if (hitStunTimer > 0f || !grounded || _isLyingDown || _isStandingUp)
         {
             if (hitStunTimer > 0f) hitStunTimer -= Time.deltaTime;
+            
+            if ((grounded || controller.velocity.y == 0) && verticalVelocity <= 0f)
+            {
+                if (IsInThrowState || (animator != null && animator.GetBool("IsFalling")))
+                {
+                    if (!_isLyingDown && !_isStandingUp)
+                    {
+                        _isLyingDown = true;
+                        _lieDownTimer = standUpDelay;
+                        if (animator != null)
+                        {
+                            animator.SetBool("IsFalling", true); 
+                        }
+                    }
+                }
+            }
+
+            if (!grounded && verticalVelocity > 0f)
+            {
+                _isLyingDown = false;
+                _isStandingUp = false;
+            }
+
+            if (_isLyingDown)
+            {
+                _lieDownTimer -= Time.deltaTime;
+                if (_lieDownTimer <= 0f)
+                {
+                    _isLyingDown = false;
+                    _isStandingUp = true;
+                    if (animator != null)
+                    {
+                        animator.SetBool("IsFalling", false); 
+                        animator.SetTrigger("StandUp");
+                    }
+                    StartCoroutine(FinishStandUp());
+                }
+            }
+
             ApplyGravityAndMove(Vector3.zero);
             if (animator != null) animator.SetFloat("Speed", 0f);
             return;
@@ -138,6 +229,13 @@ public class EnemyMovement : MonoBehaviour
 
         MoveBasedOnTactic();
         LookAtPlayer();
+    }
+
+    private IEnumerator FinishStandUp()
+    {
+        yield return new WaitForSeconds(1.0f); 
+        _isStandingUp = false;
+        IsInThrowState = false;
     }
 
     private void PickNewTactic()
@@ -243,7 +341,7 @@ public class EnemyMovement : MonoBehaviour
         }
         else
         {
-            verticalVelocity -= 20f * Time.deltaTime;
+            verticalVelocity -= gravity * Time.deltaTime;
         }
 
         Vector3 totalMovement = moveVelocity + externalForce;
