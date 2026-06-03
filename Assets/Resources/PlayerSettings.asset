@@ -18,7 +18,7 @@ MonoBehaviour:
   gravity: 20
   dashSpeed: 0
   dashDuration: 0
-  attackActiveTime: 0.2
+  attackActiveTime: 0.1
   punchDamage: 10
   punchBaseKnockback: 0
   punchFinisherKnockup: 7
@@ -37,7 +37,7 @@ MonoBehaviour:
   holdOffset: 1.2
   projectileDamage: 10
   projectileKnockback: 3
-  projectileKnockUp: 3
+  projectileKnockUp: 5
   projectileRadius: 1
   impactKnockback: 0
   impactKnockUp: 0
