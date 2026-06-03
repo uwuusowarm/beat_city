@@ -21,6 +21,7 @@ public class EndlessManager : MonoBehaviour
     [Header("Score UI (Meter)")]
     [SerializeField] private TextMeshProUGUI distanceText;
     [SerializeField] private TextMeshProUGUI highscoreText;
+    public bool IsNewHighscore { get; private set; }
 
     private Queue<GameObject> _activeChunks = new Queue<GameObject>();
     private float _spawnX = 0f; 
@@ -78,6 +79,7 @@ public class EndlessManager : MonoBehaviour
         if (currentMeters > _highscore)
         {
             _highscore = currentMeters;
+            IsNewHighscore = true;
             
             PlayerPrefs.SetInt("EndlessHighscore", _highscore);
             PlayerPrefs.Save(); 
@@ -122,4 +124,7 @@ public class EndlessManager : MonoBehaviour
         if (highscoreText != null)
             highscoreText.text = $"Highscore: {_highscore}m";
     }
+
+    public int GetCurrentMeters() => Mathf.Max(0, Mathf.FloorToInt(player.position.x - _startX));
+    public int GetHighscore() => _highscore;
 }
