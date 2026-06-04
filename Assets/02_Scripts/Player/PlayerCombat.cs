@@ -174,7 +174,22 @@ public class PlayerCombat : MonoBehaviour
 
     private void PlayAttackSfx(CombatInputType input)
     {
-        if (audioManager == null) return;
+        if (audioManager == null)
+        {
+            audioManager = AudioManager.Instance;
+        }
+
+        if (audioManager == null)
+        {
+            Debug.LogWarning("[PlayerCombat] PlayAttackSfx: audioManager is still null! Trying to find it now...");
+            audioManager = FindFirstObjectByType<AudioManager>();
+        }
+        
+        if (audioManager == null)
+        {
+            Debug.LogError("[PlayerCombat] PlayAttackSfx: NO AudioManager found in scene or via Instance!");
+            return;
+        }
 
         int index = _comboStep - 1;
 
