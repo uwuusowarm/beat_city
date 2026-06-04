@@ -320,7 +320,7 @@ public class PlayerGrapple : MonoBehaviour
             {
                 if (!interrupted)
                 {
-                    em.ApplyImpulse(settings.impactKnockUp, throwDir * settings.impactKnockback, 0f, true);
+                    // em.ApplyImpulse(settings.impactKnockUp, throwDir * settings.impactKnockback, 0f, true);
                 }
                 em.IsInThrowState = false;
             }

@@ -122,7 +122,7 @@ MonoBehaviour:
   attackDistance: 1.5
   minRepositionTime: 1
   maxRepositionTime: 3
-  comboHitStun: 0.5
+  comboHitStun: 1
   kickStunDuration: 1.5
   standUpDelay: 1
   maxJugglingVelocity: 10
@@ -360,7 +360,7 @@ MonoBehaviour:
   attackDistance: 1.5
   minRepositionTime: 1
   maxRepositionTime: 3
-  comboHitStun: 0.5
+  comboHitStun: 1
   kickStunDuration: 1.5
   standUpDelay: 1
   maxJugglingVelocity: 10
@@ -598,7 +598,7 @@ MonoBehaviour:
   attackDistance: 1.5
   minRepositionTime: 1
   maxRepositionTime: 3
-  comboHitStun: 0.5
+  comboHitStun: 1
   kickStunDuration: 1.5
   standUpDelay: 1
   maxJugglingVelocity: 10

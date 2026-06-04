@@ -50,8 +50,7 @@ MonoBehaviour:
   sfxSource: {fileID: 4667260958754158351}
   musicEntries:
   - musicType: 0
-    musicClips:
-    - {fileID: 8300000, guid: c7914612a3d9396438a78d01e920fcfd, type: 3}
+    musicClips: []
   - musicType: 1
     musicClips:
     - {fileID: 8300000, guid: a5502c37df586ce42a77ddc34ed0d4b3, type: 3}
@@ -63,9 +62,9 @@ MonoBehaviour:
     - {fileID: 8300000, guid: a715ddf00ff7f24469c72404e8df85e9, type: 3}
   - sfxType: 1
     sfxClips:
-    - {fileID: 8300000, guid: 482611fe6bc559142a00be6e726b4862, type: 3}
-    - {fileID: 8300000, guid: 482611fe6bc559142a00be6e726b4862, type: 3}
-    - {fileID: 8300000, guid: 4d4ef7516a431934681038a3dc391e55, type: 3}
+    - {fileID: 8300000, guid: 1cd9fbc4bb2c19749aa2e61afd72aaaa, type: 3}
+    - {fileID: 8300000, guid: faf53b5b59d41a14e97c8858f4664122, type: 3}
+    - {fileID: 8300000, guid: a715ddf00ff7f24469c72404e8df85e9, type: 3}
 --- !u!82 &4667260958754158351
 AudioSource:
   m_ObjectHideFlags: 0

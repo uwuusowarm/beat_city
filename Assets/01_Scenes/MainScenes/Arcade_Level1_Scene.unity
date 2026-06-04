@@ -339,9 +339,21 @@ PrefabInstance:
       propertyPath: target
       value: 
       objectReference: {fileID: 131228852}
+    - target: {fileID: 4653235909103322249, guid: 59a0172bbcfcc424fb3ecddc59a92240, type: 3}
+      propertyPath: m_Antialiasing
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 8425841467808385606, guid: 59a0172bbcfcc424fb3ecddc59a92240, type: 3}
       propertyPath: field of view
       value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 8425841467808385606, guid: 59a0172bbcfcc424fb3ecddc59a92240, type: 3}
+      propertyPath: m_FocalLength
+      value: 32.96973
+      objectReference: {fileID: 0}
+    - target: {fileID: 8425841467808385606, guid: 59a0172bbcfcc424fb3ecddc59a92240, type: 3}
+      propertyPath: m_projectionMatrixMode
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8957796491338963788, guid: 59a0172bbcfcc424fb3ecddc59a92240, type: 3}
       propertyPath: m_Name
