@@ -7,7 +7,6 @@ public class EnemyCombat : MonoBehaviour
     [Header("Attack Settings")]
     [SerializeField] private int attackDamage = 10;
     [SerializeField] private float attackCooldown = 1.5f;
-    [SerializeField] private float attackRange = 2f;
     [SerializeField] private float knockbackForce = 5f;
     [SerializeField] private float hitStunDuration = 0.5f;
     [SerializeField] private float telegraphDuration = 0.35f;
@@ -72,11 +71,12 @@ public class EnemyCombat : MonoBehaviour
     {
         if (_player == null || _isTelegraphing) return;
         if (_health != null && _health.Current <= 0) return;
-        if (_movement != null && _movement.IsStunned) return;
+        if (_movement != null && !_movement.CanAct) return;
 
         Vector3 playerPos2D = new Vector3(_player.position.x, transform.position.y, _player.position.z);
         float distanceToPlayer = Vector3.Distance(transform.position, playerPos2D);
 
+        float attackRange = _movement != null ? _movement.attackDistance : 2f;
         if (distanceToPlayer <= attackRange && Time.time >= _lastAttackTime + attackCooldown)
         {
             if (BeatEmUpDirector.Instance != null && BeatEmUpDirector.Instance.RequestAttackToken(this))
@@ -95,8 +95,21 @@ public class EnemyCombat : MonoBehaviour
                 r.material.color = Color.red;
         }
 
-        yield return new WaitForSeconds(telegraphDuration);
-        if (_health != null && _health.Current > 0 && !_movement.IsStunned)
+        float elapsed = 0f;
+        while (elapsed < telegraphDuration)
+        {
+            if (_movement != null && !_movement.CanAct)
+            {
+                ResetVisuals();
+                _isTelegraphing = false;
+                if (BeatEmUpDirector.Instance != null) BeatEmUpDirector.Instance.ReleaseToken(this);
+                yield break;
+            }
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        
+        if (_health != null && _health.Current > 0 && _movement != null && _movement.CanAct)
         {
             Attack();
         }

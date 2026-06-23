@@ -13,6 +13,8 @@ public class Hitbox : MonoBehaviour
     [SerializeField] private float hitStunDuration = 0.3f;
     [SerializeField] private float hitStopDuration = 0.08f;
     [SerializeField] private bool shouldKnockdown = false;
+    [SerializeField] private bool isLauncher = false;
+    [SerializeField] private JuggleType juggleType = JuggleType.None;
     [SerializeField] private bool applyDamage = true;
     [SerializeField] private LayerMask targetLayer = ~0;
 
@@ -20,6 +22,8 @@ public class Hitbox : MonoBehaviour
     public float KnockbackForce { get => knockbackForce; set => knockbackForce = value; }
     public float KnockUpForce { get => knockUpForce; set => knockUpForce = value; }
     public bool ShouldKnockdown { get => shouldKnockdown; set => shouldKnockdown = value; }
+    public bool IsLauncher { get => isLauncher; set => isLauncher = value; }
+    public JuggleType JuggleType { get => juggleType; set => juggleType = value; }
 
     public bool ApplyDamage { get => applyDamage; set => applyDamage = value; }
     public Vector3 Size => size;
@@ -84,6 +88,8 @@ public class Hitbox : MonoBehaviour
                     KnockUpForce = knockUpForce,
                     HitStunDuration = hitStunDuration,
                     ShouldKnockdown = shouldKnockdown,
+                    IsLauncher = isLauncher,
+                    JuggleType = juggleType,
                     Source = owner
                 });
 

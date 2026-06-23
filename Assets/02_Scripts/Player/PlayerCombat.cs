@@ -116,7 +116,8 @@ public class PlayerCombat : MonoBehaviour
             bool isFinisher = _comboStep >= _settings.maxComboSteps;
             hitbox.KnockbackForce = _settings.punchBaseKnockback; 
             hitbox.KnockUpForce = isFinisher ? _settings.punchFinisherKnockup : _settings.jugglingForce;
-            hitbox.ShouldKnockdown = isFinisher;
+            hitbox.ShouldKnockdown = false;
+            hitbox.IsLauncher = isFinisher;
         }
 
         hitbox.Activate();
