@@ -10,6 +10,7 @@ public class Hitbox : MonoBehaviour
     [SerializeField] private int damage = 10;
     [SerializeField] private float knockbackForce = 5f;
     [SerializeField] private float knockUpForce = 0f;
+    [SerializeField] private float jugglingForce = 0f;
     [SerializeField] private float hitStunDuration = 0.3f;
     [SerializeField] private float hitStopDuration = 0.08f;
     [SerializeField] private bool shouldKnockdown = false;
@@ -21,6 +22,7 @@ public class Hitbox : MonoBehaviour
     public int Damage { get => damage; set => damage = value; }
     public float KnockbackForce { get => knockbackForce; set => knockbackForce = value; }
     public float KnockUpForce { get => knockUpForce; set => knockUpForce = value; }
+    public float JugglingForce { get => jugglingForce; set => jugglingForce = value; }
     public bool ShouldKnockdown { get => shouldKnockdown; set => shouldKnockdown = value; }
     public bool IsLauncher { get => isLauncher; set => isLauncher = value; }
     public JuggleType JuggleType { get => juggleType; set => juggleType = value; }
@@ -80,16 +82,27 @@ public class Hitbox : MonoBehaviour
                 var knockbackDir = (hurtbox.Owner.transform.position - owner.transform.position).normalized;
                 knockbackDir.y = 0f;
 
+                float effectiveKnockUp = knockUpForce;
+                JuggleType effectiveJuggleType = juggleType;
+                
+                var enemyMovement = hurtbox.Owner.GetComponent<EnemyMovement>();
+                if (enemyMovement != null && enemyMovement.IsInThrowState)
+                {
+                    effectiveKnockUp = jugglingForce;
+                    if (effectiveJuggleType == JuggleType.None)
+                        effectiveJuggleType = JuggleType.Juggle;
+                }
+
                 damageable.TakeDamage(new HitData
                 {
                     Damage = damage,
                     KnockbackDirection = knockbackDir,
                     KnockbackForce = knockbackForce,
-                    KnockUpForce = knockUpForce,
+                    KnockUpForce = effectiveKnockUp,
                     HitStunDuration = hitStunDuration,
                     ShouldKnockdown = shouldKnockdown,
                     IsLauncher = isLauncher,
-                    JuggleType = juggleType,
+                    JuggleType = effectiveJuggleType,
                     Source = owner
                 });
 

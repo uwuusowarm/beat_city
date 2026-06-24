@@ -8,7 +8,9 @@ public enum JuggleType
     
     Juggle,
     
-    Spike, 
+    Spike,
+    
+    OTG
 }
 
 public struct HitData
@@ -21,7 +23,6 @@ public struct HitData
     public bool ShouldKnockdown;
     public GameObject Source;
     
-
     public JuggleType JuggleType;
     
     public bool IsLauncher;
