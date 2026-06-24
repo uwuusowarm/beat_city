@@ -12,18 +12,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61a846eafdc48844cbaaf86ad04ea77f, type: 3}
   m_Name: EnemySettings
   m_EditorClassIdentifier: Assembly-CSharp::EnemySettings
-  maxJugglingVelocity: 15
+  moveSpeed: 3
+  stopDistance: 1.5
+  attackDistance: 1.5
+  minRepositionTime: 1
+  maxRepositionTime: 3
+  comboHitStun: 0.5
+  kickStunDuration: 1.5
+  maxJugglingVelocity: 8
+  maxJuggleHeight: 4
   launchThreshold: 3.5
-  juggleFalloffPerHit: 0.15
+  juggleFalloffPerHit: 0.2
   juggleMinScale: 0.3
-  maxJuggleCount: 10
-  baseGravity: 20
-  useGravityScaling: 1
+  maxJuggleCount: 2147483647
+  baseGravity: 16
+  useGravityScaling: 0
   fallGravityMultiplier: 1.5
-  groundCheckDistance: 0.2
+  groundCheckDistance: 0.1
   groundLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1
   knockdownDuration: 1
   standUpDuration: 1
-  standUpInvulnerability: 0.5
+  fallWobbleSpeed: 2
+  fallWobbleIntensity: 0.3
+  fallAnimationHoldPoint: 0.2
+  despawnDelay: 3
