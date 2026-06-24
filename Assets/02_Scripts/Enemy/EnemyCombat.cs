@@ -71,6 +71,7 @@ public class EnemyCombat : MonoBehaviour
     {
         if (_player == null || _isTelegraphing) return;
         if (_health != null && _health.Current <= 0) return;
+
         if (_movement != null && !_movement.CanAct) return;
 
         Vector3 playerPos2D = new Vector3(_player.position.x, transform.position.y, _player.position.z);
