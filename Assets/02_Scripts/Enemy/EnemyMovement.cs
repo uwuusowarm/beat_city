@@ -17,6 +17,7 @@ public class EnemyMovement : MonoBehaviour
                              CurrentState == EnemyState.Knockdown || 
                              CurrentState == EnemyState.StandingUp;
     
+
     public bool CanAct => CurrentState == EnemyState.Grounded || CurrentState == EnemyState.HitStun;
     
     public bool IsInThrowState 
@@ -148,7 +149,7 @@ public class EnemyMovement : MonoBehaviour
                 break;
                 
             case EnemyState.HitStun:
-                if (IsGroundedRaycast()) UpdateAnimatorFalling(false);
+                UpdateAnimatorFalling(false);
                 break;
 
             case EnemyState.Launched:
@@ -157,13 +158,11 @@ public class EnemyMovement : MonoBehaviour
                 break;
                 
             case EnemyState.Knockdown:
-                _isBeingThrown = false;
-                _stateTimer = KnockdownDuration; 
-                
+                _isBeingThrown = false; 
+                _stateTimer = KnockdownDuration;
                 if (animator != null)
                 {
-                    animator.Play("Fall", 0, 1f); 
-                    animator.speed = 0f; 
+                    animator.speed = 1f;
                 }
                 break;
                 
@@ -245,6 +244,7 @@ public class EnemyMovement : MonoBehaviour
         Debug.Log($"[EnemyMovement] {gameObject.name} EndThrowAnimation called - Physics resumed");
     }
     
+
     public void ApplyImpulse(float knockUpForce, Vector3 knockbackForce, float hitStunReset = 0f, bool forceKnockdown = false)
     {
         HitData data = new HitData
@@ -291,7 +291,7 @@ public class EnemyMovement : MonoBehaviour
         {
             HandleLauncherHit(hitData, effectiveKnockUp, isGrounded);
         }
-        else if (wasAirborne || !isGrounded)
+        else if (wasAirborne && (effectiveKnockUp > 0.5f || verticalVelocity > 0f))
         {
             HandleJuggleHit(hitData, effectiveKnockUp);
         }
@@ -351,8 +351,10 @@ public class EnemyMovement : MonoBehaviour
         float targetVelocity = scaledForce + velocityBonus;
         verticalVelocity = Mathf.Min(targetVelocity, MaxJugglingVelocity);
         
-        if (verticalVelocity > 0)
+        if (verticalVelocity > 0.5f)
             SetState(EnemyState.Launched);
+        else if (verticalVelocity > 0)
+            SetState(EnemyState.Airborne);
         else
             SetState(EnemyState.Airborne);
         
@@ -478,7 +480,7 @@ public class EnemyMovement : MonoBehaviour
             float currentHeight = transform.position.y - _groundYPosition;
             if (currentHeight >= MaxJuggleHeight && verticalVelocity > 0f)
             {
-                verticalVelocity = 0f;
+                verticalVelocity = 0f; 
             }
             
             ApplyGravityAndMove(Vector3.zero);
@@ -557,12 +559,19 @@ public class EnemyMovement : MonoBehaviour
     private void UpdateKnockdownState()
     {
         ApplyGravityAndMove(Vector3.zero);
+    
         if (animator != null) 
         {
             animator.SetFloat("Speed", 0f);
-            animator.speed = 0f; 
-        }
         
+            AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+        
+            if (stateInfo.IsName("Fall") && stateInfo.normalizedTime >= 1.0f)
+            {
+                animator.speed = 0f;
+            }
+        }
+    
         if (_stateTimer <= 0f)
         {
             SetState(EnemyState.StandingUp);

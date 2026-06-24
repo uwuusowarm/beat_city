@@ -270,7 +270,7 @@ public class PlayerGrapple : MonoBehaviour
         if (em != null) 
         {
             em.IsInThrowState = true;
-            em.StartThrowAnimation(); 
+            em.StartThrowAnimation();
         }
 
         if (cc != null) cc.enabled = false;
