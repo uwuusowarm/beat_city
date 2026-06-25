@@ -114,8 +114,11 @@ public class PlayerCombat : MonoBehaviour
         {
             hitbox.Damage = _settings.punchDamage;
             bool isFinisher = _comboStep >= _settings.maxComboSteps;
-            hitbox.KnockbackForce = isFinisher ? _settings.punchBaseKnockback : _settings.punchBaseKnockback; 
-            hitbox.KnockUpForce = isFinisher ? _settings.punchFinisherKnockup : _settings.jugglingForce;
+            hitbox.KnockbackForce = _settings.punchBaseKnockback; 
+            hitbox.KnockUpForce = isFinisher ? _settings.punchFinisherKnockup : 0f;
+            hitbox.JugglingForce = _settings.jugglingForce;
+            hitbox.ShouldKnockdown = false;
+            hitbox.IsLauncher = isFinisher;
         }
 
         hitbox.Activate();
@@ -144,7 +147,9 @@ public class PlayerCombat : MonoBehaviour
             hitbox.Damage = _settings.kickDamage;
             bool isFinisher = _comboStep >= _settings.maxComboSteps;
             hitbox.KnockbackForce = isFinisher ? _settings.kickFinisherKnockback : _settings.kickBaseKnockback;
-            hitbox.KnockUpForce = _settings.jugglingForce;
+            hitbox.KnockUpForce = 0f;
+            hitbox.JugglingForce = _settings.jugglingForce;
+            hitbox.ShouldKnockdown = isFinisher;
         }
 
         hitbox.Activate();
@@ -172,7 +177,22 @@ public class PlayerCombat : MonoBehaviour
 
     private void PlayAttackSfx(CombatInputType input)
     {
-        if (audioManager == null) return;
+        if (audioManager == null)
+        {
+            audioManager = AudioManager.Instance;
+        }
+
+        if (audioManager == null)
+        {
+            Debug.LogWarning("[PlayerCombat] PlayAttackSfx: audioManager is still null! Trying to find it now...");
+            audioManager = FindFirstObjectByType<AudioManager>();
+        }
+        
+        if (audioManager == null)
+        {
+            Debug.LogError("[PlayerCombat] PlayAttackSfx: NO AudioManager found in scene or via Instance!");
+            return;
+        }
 
         int index = _comboStep - 1;
 

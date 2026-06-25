@@ -159,6 +159,11 @@ public class PlayerGrapple : MonoBehaviour
         _heldTarget = target;
         PlayerStateManager.Instance.SetState(PlayerState.Holding);
         
+        if (target.TryGetComponent<EnemyMovement>(out var em))
+        {
+            em.SetState(EnemyState.Grabbed);
+        }
+        
         StartCoroutine(HoldTarget(target));
         
         Debug.Log($"[PlayerGrapple] Target {target.name} caught and being held.");
@@ -194,10 +199,12 @@ public class PlayerGrapple : MonoBehaviour
                 if (Vector3.Dot(characterModel.forward, inputDir) < -0.5f)
                 {
                     throwDir = inputDir;
+                    characterModel.rotation = Quaternion.LookRotation(new Vector3(throwDir.x, 0, 0));
                 }
                 else
                 {
-                    throwDir = characterModel.forward;
+                    throwDir = inputDir;
+                    characterModel.rotation = Quaternion.LookRotation(new Vector3(throwDir.x, 0, 0));
                 }
             }
         }
@@ -217,6 +224,8 @@ public class PlayerGrapple : MonoBehaviour
                     KnockbackForce = settings.impactKnockback, 
                     KnockUpForce = settings.impactKnockUp,
                     HitStunDuration = 0.5f,
+                    ShouldKnockdown = true,
+                    SuppressHitAnimation = true,
                     Source = gameObject
                 });
 
@@ -227,6 +236,23 @@ public class PlayerGrapple : MonoBehaviour
             }
         }
 
+        if (target != null)
+        {
+            var cc = target.GetComponent<CharacterController>();
+            if (cc != null) cc.enabled = true;
+            
+            var em = target.GetComponent<EnemyMovement>();
+            if (em != null)
+            {
+                em.EndThrowAnimation();
+                
+                if (em.CurrentState == EnemyState.Grabbed)
+                {
+                    em.SetState(EnemyState.Airborne);
+                }
+            }
+        }
+        
         PlayerStateManager.Instance.ResetToIdle();
         _nextGrappleTime = Time.time + settings.grappleCooldown;
     }
@@ -241,7 +267,11 @@ public class PlayerGrapple : MonoBehaviour
         CharacterController cc = target.GetComponent<CharacterController>();
         Rigidbody rb = target.GetComponent<Rigidbody>();
         EnemyMovement em = target.GetComponent<EnemyMovement>();
-        if (em != null) em.IsInThrowState = true;
+        if (em != null) 
+        {
+            em.IsInThrowState = true;
+            em.StartThrowAnimation();
+        }
 
         if (cc != null) cc.enabled = false;
 
@@ -290,6 +320,7 @@ public class PlayerGrapple : MonoBehaviour
                                 KnockbackForce = settings.projectileKnockback,
                                 KnockUpForce = settings.projectileKnockUp,
                                 HitStunDuration = 0.3f,
+                                ShouldKnockdown = true,
                                 Source = target 
                             });
                             
@@ -314,14 +345,14 @@ public class PlayerGrapple : MonoBehaviour
 
             if (cc != null) cc.enabled = true;
 
-            if (em != null)
+        if (em != null)
+        {
+            if (!interrupted)
             {
-                if (!interrupted)
-                {
-                    em.ApplyImpulse(settings.impactKnockUp, throwDir * settings.impactKnockback);
-                }
-                em.IsInThrowState = false;
+                em.SetState(EnemyState.Airborne);
             }
+            em.IsInThrowState = false;
+        }
         }
 
         _currentProjectile = null;
