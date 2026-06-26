@@ -43,6 +43,8 @@ public class EnemyMovement : MonoBehaviour
     private bool _isBeingThrown;
     public bool IsBeingThrown => _isBeingThrown;
     
+    private bool _wasThrownSkipReset;
+    
     private float _groundYPosition;
     
     private Transform player;
@@ -158,10 +160,12 @@ public class EnemyMovement : MonoBehaviour
                 break;
                 
             case EnemyState.Knockdown:
-                _isBeingThrown = false; 
+                _isBeingThrown = false;
+                _wasThrownSkipReset = false;
                 _stateTimer = KnockdownDuration;
                 if (animator != null)
                 {
+
                     animator.speed = 1f;
                 }
                 break;
@@ -203,12 +207,15 @@ public class EnemyMovement : MonoBehaviour
         
         bool wasFalling = animator.GetBool("IsFalling");
         
+        Debug.Log($"[EnemyMovement] {gameObject.name} UpdateAnimatorFalling({isFalling}) - wasFalling={wasFalling}, _wasThrownSkipReset={_wasThrownSkipReset}, State={CurrentState}");
+        
         if (wasFalling != isFalling)
         {
             animator.SetBool("IsFalling", isFalling);
             
-            if (isFalling)
+            if (isFalling && !_wasThrownSkipReset)
             {
+                Debug.Log($"[EnemyMovement] {gameObject.name} RESTARTING FALL ANIMATION from UpdateAnimatorFalling");
                 animator.Play("Fall", 0, 0f);
             }
         }
@@ -219,6 +226,7 @@ public class EnemyMovement : MonoBehaviour
         _juggleCount = 0;
         _juggleDecayMultiplier = 1f;
         hitStunTimer = 0f;
+        _wasThrownSkipReset = false;
     }
     
     private bool IsGroundedRaycast()
@@ -231,6 +239,7 @@ public class EnemyMovement : MonoBehaviour
     public void StartThrowAnimation()
     {
         _isBeingThrown = true;
+        _wasThrownSkipReset = true;
         
         UpdateAnimatorFalling(true);
         _wobblePhase = 0f;
@@ -263,7 +272,7 @@ public class EnemyMovement : MonoBehaviour
 
     private void OnHit(HitData hitData)
     {
-        if (CurrentState == EnemyState.StandingUp || CurrentState == EnemyState.Dead) return;
+        if (CurrentState == EnemyState.Knockdown || CurrentState == EnemyState.StandingUp || CurrentState == EnemyState.Dead) return;
         
         bool isBeingThrown = CurrentState == EnemyState.Grabbed || IsInThrowState || _isBeingThrown;
         
@@ -271,11 +280,6 @@ public class EnemyMovement : MonoBehaviour
         if (animator != null && !suppressHit && (CurrentState == EnemyState.Grounded || CurrentState == EnemyState.HitStun))
         {
             animator.SetTrigger("Hit");
-        }
-        
-        if (CurrentState == EnemyState.Knockdown)
-        {
-            StopAllCoroutines();
         }
 
         bool wasAirborne = CurrentState == EnemyState.Launched || CurrentState == EnemyState.Airborne || isBeingThrown;
@@ -518,6 +522,12 @@ public class EnemyMovement : MonoBehaviour
         {
             if (!IsGroundedRaycast())
             {
+                if (_wasThrownSkipReset)
+                {
+                    animator.speed = 1f;
+                    return;
+                }
+                
                 if (stateInfo.normalizedTime >= FallHoldPoint)
                 {
                     _wobblePhase += Time.deltaTime * FallWobbleSpeed;
@@ -528,6 +538,7 @@ public class EnemyMovement : MonoBehaviour
                     
                     if (drift > 0.05f)
                     {
+                        Debug.Log($"[EnemyMovement] {gameObject.name} RESETTING FALL to HoldPoint in UpdateJugglingAnimation - drift={drift:F3}");
                         animator.Play("Fall", 0, FallHoldPoint);
                         animator.speed = 0f;
                         _wobblePhase = 0f;
@@ -566,9 +577,13 @@ public class EnemyMovement : MonoBehaviour
         
             AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
         
-            if (stateInfo.IsName("Fall") && stateInfo.normalizedTime >= 1.0f)
+            if (stateInfo.IsName("Fall"))
             {
-                animator.speed = 0f;
+                if (stateInfo.normalizedTime >= 0.95f)
+                {
+                    animator.Play("Fall", 0, 0.99f);
+                    animator.speed = 0f;
+                }
             }
         }
     
@@ -592,13 +607,22 @@ public class EnemyMovement : MonoBehaviour
     
     private void OnLanded()
     {
-        Debug.Log($"[EnemyMovement] {gameObject.name} LANDED! JuggleCount: {_juggleCount}");
+        Debug.Log($"[EnemyMovement] {gameObject.name} LANDED! JuggleCount: {_juggleCount}, _wasThrownSkipReset={_wasThrownSkipReset}");
         
         _groundYPosition = transform.position.y;
         
         if (animator != null)
         {
-            animator.speed = 1f;
+            if (_wasThrownSkipReset)
+            {
+                animator.Play("Fall", 0, 0.99f);
+                animator.speed = 0f;
+                Debug.Log($"[EnemyMovement] {gameObject.name} Throw landing - snapping to end of Fall animation");
+            }
+            else
+            {
+                animator.speed = 1f;
+            }
         }
 
         SetState(EnemyState.Knockdown);
