@@ -25,10 +25,27 @@ public class UpgradeShop : MonoBehaviour
     [SerializeField] private GameObject shopPanel;
     [SerializeField] private bool pauseWhenOpen = true;
     [SerializeField] private UpgradeData[] upgrades;
-    
+
+    [SerializeField] private Meter special;
+    [SerializeField] private int specialBoost = 1;
     [SerializeField] private Health health;
+    [SerializeField] private PlayerSettings _settings;
+    [SerializeField] private int damageBoost = 1;
 
     private bool _isOpen;
+
+    private void Awake()
+    {
+        if (_settings == null)
+        {
+            _settings = Resources.Load<PlayerSettings>("PlayerSettings");
+        }
+
+        if (special == null)
+        {
+            Debug.LogWarning("Meter script is missing in UpgradeShop script. Insert from Inspector");
+        }
+    }
 
     private void Start()
     {
@@ -40,7 +57,7 @@ public class UpgradeShop : MonoBehaviour
             UpdateLabel(upgrade);
         }
     }
-    
+
 
     private void OnEnable()
     {
@@ -120,7 +137,18 @@ public class UpgradeShop : MonoBehaviour
                 Debug.Log($"[UpgradeShop] apply effect for '{upgrade.Name}' at level {upgrade.Level}. PlayerHealth now {health.Max}");
                 UIManager.Instance.PlayerHealthUI.RefreshHealth();
                 break;
-            
+
+            case "Damage Up":
+                Debug.Log("DAMAGE UPGRADE WURDE AUSGEFÜHRT");
+                _settings.punchDamage += damageBoost;
+                Debug.Log($"Damage now {_settings.punchDamage}");
+                break;
+
+            case "Special Up":
+                Debug.Log("SPECIAL UPGRADE WURDE AUSGEFÜHRT");
+                special.BaseMeterPerHit += specialBoost;
+                break;
+
             default:
                 Debug.Log($"[UpgradeShop] apply effect for '{upgrade.Name}' at level {upgrade.Level}.");
                 break;

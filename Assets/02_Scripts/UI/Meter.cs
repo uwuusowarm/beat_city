@@ -9,6 +9,8 @@ public class Meter : MonoBehaviour
 
     public int Current { get; private set; }
 
+    public int BaseMeterPerHit { get => baseMeterPerHit; set => baseMeterPerHit = value; }
+
     public event Action<int> OnMeterChanged;
 
     private void OnEnable()

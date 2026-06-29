@@ -1,7 +1,7 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "EnemySettings", menuName = "ScriptableObjects/EnemySettings")]
-public class EnemySettings : ScriptableObject
+[CreateAssetMenu(fileName = "RangedEnemySettings", menuName = "ScriptableObjects/RangedEnemySettings")]
+public class RangedEnemySettings : ScriptableObject
 {
     [Header("Movement")]
     [Tooltip("Base movement speed")]
@@ -82,5 +82,14 @@ public class EnemySettings : ScriptableObject
     [Header("Death / Despawn")]
     [Tooltip("Time before the enemy object is destroyed after death")]
     public float despawnDelay = 3.0f;
+
+    [Header("Ranged")]
+    public bool isRanged;
+    public float rangedMinDistance = 5f;
+    public float rangedMaxDistance = 8f;
+    public float rangedShootCooldownMin = 2f;
+    public float rangedShootCooldownMax = 3f;
+    public float rangedShootRange = 20f;
+    public int rangedDamage = 10;
 
 }
