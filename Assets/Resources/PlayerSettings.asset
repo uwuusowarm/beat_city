@@ -15,7 +15,7 @@ MonoBehaviour:
   walkSpeed: 3
   jumpForce: 0
   gravity: 20
-  punchDamage: 1000
+  punchDamage: 10
   punchBaseKnockback: 0
   punchFinisherKnockup: 7
   kickDamage: 15

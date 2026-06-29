@@ -18,6 +18,7 @@ public class EnemyCombat : MonoBehaviour
     private bool _isTelegraphing;
     private Renderer[] _renderers;
     private Color[] _originalColors;
+    
 
     public bool IsReadyToAttack => Time.time >= _lastAttackTime + attackCooldown;
 
@@ -73,6 +74,11 @@ public class EnemyCombat : MonoBehaviour
         if (_health != null && _health.Current <= 0) return;
 
         if (_movement != null && !_movement.CanAct) return;
+
+        if (_movement != null && _movement.rangedSettings != null)
+        {
+            return;
+        }
 
         Vector3 playerPos2D = new Vector3(_player.position.x, transform.position.y, _player.position.z);
         float distanceToPlayer = Vector3.Distance(transform.position, playerPos2D);
@@ -164,5 +170,43 @@ public class EnemyCombat : MonoBehaviour
             if (_renderers[i] != null && _renderers[i].material.HasProperty("_Color"))
                 _renderers[i].material.color = _originalColors[i];
         }
+    }
+
+    public void TryRangedAttack(RangedEnemySettings rangedSettings)
+    {
+        if (rangedSettings == null) return;
+        if (_player == null) return;
+        if (_health != null && _health.Current <= 0) return;
+        if (_movement != null && !_movement.CanAct) return;
+
+        ShootRanged(rangedSettings);
+        _lastAttackTime = Time.time;
+    }
+
+    private void ShootRanged(RangedEnemySettings rangedSettings)
+    {
+        Vector3 origin = transform.position + Vector3.up * 1f;
+
+        float dirX = _player.position.x >= transform.position.x ? 1f : -1f;
+        Vector3 direction = new Vector3(dirX, 0f, 0f);
+
+        if (Physics.Raycast(origin, direction, out RaycastHit hit, rangedSettings.rangedShootRange))
+        {
+            if (hit.transform.CompareTag("Player"))
+            {
+                Health playerHealth = hit.transform.GetComponent<Health>();
+
+                if (playerHealth != null)
+                {
+                    playerHealth.TakeDamage(new HitData
+                    {
+                        Damage = rangedSettings.rangedDamage,
+                        Source = gameObject
+                    });
+                }
+            }
+        }
+
+        Debug.DrawRay(origin, direction * rangedSettings.rangedShootRange, Color.red, 0.5f);
     }
 }
