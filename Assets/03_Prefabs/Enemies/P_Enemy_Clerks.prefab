@@ -90,6 +90,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Health
   maxHealth: 70
   uiHealth: {fileID: 0}
+  hitVfxPrefab: {fileID: 8782009059513614302, guid: 171dda363e9efd94ca9bc63e38ca9658, type: 3}
 --- !u!54 &2898574131041051538
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -148,19 +149,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a1f2d8570f90394783959550708db5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
-  moveSpeed: 3
-  stopDistance: 1.5
-  gravity: 16
+  meleeSettings: {fileID: 0}
+  rangedSettings: {fileID: 0}
   characterModel: {fileID: 1385330487943477218}
   animator: {fileID: 4384789697713157892}
-  attackDistance: 1.5
-  minRepositionTime: 1
-  maxRepositionTime: 3
-  comboHitStun: 1
-  kickStunDuration: 1.5
-  standUpDelay: 1
-  maxJugglingVelocity: 10
-  maxIncomingJugglingForce: 3
 --- !u!114 &4035490235511647781
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -173,7 +165,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e381a221fdc82d84c957fc1b981a9dc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyDeathHandler
-  despawnDelay: 0.5
+  settings: {fileID: 0}
 --- !u!143 &6230549841718577859
 CharacterController:
   m_ObjectHideFlags: 0
@@ -213,7 +205,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyCombat
   attackDamage: 10
   attackCooldown: 1.5
-  attackRange: 2
   knockbackForce: 5
   hitStunDuration: 0.5
   telegraphDuration: 0.35
@@ -328,6 +319,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Health
   maxHealth: 70
   uiHealth: {fileID: 0}
+  hitVfxPrefab: {fileID: 8782009059513614302, guid: 171dda363e9efd94ca9bc63e38ca9658, type: 3}
 --- !u!54 &2824570313365789318
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -386,19 +378,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a1f2d8570f90394783959550708db5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
-  moveSpeed: 3
-  stopDistance: 1.5
-  gravity: 16
+  meleeSettings: {fileID: 0}
+  rangedSettings: {fileID: 0}
   characterModel: {fileID: 3221350716742140775}
   animator: {fileID: 7051785022574258045}
-  attackDistance: 1.5
-  minRepositionTime: 1
-  maxRepositionTime: 3
-  comboHitStun: 1
-  kickStunDuration: 1.5
-  standUpDelay: 1
-  maxJugglingVelocity: 10
-  maxIncomingJugglingForce: 3
 --- !u!114 &6333785016193006451
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -411,7 +394,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e381a221fdc82d84c957fc1b981a9dc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyDeathHandler
-  despawnDelay: 0.5
+  settings: {fileID: 0}
 --- !u!143 &2213263406245777000
 CharacterController:
   m_ObjectHideFlags: 0
@@ -451,7 +434,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyCombat
   attackDamage: 10
   attackCooldown: 1.5
-  attackRange: 2
   knockbackForce: 5
   hitStunDuration: 0.5
   telegraphDuration: 0.35
@@ -566,6 +548,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Health
   maxHealth: 70
   uiHealth: {fileID: 0}
+  hitVfxPrefab: {fileID: 8782009059513614302, guid: 171dda363e9efd94ca9bc63e38ca9658, type: 3}
 --- !u!54 &2425524499823450262
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -624,19 +607,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a1f2d8570f90394783959550708db5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
-  moveSpeed: 3
-  stopDistance: 1.5
-  gravity: 16
+  meleeSettings: {fileID: 0}
+  rangedSettings: {fileID: 0}
   characterModel: {fileID: 828330454222476270}
   animator: {fileID: 2007466405565452480}
-  attackDistance: 1.5
-  minRepositionTime: 1
-  maxRepositionTime: 3
-  comboHitStun: 1
-  kickStunDuration: 1.5
-  standUpDelay: 1
-  maxJugglingVelocity: 10
-  maxIncomingJugglingForce: 3
 --- !u!114 &4683629558364105167
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -649,7 +623,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e381a221fdc82d84c957fc1b981a9dc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyDeathHandler
-  despawnDelay: 0.5
+  settings: {fileID: 0}
 --- !u!143 &5468975762695983989
 CharacterController:
   m_ObjectHideFlags: 0
@@ -689,7 +663,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyCombat
   attackDamage: 10
   attackCooldown: 1.5
-  attackRange: 2
   knockbackForce: 5
   hitStunDuration: 0.5
   telegraphDuration: 0.35

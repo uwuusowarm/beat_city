@@ -103,7 +103,8 @@ public class Hitbox : MonoBehaviour
                     ShouldKnockdown = shouldKnockdown,
                     IsLauncher = isLauncher,
                     JuggleType = effectiveJuggleType,
-                    Source = owner
+                    Source = owner,
+                    HitPosition = col.ClosestPoint(worldCenter)
                 });
 
                 if (owner.CompareTag("Player") && damageable is Health enemyHealth)
