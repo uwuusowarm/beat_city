@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5cc5f9872692fbe4a91d8407469096e9, type: 3}
+  m_Name: RangedEnemySettings
+  m_EditorClassIdentifier: Assembly-CSharp::RangedEnemySettings
+  moveSpeed: 3
+  stopDistance: 1.5
+  attackDistance: 1.5
+  minRepositionTime: 1
+  maxRepositionTime: 3
+  comboHitStun: 0.5
+  kickStunDuration: 1.5
+  maxJugglingVelocity: 15
+  maxJuggleHeight: 4
+  launchThreshold: 3.5
+  juggleFalloffPerHit: 0.15
+  juggleMinScale: 0.3
+  maxJuggleCount: 10
+  baseGravity: 20
+  useGravityScaling: 1
+  fallGravityMultiplier: 1.5
+  groundCheckDistance: 0.2
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  knockdownDuration: 1
+  standUpDuration: 1
+  fallWobbleSpeed: 4
+  fallWobbleIntensity: 0.02
+  fallAnimationHoldPoint: 0.2
+  despawnDelay: 3
+  isRanged: 1
+  rangedMinDistance: 4
+  rangedMaxDistance: 5
+  rangedShootCooldownMin: 2
+  rangedShootCooldownMax: 3
+  rangedShootRange: 20
+  rangedDamage: 10

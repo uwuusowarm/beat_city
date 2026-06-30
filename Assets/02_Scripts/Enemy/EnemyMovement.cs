@@ -5,7 +5,8 @@ using System.Collections;
 public class EnemyMovement : MonoBehaviour
 {
     [Header("Settings")]
-    public EnemySettings settings;
+    public EnemySettings meleeSettings;
+    public RangedEnemySettings rangedSettings;
 
     [Header("Visuals")]
     public Transform characterModel;
@@ -37,6 +38,9 @@ public class EnemyMovement : MonoBehaviour
         }
     }
 
+    private int rangedSide = 1;
+    private float rangedShootTimer;
+
     private int _juggleCount;
     private float _juggleDecayMultiplier = 1f;
     
@@ -60,35 +64,43 @@ public class EnemyMovement : MonoBehaviour
     private Vector3 externalForce;
     public Vector3 ExternalForce { get => externalForce; set => externalForce = value; }
     private float horizontalDrag = 5f;
-    
+
+    private Vector3 rangedTargetPosition;
+    private float rangedRepositionTimer;
+    private bool isAiming;
+    private float rangedAimTimer;
+    private float rangedDodgeTimer;
+    private float rangedDodgeDirection;
+    private float rangedRecoveryTimer;
+
     private Health _health;
     private EnemyCombat _combat;
     
-    public float moveSpeed => settings != null ? settings.moveSpeed : 3f;
-    private float StopDistance => settings != null ? settings.stopDistance : 1.5f;
-    public float attackDistance => settings != null ? settings.attackDistance : 1.5f;
+    public float moveSpeed => meleeSettings != null ? meleeSettings.moveSpeed : 3f;
+    private float StopDistance => meleeSettings != null ? meleeSettings.stopDistance : 1.5f;
+    public float attackDistance => meleeSettings != null ? meleeSettings.attackDistance : 1.5f;
     
-    public float minRepositionTime => settings != null ? settings.minRepositionTime : 1.0f;
-    public float maxRepositionTime => settings != null ? settings.maxRepositionTime : 3.0f;
+    public float minRepositionTime => meleeSettings != null ? meleeSettings.minRepositionTime : 1.0f;
+    public float maxRepositionTime => meleeSettings != null ? meleeSettings.maxRepositionTime : 3.0f;
     
-    public float comboHitStun => settings != null ? settings.comboHitStun : 0.5f;
-    public float kickStunDuration => settings != null ? settings.kickStunDuration : 1.5f;
+    public float comboHitStun => meleeSettings != null ? meleeSettings.comboHitStun : 0.5f;
+    public float kickStunDuration => meleeSettings != null ? meleeSettings.kickStunDuration : 1.5f;
     
-    private float Gravity => settings != null ? settings.baseGravity : 20f;
-    private float MaxJugglingVelocity => settings != null ? settings.maxJugglingVelocity : 15f;
-    private float MaxJuggleHeight => settings != null ? settings.maxJuggleHeight : 4f;
-    private float LaunchThreshold => settings != null ? settings.launchThreshold : 3.5f;
-    private float JuggleFalloff => settings != null ? settings.juggleFalloffPerHit : 0.15f;
-    private float JuggleMinScale => settings != null ? settings.juggleMinScale : 0.30f;
-    private int MaxJuggleCount => settings != null ? settings.maxJuggleCount : 10;
-    private float KnockdownDuration => settings != null ? settings.knockdownDuration : 1.0f;
-    private float StandUpDuration => settings != null ? settings.standUpDuration : 1.0f;
-    private float GroundCheckDistance => settings != null ? settings.groundCheckDistance : 0.2f;
-    private LayerMask GroundLayer => settings != null ? settings.groundLayer : LayerMask.GetMask("Default");
-    private float FallWobbleSpeed => settings != null ? settings.fallWobbleSpeed : 4f;
-    private float FallWobbleIntensity => settings != null ? settings.fallWobbleIntensity : 0.02f;
-    private float FallHoldPoint => settings != null ? settings.fallAnimationHoldPoint : 0.2f;
-    private float DespawnDelay => settings != null ? settings.despawnDelay : 3.0f;
+    private float Gravity => meleeSettings != null ? meleeSettings.baseGravity : 20f;
+    private float MaxJugglingVelocity => meleeSettings != null ? meleeSettings.maxJugglingVelocity : 15f;
+    private float MaxJuggleHeight => meleeSettings != null ? meleeSettings.maxJuggleHeight : 4f;
+    private float LaunchThreshold => meleeSettings != null ? meleeSettings.launchThreshold : 3.5f;
+    private float JuggleFalloff => meleeSettings != null ? meleeSettings.juggleFalloffPerHit : 0.15f;
+    private float JuggleMinScale => meleeSettings != null ? meleeSettings.juggleMinScale : 0.30f;
+    private int MaxJuggleCount => meleeSettings != null ? meleeSettings.maxJuggleCount : 10;
+    private float KnockdownDuration => meleeSettings != null ? meleeSettings.knockdownDuration : 1.0f;
+    private float StandUpDuration => meleeSettings != null ? meleeSettings.standUpDuration : 1.0f;
+    private float GroundCheckDistance => meleeSettings != null ? meleeSettings.groundCheckDistance : 0.2f;
+    private LayerMask GroundLayer => meleeSettings != null ? meleeSettings.groundLayer : LayerMask.GetMask("Default");
+    private float FallWobbleSpeed => meleeSettings != null ? meleeSettings.fallWobbleSpeed : 4f;
+    private float FallWobbleIntensity => meleeSettings != null ? meleeSettings.fallWobbleIntensity : 0.02f;
+    private float FallHoldPoint => meleeSettings != null ? meleeSettings.fallAnimationHoldPoint : 0.2f;
+    private float DespawnDelay => meleeSettings != null ? meleeSettings.despawnDelay : 3.0f;
 
     private void Start()
     {
@@ -106,19 +118,31 @@ public class EnemyMovement : MonoBehaviour
             animator = GetComponentInChildren<Animator>();
         
         _groundYPosition = transform.position.y;
-            
-        if (settings == null)
+
+        if (meleeSettings == null && rangedSettings == null)
         {
-            settings = Resources.Load<EnemySettings>("EnemySettings");
-            if (settings == null)
+            meleeSettings = Resources.Load<EnemySettings>("EnemySettings");
+            if (meleeSettings == null)
                 Debug.LogWarning("[EnemyMovement] No EnemySettings assigned or found in Resources folder.");
         }
 
-        PickNewTactic();
+        if (rangedSettings == null)
+        {
+            PickNewTactic();
+        }
 
         if (TryGetComponent<Health>(out var health))
         {
             health.OnHit += OnHit;
+        }
+
+        
+
+        if (rangedSettings != null)
+        {
+            rangedSide = transform.position.x < player.position.x ? -1 : 1;
+            PickNewRangedTarget();
+            rangedShootTimer = Random.Range(rangedSettings.rangedShootCooldownMin, rangedSettings.rangedShootCooldownMax);
         }
     }
     
@@ -446,19 +470,27 @@ public class EnemyMovement : MonoBehaviour
     
     private void UpdateGroundedState()
     {
-        tacticTimer -= Time.deltaTime;
-
-        if (!isFlanking && BeatEmUpDirector.Instance != null && !BeatEmUpDirector.Instance.HasToken(_combat))
+        if (rangedSettings != null)
         {
-            ForceRecalculateTactic();
+            MoveRanged();
+        }
+        else
+        {
+            tacticTimer -= Time.deltaTime;
+
+            if (!isFlanking && BeatEmUpDirector.Instance != null && !BeatEmUpDirector.Instance.HasToken(_combat))
+            {
+                ForceRecalculateTactic();
+            }
+
+            if (tacticTimer <= 0f)
+            {
+                PickNewTactic();
+            }
+
+            MoveBasedOnTactic();
         }
 
-        if (tacticTimer <= 0f)
-        {
-            PickNewTactic();
-        }
-
-        MoveBasedOnTactic();
         LookAtPlayer();
     }
     
@@ -631,6 +663,7 @@ public class EnemyMovement : MonoBehaviour
 
     private void MoveBasedOnTactic()
     {
+
         Vector3 targetPosition;
 
         if (isFlanking)
@@ -673,6 +706,117 @@ public class EnemyMovement : MonoBehaviour
         }
     }
 
+    private void MoveRanged()
+    {
+        if (rangedRecoveryTimer > 0f)
+        {
+            rangedRecoveryTimer -= Time.deltaTime;
+
+            ApplyGravityAndMove(Vector3.zero);
+
+            if (animator != null)
+                animator.SetFloat("Speed", 0f);
+
+            return;
+        }
+
+        if (rangedDodgeTimer > 0f)
+        {
+            rangedDodgeTimer -= Time.deltaTime;
+
+            Vector3 dodgeMove = new Vector3(0f, 0f, rangedDodgeDirection) * moveSpeed;
+
+            ApplyGravityAndMove(dodgeMove);
+
+            if (animator != null)
+                animator.SetFloat("Speed", 1f);
+
+            if (rangedDodgeTimer <= 0f)
+            {
+                PickNewRangedTarget();
+            }
+
+            return;
+        }
+
+        rangedRepositionTimer -= Time.deltaTime;
+
+        if (rangedRepositionTimer <= 0f)
+        {
+            PickNewRangedTarget();
+        }
+
+        Vector3 pos = transform.position;
+
+        Vector3 direction = rangedTargetPosition - pos;
+        direction.y = 0f;
+
+        Vector3 moveVelocity = Vector3.zero;
+
+        if (direction.magnitude > 0.2f)
+        {
+            moveVelocity = direction.normalized * moveSpeed;
+        }
+
+        ApplyGravityAndMove(moveVelocity);
+
+        if (animator != null)
+        {
+            animator.SetFloat("Speed", moveVelocity.sqrMagnitude > 0f ? 1f : 0f);
+        }
+
+        float zDistance = Mathf.Abs(player.position.z - transform.position.z);
+        bool isAlignedOnZ = zDistance <= 0.3f;
+
+        if (isAlignedOnZ)
+        {
+            if (!isAiming)
+            {
+                isAiming = true;
+                rangedAimTimer = Random.Range(1f, 2f);
+            }
+
+            rangedAimTimer -= Time.deltaTime;
+
+            if (rangedAimTimer <= 0f)
+            {
+                if (_combat != null)
+                {
+                    _combat.TryRangedAttack(rangedSettings);
+                }
+
+                isAiming = false;
+                rangedAimTimer = 0f;
+
+                rangedRecoveryTimer = 1f;
+
+                rangedDodgeTimer = Random.Range(0.8f, 1.0f);
+                rangedDodgeDirection = Random.value < 0.5f ? -1f : 1f;
+            }
+        }
+        else
+        {
+            isAiming = false;
+        }
+    }
+
+
+
+    private void PickNewRangedTarget()
+    {
+        float targetDistance =
+            (rangedSettings.rangedMinDistance + rangedSettings.rangedMaxDistance) * 0.5f;
+
+        rangedTargetPosition = new Vector3(
+            player.position.x + rangedSide * targetDistance,
+            transform.position.y,
+            player.position.z
+        );
+
+        rangedRepositionTimer = Random.Range(0.8f, 1.5f);
+    }
+
+
     private Vector3 CalculateAvoidance()
     {
         Vector3 avoidance = Vector3.zero;
@@ -711,9 +855,9 @@ public class EnemyMovement : MonoBehaviour
         else
         {
             float gravityMultiplier = 1f;
-            if (settings != null && settings.useGravityScaling && verticalVelocity < 0f)
+            if (meleeSettings != null && meleeSettings.useGravityScaling && verticalVelocity < 0f)
             {
-                gravityMultiplier = settings.fallGravityMultiplier;
+                gravityMultiplier = meleeSettings.fallGravityMultiplier;
             }
             verticalVelocity -= Gravity * gravityMultiplier * Time.deltaTime;
         }

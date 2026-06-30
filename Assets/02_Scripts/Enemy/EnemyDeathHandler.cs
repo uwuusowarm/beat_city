@@ -20,7 +20,7 @@ public class EnemyDeathHandler : MonoBehaviour
         
         if (settings == null && _movement != null)
         {
-            settings = _movement.settings;
+            settings = _movement.meleeSettings;
         }
 
         if (_health != null) _health.OnDeath += HandleDeath;
