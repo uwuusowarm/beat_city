@@ -1,5 +1,18 @@
 using UnityEngine;
 
+public enum JuggleType
+{
+    None,
+    
+    Launcher,
+    
+    Juggle,
+    
+    Spike,
+    
+    OTG
+}
+
 public struct HitData
 {
     public int Damage;
@@ -9,4 +22,13 @@ public struct HitData
     public float HitStunDuration;
     public bool ShouldKnockdown;
     public GameObject Source;
+    public Vector3 HitPosition;
+
+    public JuggleType JuggleType;
+    
+    public bool IsLauncher;
+    
+    public bool IgnoreJuggleDecay;
+    
+    public bool SuppressHitAnimation;
 }

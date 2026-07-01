@@ -4,31 +4,53 @@ using System.Collections;
 [RequireComponent(typeof(CharacterController))]
 public class EnemyMovement : MonoBehaviour
 {
-    [Header("Movement")]
-    public float moveSpeed = 3f;
-    public float stopDistance = 1.5f;
-    [SerializeField] private float gravity = 20f;
+    [Header("Settings")]
+    public EnemySettings meleeSettings;
+    public RangedEnemySettings rangedSettings;
 
     [Header("Visuals")]
     public Transform characterModel;
     [SerializeField] private Animator animator;
+    
+    public EnemyState CurrentState { get; private set; } = EnemyState.Grounded;
+    
+    public bool IsStunned => CurrentState == EnemyState.HitStun || 
+                             CurrentState == EnemyState.Knockdown || 
+                             CurrentState == EnemyState.StandingUp;
+    
 
-    [Header("Distances")]
-    public float attackDistance = 1.5f;
-    //public float flankDistance = 3.5f;
+    public bool CanAct => CurrentState == EnemyState.Grounded || CurrentState == EnemyState.HitStun;
+    
+    public bool IsInThrowState 
+    { 
+        get => CurrentState == EnemyState.Launched || CurrentState == EnemyState.Airborne || CurrentState == EnemyState.Grabbed;
+        set 
+        {
+            if (value)
+            {
+                if (CurrentState == EnemyState.Grounded || CurrentState == EnemyState.HitStun)
+                    SetState(EnemyState.Launched);
+            }
+            else if (CurrentState == EnemyState.Launched || CurrentState == EnemyState.Airborne)
+            {
+                SetState(EnemyState.Grounded);
+            }
+        }
+    }
 
-    [Header("AI Tactics")]
-    public float minRepositionTime = 1.0f;
-    public float maxRepositionTime = 3.0f;
+    private int rangedSide = 1;
+    private float rangedShootTimer;
 
-    [Header("Combat State")]
-    public float comboHitStun = 0.5f;
-    public float kickStunDuration = 1.5f;
-    [SerializeField] private float standUpDelay = 1.0f;
-    [SerializeField] private float maxJugglingVelocity = 10f;
-    [SerializeField] private float maxIncomingJugglingForce = 3f;
-    public bool IsStunned => hitStunTimer > 0f || _isStandingUp || _isLyingDown;
-
+    private int _juggleCount;
+    private float _juggleDecayMultiplier = 1f;
+    
+    private bool _isBeingThrown;
+    public bool IsBeingThrown => _isBeingThrown;
+    
+    private bool _wasThrownSkipReset;
+    
+    private float _groundYPosition;
+    
     private Transform player;
     private float tacticTimer;
     private bool isFlanking;
@@ -39,18 +61,48 @@ public class EnemyMovement : MonoBehaviour
     private CharacterController controller;
     private float verticalVelocity;
     private float hitStunTimer;
-    private float _lieDownTimer;
-    private bool _isStandingUp;
-    private bool _isLyingDown;
-    private bool _shouldLieDown;
+    private float _stateTimer;
+    private float _wobblePhase;
     private Vector3 externalForce;
     public Vector3 ExternalForce { get => externalForce; set => externalForce = value; }
     private float horizontalDrag = 5f;
 
-    public bool IsInThrowState { get; set; }
-    
+    private Vector3 rangedTargetPosition;
+    private float rangedRepositionTimer;
+    private bool isAiming;
+    private float rangedAimTimer;
+    private float rangedDodgeTimer;
+    private float rangedDodgeDirection;
+    private float rangedRecoveryTimer;
+
     private Health _health;
     private EnemyCombat _combat;
+    
+    public float moveSpeed => meleeSettings != null ? meleeSettings.moveSpeed : 3f;
+    private float StopDistance => meleeSettings != null ? meleeSettings.stopDistance : 1.5f;
+    public float attackDistance => meleeSettings != null ? meleeSettings.attackDistance : 1.5f;
+    
+    public float minRepositionTime => meleeSettings != null ? meleeSettings.minRepositionTime : 1.0f;
+    public float maxRepositionTime => meleeSettings != null ? meleeSettings.maxRepositionTime : 3.0f;
+    
+    public float comboHitStun => meleeSettings != null ? meleeSettings.comboHitStun : 0.5f;
+    public float kickStunDuration => meleeSettings != null ? meleeSettings.kickStunDuration : 1.5f;
+    
+    private float Gravity => meleeSettings != null ? meleeSettings.baseGravity : 20f;
+    private float MaxJugglingVelocity => meleeSettings != null ? meleeSettings.maxJugglingVelocity : 15f;
+    private float MaxJuggleHeight => meleeSettings != null ? meleeSettings.maxJuggleHeight : 4f;
+    private float LaunchThreshold => meleeSettings != null ? meleeSettings.launchThreshold : 3.5f;
+    private float JuggleFalloff => meleeSettings != null ? meleeSettings.juggleFalloffPerHit : 0.15f;
+    private float JuggleMinScale => meleeSettings != null ? meleeSettings.juggleMinScale : 0.30f;
+    private int MaxJuggleCount => meleeSettings != null ? meleeSettings.maxJuggleCount : 10;
+    private float KnockdownDuration => meleeSettings != null ? meleeSettings.knockdownDuration : 1.0f;
+    private float StandUpDuration => meleeSettings != null ? meleeSettings.standUpDuration : 1.0f;
+    private float GroundCheckDistance => meleeSettings != null ? meleeSettings.groundCheckDistance : 0.2f;
+    private LayerMask GroundLayer => meleeSettings != null ? meleeSettings.groundLayer : LayerMask.GetMask("Default");
+    private float FallWobbleSpeed => meleeSettings != null ? meleeSettings.fallWobbleSpeed : 4f;
+    private float FallWobbleIntensity => meleeSettings != null ? meleeSettings.fallWobbleIntensity : 0.02f;
+    private float FallHoldPoint => meleeSettings != null ? meleeSettings.fallAnimationHoldPoint : 0.2f;
+    private float DespawnDelay => meleeSettings != null ? meleeSettings.despawnDelay : 3.0f;
 
     private void Start()
     {
@@ -66,14 +118,165 @@ public class EnemyMovement : MonoBehaviour
 
         if (animator == null)
             animator = GetComponentInChildren<Animator>();
+        
+        _groundYPosition = transform.position.y;
 
-        PickNewTactic();
+        if (meleeSettings == null && rangedSettings == null)
+        {
+            meleeSettings = Resources.Load<EnemySettings>("EnemySettings");
+            if (meleeSettings == null)
+                Debug.LogWarning("[EnemyMovement] No EnemySettings assigned or found in Resources folder.");
+        }
+
+        if (rangedSettings == null)
+        {
+            PickNewTactic();
+        }
 
         if (TryGetComponent<Health>(out var health))
         {
             health.OnHit += OnHit;
         }
+
+        
+
+        if (rangedSettings != null)
+        {
+            rangedSide = transform.position.x < player.position.x ? -1 : 1;
+            PickNewRangedTarget();
+            rangedShootTimer = Random.Range(rangedSettings.rangedShootCooldownMin, rangedSettings.rangedShootCooldownMax);
+        }
     }
+    
+    private void OnDestroy()
+    {
+        if (TryGetComponent<Health>(out var health))
+        {
+            health.OnHit -= OnHit;
+        }
+    }
+    
+    public void SetState(EnemyState newState)
+    {
+        if (CurrentState == newState) return;
+        
+        EnemyState previousState = CurrentState;
+        CurrentState = newState;
+        _stateTimer = 0f;
+        
+        Debug.Log($"[EnemyMovement] {gameObject.name} State: {previousState} -> {newState}");
+        
+        switch (newState)
+        {
+            case EnemyState.Grounded:
+                _isBeingThrown = false; 
+                ResetJuggleState();
+                UpdateAnimatorFalling(false);
+                break;
+                
+            case EnemyState.HitStun:
+                UpdateAnimatorFalling(false);
+                break;
+
+            case EnemyState.Launched:
+            case EnemyState.Airborne:
+                UpdateAnimatorFalling(true);
+                break;
+                
+            case EnemyState.Knockdown:
+                _isBeingThrown = false;
+                _wasThrownSkipReset = false;
+                _stateTimer = KnockdownDuration;
+                if (animator != null)
+                {
+
+                    animator.speed = 1f;
+                }
+                break;
+                
+            case EnemyState.StandingUp:
+                _stateTimer = StandUpDuration;
+                if (animator != null)
+                {
+                    animator.speed = 1f; 
+                    UpdateAnimatorFalling(false); 
+                    animator.SetTrigger("StandUp");
+                }
+                break;
+
+            case EnemyState.Grabbed:
+                if (animator != null)
+                {
+                    animator.SetFloat("Speed", 0f);
+                }
+                break;
+
+            case EnemyState.Dead:
+                if (!controller.isGrounded)
+                {
+                    UpdateAnimatorFalling(true);
+                }
+                else
+                {
+                    UpdateAnimatorFalling(false);
+                }
+                _stateTimer = DespawnDelay;
+                break;
+        }
+    }
+
+    private void UpdateAnimatorFalling(bool isFalling)
+    {
+        if (animator == null) return;
+        
+        bool wasFalling = animator.GetBool("IsFalling");
+        
+        Debug.Log($"[EnemyMovement] {gameObject.name} UpdateAnimatorFalling({isFalling}) - wasFalling={wasFalling}, _wasThrownSkipReset={_wasThrownSkipReset}, State={CurrentState}");
+        
+        if (wasFalling != isFalling)
+        {
+            animator.SetBool("IsFalling", isFalling);
+            
+            if (isFalling && !_wasThrownSkipReset)
+            {
+                Debug.Log($"[EnemyMovement] {gameObject.name} RESTARTING FALL ANIMATION from UpdateAnimatorFalling");
+                animator.Play("Fall", 0, 0f);
+            }
+        }
+    }
+    
+    private void ResetJuggleState()
+    {
+        _juggleCount = 0;
+        _juggleDecayMultiplier = 1f;
+        hitStunTimer = 0f;
+        _wasThrownSkipReset = false;
+    }
+    
+    private bool IsGroundedRaycast()
+    {
+        Vector3 origin = transform.position + Vector3.up * 0.1f;
+        return Physics.Raycast(origin, Vector3.down, GroundCheckDistance + 0.1f, GroundLayer) 
+               || controller.isGrounded;
+    }
+    
+    public void StartThrowAnimation()
+    {
+        _isBeingThrown = true;
+        _wasThrownSkipReset = true;
+        
+        UpdateAnimatorFalling(true);
+        _wobblePhase = 0f;
+        
+        Debug.Log($"[EnemyMovement] {gameObject.name} StartThrowAnimation called - Fall animation activated");
+    }
+    
+    public void EndThrowAnimation()
+    {
+        _isBeingThrown = false;
+        Debug.Log($"[EnemyMovement] {gameObject.name} EndThrowAnimation called - Physics resumed");
+    }
+    
 
     public void ApplyImpulse(float knockUpForce, Vector3 knockbackForce, float hitStunReset = 0f, bool forceKnockdown = false)
     {
@@ -84,87 +287,133 @@ public class EnemyMovement : MonoBehaviour
             KnockbackForce = knockbackForce.magnitude,
             HitStunDuration = hitStunReset,
             ShouldKnockdown = forceKnockdown,
-            Damage = 0
+            Damage = 0,
+            JuggleType = forceKnockdown ? JuggleType.Spike : JuggleType.Juggle,
+            IsLauncher = knockUpForce > LaunchThreshold && forceKnockdown == false
         };
         OnHit(data);
     }
 
     private void OnHit(HitData hitData)
     {
-        if (animator != null && !_isLyingDown && !_isStandingUp)
+        if (CurrentState == EnemyState.Knockdown || CurrentState == EnemyState.StandingUp || CurrentState == EnemyState.Dead) return;
+        
+        bool isBeingThrown = CurrentState == EnemyState.Grabbed || IsInThrowState || _isBeingThrown;
+        
+        bool suppressHit = isBeingThrown || hitData.SuppressHitAnimation;
+        if (animator != null && !suppressHit && (CurrentState == EnemyState.Grounded || CurrentState == EnemyState.HitStun))
         {
             animator.SetTrigger("Hit");
         }
 
-        if (_isStandingUp || _isLyingDown)
+        bool wasAirborne = CurrentState == EnemyState.Launched || CurrentState == EnemyState.Airborne || isBeingThrown;
+        bool isGrounded = IsGroundedRaycast();
+        
+        float effectiveKnockUp = CalculateJuggleForce(hitData);
+        
+        if (hitData.ShouldKnockdown || _juggleCount >= MaxJuggleCount)
         {
-             StopAllCoroutines();
-             _isStandingUp = false;
+            HandleKnockdownHit(hitData, effectiveKnockUp);
         }
-
-        if (hitData.KnockUpForce > 0f || hitData.ShouldKnockdown)
+        else if (hitData.IsLauncher || hitData.JuggleType == JuggleType.Launcher)
         {
-            if (hitData.ShouldKnockdown)
-            {
-                _shouldLieDown = true;
-            }
-
-            bool wasGrounded = controller.isGrounded;
-
-            if (!wasGrounded || IsInThrowState || hitData.ShouldKnockdown)
-            {
-                if (!wasGrounded || hitData.ShouldKnockdown) _shouldLieDown = true; 
-                if (animator != null)
-                {
-                    animator.SetBool("IsFalling", true);
-                }
-                
-                float effectiveForce = hitData.KnockUpForce;
-                if (!hitData.ShouldKnockdown)
-                {
-                    effectiveForce = Mathf.Min(hitData.KnockUpForce, maxIncomingJugglingForce);
-                    float targetVelocity = Mathf.Max(verticalVelocity * 0.2f + effectiveForce, effectiveForce);
-                    verticalVelocity = Mathf.Min(targetVelocity, maxJugglingVelocity);
-                }
-                else
-                {
-                    verticalVelocity = effectiveForce;
-                }
-                
-                if (verticalVelocity > 0) IsInThrowState = true;
-            }
-            else
-            {
-                if (hitData.KnockUpForce > 3.5f) 
-                {
-                    verticalVelocity = hitData.KnockUpForce;
-                    if (animator != null)
-                    {
-                        animator.SetBool("IsFalling", true);
-                    }
-                    _shouldLieDown = true;
-                    IsInThrowState = true; 
-                }
-                else
-                {
-                    verticalVelocity = -0.5f; 
-                }
-            }
+            HandleLauncherHit(hitData, effectiveKnockUp, isGrounded);
         }
-
+        else if (wasAirborne && (effectiveKnockUp > 0.5f || verticalVelocity > 0f))
+        {
+            HandleJuggleHit(hitData, effectiveKnockUp);
+        }
+        else if (effectiveKnockUp > LaunchThreshold)
+        {
+            HandleLauncherHit(hitData, effectiveKnockUp, isGrounded);
+        }
+        else
+        {
+            HandleGroundHit(hitData);
+        }
+        
+        if (hitData.KnockbackForce > 0f && hitData.KnockbackDirection != Vector3.zero)
+        {
+            externalForce = hitData.KnockbackDirection * hitData.KnockbackForce;
+        }
+        
         if (hitData.HitStunDuration > 0f)
         {
             hitStunTimer = Mathf.Max(hitStunTimer, hitData.HitStunDuration);
         }
-
-        if (hitData.KnockbackForce > 0f && hitData.KnockbackDirection != Vector3.zero)
+    }
+    
+    private float CalculateJuggleForce(HitData hitData)
+    {
+        if (hitData.IgnoreJuggleDecay) 
+            return hitData.KnockUpForce;
+            
+        float decay = 1f - (JuggleFalloff * _juggleCount);
+        decay = Mathf.Max(decay, JuggleMinScale);
+        
+        return hitData.KnockUpForce * decay;
+    }
+    
+    private void HandleLauncherHit(HitData hitData, float effectiveForce, bool wasGrounded)
+    {
+        _juggleCount = 1;
+        _juggleDecayMultiplier = 1f;
+        
+        verticalVelocity = Mathf.Min(effectiveForce, MaxJugglingVelocity);
+        SetState(EnemyState.Launched);
+        
+        Debug.Log($"[EnemyMovement] {gameObject.name} LAUNCHED! Force: {effectiveForce:F2}, Velocity: {verticalVelocity:F2}");
+    }
+    
+    private void HandleJuggleHit(HitData hitData, float effectiveForce)
+    {
+        _juggleCount++;
+        
+        float currentHeight = transform.position.y - _groundYPosition;
+        float heightRatio = Mathf.Clamp01(currentHeight / MaxJuggleHeight);
+        
+        float heightScale = Mathf.Lerp(1f, 0.2f, heightRatio);
+        float scaledForce = effectiveForce * heightScale;
+        
+        float velocityBonus = verticalVelocity > 0 ? verticalVelocity * 0.2f : 0f;
+        float targetVelocity = scaledForce + velocityBonus;
+        verticalVelocity = Mathf.Min(targetVelocity, MaxJugglingVelocity);
+        
+        if (verticalVelocity > 0.5f)
+            SetState(EnemyState.Launched);
+        else if (verticalVelocity > 0)
+            SetState(EnemyState.Airborne);
+        else
+            SetState(EnemyState.Airborne);
+        
+        Debug.Log($"[EnemyMovement] {gameObject.name} JUGGLED! Count: {_juggleCount}, Height: {currentHeight:F2}/{MaxJuggleHeight:F2}, Velocity: {verticalVelocity:F2}");
+    }
+    
+    private void HandleKnockdownHit(HitData hitData, float effectiveForce)
+    {
+        if (hitData.JuggleType == JuggleType.Spike)
         {
-            externalForce = hitData.KnockbackDirection * hitData.KnockbackForce;
-            if (hitData.KnockbackForce > moveSpeed * 1.5f)
-            {
-                IsInThrowState = true;
-                hitStunTimer = Mathf.Max(hitStunTimer, kickStunDuration);
-            }
+            verticalVelocity = -effectiveForce; 
+        }
+        else
+        {
+            verticalVelocity = effectiveForce;
+        }
+        
+        SetState(EnemyState.Airborne);
+        _juggleCount = MaxJuggleCount;
+        
+        Debug.Log($"[EnemyMovement] {gameObject.name} KNOCKDOWN incoming!");
+    }
+    
+    private void HandleGroundHit(HitData hitData)
+    {
+        verticalVelocity = -0.5f;
+        SetState(EnemyState.HitStun);
+        
+        if (hitData.KnockbackForce > moveSpeed * 1.5f)
+        {
+            hitStunTimer = Mathf.Max(hitStunTimer, kickStunDuration);
         }
     }
 
@@ -176,108 +425,243 @@ public class EnemyMovement : MonoBehaviour
     private void Update()
     {
         if (player == null) return;
-        if (_health != null && _health.Current <= 0)
+        if (_health != null && _health.Current <= 0 && CurrentState != EnemyState.Dead)
         {
             if (animator != null) animator.SetFloat("Speed", 0f);
             return;
         }
 
-        bool grounded = controller.isGrounded;
-
-        if (hitStunTimer > 0f || !grounded || _isLyingDown || _isStandingUp || IsInThrowState)
+        if (hitStunTimer > 0f) hitStunTimer -= Time.deltaTime;
+        if (_stateTimer > 0f) _stateTimer -= Time.deltaTime;
+        
+        switch (CurrentState)
         {
-            if (hitStunTimer > 0f) hitStunTimer -= Time.deltaTime;
-            
-            if ((grounded || controller.velocity.y == 0) && verticalVelocity <= 0f)
+            case EnemyState.Grounded:
+                UpdateGroundedState();
+                break;
+                
+            case EnemyState.HitStun:
+                UpdateHitStunState();
+                break;
+                
+            case EnemyState.Launched:
+                UpdateLaunchedState();
+                break;
+                
+            case EnemyState.Airborne:
+                UpdateAirborneState();
+                break;
+                
+            case EnemyState.Knockdown:
+                UpdateKnockdownState();
+                break;
+                
+            case EnemyState.StandingUp:
+                UpdateStandingUpState();
+                break;
+                
+            case EnemyState.Grabbed:
+                if (animator != null) animator.SetFloat("Speed", 0f);
+                break;
+
+            case EnemyState.Dead:
+                ApplyGravityAndMove(Vector3.zero);
+                break;
+        }
+    }
+
+    #region State Updates
+    
+    private void UpdateGroundedState()
+    {
+        if (rangedSettings != null)
+        {
+            MoveRanged();
+        }
+        else
+        {
+            tacticTimer -= Time.deltaTime;
+
+            if (!isFlanking && BeatEmUpDirector.Instance != null && !BeatEmUpDirector.Instance.HasToken(_combat))
             {
-                if (IsInThrowState || _shouldLieDown || (animator != null && animator.GetBool("IsFalling")))
+                ForceRecalculateTactic();
+            }
+
+            if (tacticTimer <= 0f)
+            {
+                PickNewTactic();
+            }
+
+            MoveBasedOnTactic();
+        }
+
+        LookAtPlayer();
+    }
+    
+    private void UpdateHitStunState()
+    {
+        ApplyGravityAndMove(Vector3.zero);
+        if (animator != null) animator.SetFloat("Speed", 0f);
+        
+        if (hitStunTimer <= 0f)
+        {
+            SetState(EnemyState.Grounded);
+        }
+    }
+    
+    private void UpdateLaunchedState()
+    {
+        if (!_isBeingThrown)
+        {
+            float currentHeight = transform.position.y - _groundYPosition;
+            if (currentHeight >= MaxJuggleHeight && verticalVelocity > 0f)
+            {
+                verticalVelocity = 0f; 
+            }
+            
+            ApplyGravityAndMove(Vector3.zero);
+        }
+        UpdateJugglingAnimation();
+        
+        if (!_isBeingThrown && verticalVelocity <= 0f)
+        {
+            SetState(EnemyState.Airborne);
+        }
+    }
+    
+    private void UpdateAirborneState()
+    {
+        if (!_isBeingThrown)
+        {
+            ApplyGravityAndMove(Vector3.zero);
+        }
+        UpdateJugglingAnimation();
+        
+        if (!_isBeingThrown && IsGroundedRaycast() && verticalVelocity <= 0f)
+        {
+            OnLanded();
+        }
+    }
+
+    private void UpdateJugglingAnimation()
+    {
+        if (animator == null || CurrentState == EnemyState.Dead) return;
+
+        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+        bool isFallAnimation = stateInfo.IsName("Fall"); 
+
+        if (isFallAnimation)
+        {
+            if (!IsGroundedRaycast())
+            {
+                if (_wasThrownSkipReset)
                 {
-                    if (!_isLyingDown && !_isStandingUp)
+                    animator.speed = 1f;
+                    return;
+                }
+                
+                if (stateInfo.normalizedTime >= FallHoldPoint)
+                {
+                    _wobblePhase += Time.deltaTime * FallWobbleSpeed;
+                    
+                    float wobbleSpeed = Mathf.Cos(_wobblePhase) * FallWobbleIntensity;
+
+                    float drift = stateInfo.normalizedTime - FallHoldPoint;
+                    
+                    if (drift > 0.05f)
                     {
-                        if (hitStunTimer <= 0f || _shouldLieDown)
-                        {
-                            Debug.Log($"[EnemyMovement] {gameObject.name} lying down. IsInThrowState: {IsInThrowState}, _shouldLieDown: {_shouldLieDown}");
-                            _isLyingDown = true;
-                            _shouldLieDown = false;
-                            _lieDownTimer = standUpDelay;
-                            if (animator != null)
-                            {
-                                animator.SetBool("IsFalling", true); 
-                            }
-                        }
+                        Debug.Log($"[EnemyMovement] {gameObject.name} RESETTING FALL to HoldPoint in UpdateJugglingAnimation - drift={drift:F3}");
+                        animator.Play("Fall", 0, FallHoldPoint);
+                        animator.speed = 0f;
+                        _wobblePhase = 0f;
+                    }
+                    else
+                    {
+                        wobbleSpeed -= drift * 5.0f; 
+                        animator.speed = wobbleSpeed;
                     }
                 }
                 else
                 {
-                    if (hitStunTimer <= 0f && IsInThrowState && !_isLyingDown && !_isStandingUp)
-                    {
-                        Debug.Log($"[EnemyMovement] {gameObject.name} fallback standup. Resetting IsInThrowState.");
-                        IsInThrowState = false;
-                    }
-                }
-                
-                if (hitStunTimer <= 0f && grounded && animator != null && animator.GetBool("IsFalling") && !_isLyingDown && !_isStandingUp && !IsInThrowState)
-                {
-                     animator.SetBool("IsFalling", false);
+                    animator.speed = 1f;
+                    _wobblePhase = 0f; 
                 }
             }
-
-            if (!grounded && verticalVelocity > 0f)
+            else
             {
-                _isLyingDown = false;
-                _isStandingUp = false;
+                animator.speed = 1f;
             }
-
-            if (_isLyingDown)
-            {
-                _lieDownTimer -= Time.deltaTime;
-                if (_lieDownTimer <= 0f)
-                {
-                    _isLyingDown = false;
-                    _isStandingUp = true;
-                    if (animator != null)
-                    {
-                        animator.SetBool("IsFalling", false); 
-                        animator.SetTrigger("StandUp");
-                    }
-                    Debug.Log($"[EnemyMovement] {gameObject.name} starting FinishStandUp Coroutine.");
-                    StartCoroutine(FinishStandUp());
-                }
-            }
-
-            ApplyGravityAndMove(Vector3.zero);
-            if (animator != null) animator.SetFloat("Speed", 0f);
-            return;
         }
-
-        tacticTimer -= Time.deltaTime;
-
-        if (!isFlanking && BeatEmUpDirector.Instance != null && !BeatEmUpDirector.Instance.HasToken(_combat))
+        else
         {
-            ForceRecalculateTactic();
+            animator.speed = 1f;
+            if (animator.GetFloat("Speed") != 0) animator.SetFloat("Speed", 0f);
         }
-
-        if (tacticTimer <= 0f)
-        {
-            PickNewTactic();
-        }
-
-        MoveBasedOnTactic();
-        LookAtPlayer();
     }
-
-    private IEnumerator FinishStandUp()
+    
+    private void UpdateKnockdownState()
     {
-        yield return new WaitForSeconds(1.0f); 
-        _isStandingUp = false;
-        IsInThrowState = false;
-        _shouldLieDown = false; 
+        ApplyGravityAndMove(Vector3.zero);
+    
+        if (animator != null) 
+        {
+            animator.SetFloat("Speed", 0f);
+        
+            AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+        
+            if (stateInfo.IsName("Fall"))
+            {
+                if (stateInfo.normalizedTime >= 0.95f)
+                {
+                    animator.Play("Fall", 0, 0.99f);
+                    animator.speed = 0f;
+                }
+            }
+        }
+    
+        if (_stateTimer <= 0f)
+        {
+            SetState(EnemyState.StandingUp);
+        }
+    }
+    
+    private void UpdateStandingUpState()
+    {
+        ApplyGravityAndMove(Vector3.zero);
+        if (animator != null) animator.SetFloat("Speed", 0f);
+        
+        if (_stateTimer <= 0f)
+        {
+            SetState(EnemyState.Grounded);
+            Debug.Log($"[EnemyMovement] {gameObject.name} finished standing up.");
+        }
+    }
+    
+    private void OnLanded()
+    {
+        Debug.Log($"[EnemyMovement] {gameObject.name} LANDED! JuggleCount: {_juggleCount}, _wasThrownSkipReset={_wasThrownSkipReset}");
+        
+        _groundYPosition = transform.position.y;
+        
         if (animator != null)
         {
-            animator.SetBool("IsFalling", false);
+            if (_wasThrownSkipReset)
+            {
+                animator.Play("Fall", 0, 0.99f);
+                animator.speed = 0f;
+                Debug.Log($"[EnemyMovement] {gameObject.name} Throw landing - snapping to end of Fall animation");
+            }
+            else
+            {
+                animator.speed = 1f;
+            }
         }
-        Debug.Log($"[EnemyMovement] {gameObject.name} finished standing up.");
+
+        SetState(EnemyState.Knockdown);
+        verticalVelocity = -0.5f;
     }
+    
+    #endregion
 
     private void PickNewTactic()
     {
@@ -303,6 +687,7 @@ public class EnemyMovement : MonoBehaviour
 
     private void MoveBasedOnTactic()
     {
+
         Vector3 targetPosition;
 
         if (isFlanking)
@@ -345,6 +730,117 @@ public class EnemyMovement : MonoBehaviour
         }
     }
 
+    private void MoveRanged()
+    {
+        if (rangedRecoveryTimer > 0f)
+        {
+            rangedRecoveryTimer -= Time.deltaTime;
+
+            ApplyGravityAndMove(Vector3.zero);
+
+            if (animator != null)
+                animator.SetFloat("Speed", 0f);
+
+            return;
+        }
+
+        if (rangedDodgeTimer > 0f)
+        {
+            rangedDodgeTimer -= Time.deltaTime;
+
+            Vector3 dodgeMove = new Vector3(0f, 0f, rangedDodgeDirection) * moveSpeed;
+
+            ApplyGravityAndMove(dodgeMove);
+
+            if (animator != null)
+                animator.SetFloat("Speed", 1f);
+
+            if (rangedDodgeTimer <= 0f)
+            {
+                PickNewRangedTarget();
+            }
+
+            return;
+        }
+
+        rangedRepositionTimer -= Time.deltaTime;
+
+        if (rangedRepositionTimer <= 0f)
+        {
+            PickNewRangedTarget();
+        }
+
+        Vector3 pos = transform.position;
+
+        Vector3 direction = rangedTargetPosition - pos;
+        direction.y = 0f;
+
+        Vector3 moveVelocity = Vector3.zero;
+
+        if (direction.magnitude > 0.2f)
+        {
+            moveVelocity = direction.normalized * moveSpeed;
+        }
+
+        ApplyGravityAndMove(moveVelocity);
+
+        if (animator != null)
+        {
+            animator.SetFloat("Speed", moveVelocity.sqrMagnitude > 0f ? 1f : 0f);
+        }
+
+        float zDistance = Mathf.Abs(player.position.z - transform.position.z);
+        bool isAlignedOnZ = zDistance <= 0.3f;
+
+        if (isAlignedOnZ)
+        {
+            if (!isAiming)
+            {
+                isAiming = true;
+                rangedAimTimer = Random.Range(1f, 2f);
+            }
+
+            rangedAimTimer -= Time.deltaTime;
+
+            if (rangedAimTimer <= 0f)
+            {
+                if (_combat != null)
+                {
+                    _combat.TryRangedAttack(rangedSettings);
+                }
+
+                isAiming = false;
+                rangedAimTimer = 0f;
+
+                rangedRecoveryTimer = 1f;
+
+                rangedDodgeTimer = Random.Range(0.8f, 1.0f);
+                rangedDodgeDirection = Random.value < 0.5f ? -1f : 1f;
+            }
+        }
+        else
+        {
+            isAiming = false;
+        }
+    }
+
+
+
+    private void PickNewRangedTarget()
+    {
+        float targetDistance =
+            (rangedSettings.rangedMinDistance + rangedSettings.rangedMaxDistance) * 0.5f;
+
+        rangedTargetPosition = new Vector3(
+            player.position.x + rangedSide * targetDistance,
+            transform.position.y,
+            player.position.z
+        );
+
+        rangedRepositionTimer = Random.Range(0.8f, 1.5f);
+    }
+
+
     private Vector3 CalculateAvoidance()
     {
         Vector3 avoidance = Vector3.zero;
@@ -382,7 +878,12 @@ public class EnemyMovement : MonoBehaviour
         }
         else
         {
-            verticalVelocity -= gravity * Time.deltaTime;
+            float gravityMultiplier = 1f;
+            if (meleeSettings != null && meleeSettings.useGravityScaling && verticalVelocity < 0f)
+            {
+                gravityMultiplier = meleeSettings.fallGravityMultiplier;
+            }
+            verticalVelocity -= Gravity * gravityMultiplier * Time.deltaTime;
         }
 
         Vector3 totalMovement = moveVelocity + externalForce;
@@ -390,14 +891,14 @@ public class EnemyMovement : MonoBehaviour
         
         controller.Move(totalMovement * Time.deltaTime);
 
-            if (externalForce.magnitude > 0.01f)
-            {
-                externalForce -= externalForce * horizontalDrag * Time.deltaTime;
-            }
-            else
-            {
-                externalForce = Vector3.zero;
-            }
+        if (externalForce.magnitude > 0.01f)
+        {
+            externalForce -= externalForce * (horizontalDrag * Time.deltaTime);
+        }
+        else
+        {
+            externalForce = Vector3.zero;
+        }
     }
 
     private void LookAtPlayer()
@@ -408,20 +909,4 @@ public class EnemyMovement : MonoBehaviour
         
         characterModel.rotation = Quaternion.LookRotation(strictDirection);
     }
-
-    /*private void MoveTowardsPlayer()
-    {
-        if (_target == null) return;
-
-        float dist = Vector3.Distance(_target.position, transform.position);
-        if (dist <= stopDistance) return;
-
-        var dir = (_target.position - transform.position).normalized;
-        dir.y = 0f;
-
-        transform.position = Vector3.MoveTowards(transform.position, _target.position, moveSpeed * Time.deltaTime);
-
-        if (characterModel != null && dir != Vector3.zero)
-            characterModel.rotation = Quaternion.LookRotation(new Vector3(dir.x, 0f, dir.z));
-    }*/
 }

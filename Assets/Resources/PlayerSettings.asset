@@ -13,21 +13,17 @@ MonoBehaviour:
   m_Name: PlayerSettings
   m_EditorClassIdentifier: Assembly-CSharp::PlayerSettings
   walkSpeed: 3
-  runSpeed: 8
   jumpForce: 0
   gravity: 20
-  dashSpeed: 0
-  dashDuration: 0
-  attackActiveTime: 0.1
   punchDamage: 10
   punchBaseKnockback: 0
-  punchFinisherKnockup: 5
+  punchFinisherKnockup: 7
   kickDamage: 15
   kickBaseKnockback: 0
   kickFinisherKnockback: 6
   maxComboSteps: 3
   comboResetTime: 1
-  jugglingForce: 3
+  jugglingForce: 4
   grappleActiveTime: 0.2
   grappleDamage: 15
   throwDistance: 2
