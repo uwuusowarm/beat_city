@@ -345,14 +345,13 @@ public class PlayerGrapple : MonoBehaviour
 
             if (cc != null) cc.enabled = true;
 
-        if (em != null)
-        {
-            if (!interrupted)
+            if (em != null)
             {
-                em.SetState(EnemyState.Airborne);
+                if (!interrupted)
+                {
+                    em.SetState(EnemyState.Airborne);
+                }
             }
-            em.IsInThrowState = false;
-        }
         }
 
         _currentProjectile = null;

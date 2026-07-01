@@ -1283,16 +1283,26 @@ MonoBehaviour:
   upgrades:
   - Name: Damage Up
     Cost: 50
+    CostMod: 0
+    MaxLevel: 0
     Button: {fileID: 192660054}
     Label: {fileID: 930133834}
+    Level: 0
   - Name: Speed Up
     Cost: 100
+    CostMod: 0
+    MaxLevel: 0
     Button: {fileID: 896977404}
     Label: {fileID: 960031928}
+    Level: 0
   - Name: Health Up
     Cost: 25
+    CostMod: 0
+    MaxLevel: 0
     Button: {fileID: 731051192}
     Label: {fileID: 971471970}
+    Level: 0
+  health: {fileID: 0}
 --- !u!114 &302812050
 MonoBehaviour:
   m_ObjectHideFlags: 0
