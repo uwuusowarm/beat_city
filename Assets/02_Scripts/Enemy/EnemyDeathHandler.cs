@@ -4,12 +4,32 @@ using UnityEngine;
 [RequireComponent(typeof(Health))]
 public class EnemyDeathHandler : MonoBehaviour
 {
-    [SerializeField] private float despawnDelay = 0.5f;
+    [SerializeField] private EnemySettings settings;
     [SerializeField] private int coinReward = 10;
 
-    private void Awake()
+    public EnemySettings Settings { get => settings; set => settings = value; }
+
+    private EnemyMovement _movement;
+    private Health _health;
+    private Animator _animator;
+
+    private void Start()
     {
-        GetComponent<Health>().OnDeath += HandleDeath;
+        _health = GetComponent<Health>();
+        _movement = GetComponent<EnemyMovement>();
+        _animator = GetComponentInChildren<Animator>();
+
+        if (settings == null && _movement != null)
+        {
+            settings = _movement.meleeSettings;
+        }
+
+        if (_health != null) _health.OnDeath += HandleDeath;
+    }
+
+    private void OnDestroy()
+    {
+        if (_health != null) _health.OnDeath -= HandleDeath;
     }
 
     private void HandleDeath()
@@ -19,9 +39,15 @@ public class EnemyDeathHandler : MonoBehaviour
             PlayerStats.Instance.AddCoins(coinReward);
         }
         
-        foreach (var r in GetComponentsInChildren<Renderer>())
+        if (_movement != null)
         {
-            r.enabled = false;
+            _movement.SetState(EnemyState.Dead);
+        }
+
+        if (_animator != null)
+        {
+            _animator.SetBool("IsFalling", true);
+            _animator.speed = 1f;
         }
 
         foreach (var c in GetComponentsInChildren<Collider>())
@@ -29,12 +55,14 @@ public class EnemyDeathHandler : MonoBehaviour
             c.enabled = false;
         }
 
-        StartCoroutine(Despawn());
+        float delay = settings != null ? settings.despawnDelay : 3.0f;
+        StartCoroutine(Despawn(delay));
     }
 
-    private IEnumerator Despawn()
+    private IEnumerator Despawn(float delay)
     {
-        yield return new WaitForSeconds(despawnDelay);
+        yield return new WaitForSeconds(delay);
+
         Destroy(gameObject);
     }
 }

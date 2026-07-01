@@ -5,6 +5,7 @@ public class Health : MonoBehaviour, IDamageable
 {
     [SerializeField] private int maxHealth;
     [SerializeField] private UIHealth uiHealth;
+    [SerializeField] private GameObject hitVfxPrefab;
 
     public int Current { get; private set; }
     public int Max
@@ -39,6 +40,7 @@ public class Health : MonoBehaviour, IDamageable
         if (Current <= 0) return;
 
         Current = Mathf.Max(0, Current - hitData.Damage);
+        SpawnHitVfx(hitData);
         OnHit?.Invoke(hitData);
 
         if (Current <= 0)
@@ -61,5 +63,12 @@ public class Health : MonoBehaviour, IDamageable
     {
         maxHealth = newMax;
         Current = newMax;
+    }
+
+    private void SpawnHitVfx(HitData hitData)
+    {
+        if (hitVfxPrefab == null) return;
+
+        GameObject vfx = Instantiate(hitVfxPrefab, hitData.HitPosition, Quaternion.identity);
     }
 }
