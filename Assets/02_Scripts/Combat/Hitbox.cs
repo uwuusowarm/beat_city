@@ -103,7 +103,7 @@ public class Hitbox : MonoBehaviour
                 {
                     Damage = finalDamage,
                     KnockbackDirection = knockbackDir,
-                    KnockbackForce = effectiveKnockUp,
+                    KnockbackForce = knockbackForce,
                     KnockUpForce = knockUpForce,
                     HitStunDuration = hitStunDuration,
                     ShouldKnockdown = shouldKnockdown,
