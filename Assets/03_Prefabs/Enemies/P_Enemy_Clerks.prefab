@@ -53,6 +53,7 @@ GameObject:
   - component: {fileID: 1090865916532907376}
   - component: {fileID: 6656804542050624544}
   - component: {fileID: 7887967780279235466}
+  - component: {fileID: 6614944387370831897}
   m_Layer: 0
   m_Name: Enemy_Clerk_Green
   m_TagString: Enemy
@@ -90,7 +91,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Health
   maxHealth: 70
   uiHealth: {fileID: 0}
-  hitVfxPrefab: {fileID: 8782009059513614302, guid: 171dda363e9efd94ca9bc63e38ca9658, type: 3}
 --- !u!54 &2898574131041051538
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -149,10 +149,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a1f2d8570f90394783959550708db5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
-  meleeSettings: {fileID: 0}
-  rangedSettings: {fileID: 0}
+  moveSpeed: 3
+  stopDistance: 1.5
+  gravity: 16
   characterModel: {fileID: 1385330487943477218}
   animator: {fileID: 4384789697713157892}
+  attackDistance: 1.5
+  minRepositionTime: 1
+  maxRepositionTime: 3
+  comboHitStun: 1
+  kickStunDuration: 1.5
+  standUpDelay: 1
+  maxJugglingVelocity: 10
+  maxIncomingJugglingForce: 3
 --- !u!114 &4035490235511647781
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -165,7 +174,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e381a221fdc82d84c957fc1b981a9dc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyDeathHandler
-  settings: {fileID: 0}
+  despawnDelay: 0.5
+  coinReward: 10
 --- !u!143 &6230549841718577859
 CharacterController:
   m_ObjectHideFlags: 0
@@ -205,6 +215,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyCombat
   attackDamage: 10
   attackCooldown: 1.5
+  attackRange: 2
   knockbackForce: 5
   hitStunDuration: 0.5
   telegraphDuration: 0.35
@@ -263,6 +274,21 @@ MonoBehaviour:
   owner: {fileID: 2336674374545229697}
   size: {x: 1, y: 2, z: 1}
   offset: {x: 0, y: 0, z: 0}
+--- !u!114 &6614944387370831897
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2336674374545229697}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd86fddc02b242f4c9a43e6f705c3a8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyScaler
+  metersPerDifficultyStep: 60
+  hpIncreasePerStep: 0.2
+  damageIncreasePerStep: 0.15
 --- !u!1 &4655223023946547876
 GameObject:
   m_ObjectHideFlags: 0
@@ -282,6 +308,7 @@ GameObject:
   - component: {fileID: 2764346044753830265}
   - component: {fileID: 2225368458752613558}
   - component: {fileID: 1781233701951839861}
+  - component: {fileID: 8175133941580297914}
   m_Layer: 0
   m_Name: Enemy_Clerk_Purple
   m_TagString: Enemy
@@ -319,7 +346,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Health
   maxHealth: 70
   uiHealth: {fileID: 0}
-  hitVfxPrefab: {fileID: 8782009059513614302, guid: 171dda363e9efd94ca9bc63e38ca9658, type: 3}
 --- !u!54 &2824570313365789318
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -378,10 +404,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a1f2d8570f90394783959550708db5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
-  meleeSettings: {fileID: 0}
-  rangedSettings: {fileID: 0}
+  moveSpeed: 3
+  stopDistance: 1.5
+  gravity: 16
   characterModel: {fileID: 3221350716742140775}
   animator: {fileID: 7051785022574258045}
+  attackDistance: 1.5
+  minRepositionTime: 1
+  maxRepositionTime: 3
+  comboHitStun: 1
+  kickStunDuration: 1.5
+  standUpDelay: 1
+  maxJugglingVelocity: 10
+  maxIncomingJugglingForce: 3
 --- !u!114 &6333785016193006451
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -394,7 +429,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e381a221fdc82d84c957fc1b981a9dc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyDeathHandler
-  settings: {fileID: 0}
+  despawnDelay: 0.5
+  coinReward: 10
 --- !u!143 &2213263406245777000
 CharacterController:
   m_ObjectHideFlags: 0
@@ -434,6 +470,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyCombat
   attackDamage: 10
   attackCooldown: 1.5
+  attackRange: 2
   knockbackForce: 5
   hitStunDuration: 0.5
   telegraphDuration: 0.35
@@ -492,6 +529,21 @@ MonoBehaviour:
   owner: {fileID: 4655223023946547876}
   size: {x: 1, y: 2, z: 1}
   offset: {x: 0, y: 0, z: 0}
+--- !u!114 &8175133941580297914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4655223023946547876}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd86fddc02b242f4c9a43e6f705c3a8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyScaler
+  metersPerDifficultyStep: 60
+  hpIncreasePerStep: 0.2
+  damageIncreasePerStep: 0.15
 --- !u!1 &6021690092030721686
 GameObject:
   m_ObjectHideFlags: 0
@@ -511,6 +563,7 @@ GameObject:
   - component: {fileID: 7232115894334072915}
   - component: {fileID: 4861793013207294915}
   - component: {fileID: 8970979055086758525}
+  - component: {fileID: 2230627666308087388}
   m_Layer: 0
   m_Name: Enemy_Clerk_Red
   m_TagString: Enemy
@@ -548,7 +601,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Health
   maxHealth: 70
   uiHealth: {fileID: 0}
-  hitVfxPrefab: {fileID: 8782009059513614302, guid: 171dda363e9efd94ca9bc63e38ca9658, type: 3}
 --- !u!54 &2425524499823450262
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -607,10 +659,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a1f2d8570f90394783959550708db5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
-  meleeSettings: {fileID: 0}
-  rangedSettings: {fileID: 0}
+  moveSpeed: 3
+  stopDistance: 1.5
+  gravity: 16
   characterModel: {fileID: 828330454222476270}
   animator: {fileID: 2007466405565452480}
+  attackDistance: 1.5
+  minRepositionTime: 1
+  maxRepositionTime: 3
+  comboHitStun: 1
+  kickStunDuration: 1.5
+  standUpDelay: 1
+  maxJugglingVelocity: 10
+  maxIncomingJugglingForce: 3
 --- !u!114 &4683629558364105167
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -623,7 +684,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e381a221fdc82d84c957fc1b981a9dc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyDeathHandler
-  settings: {fileID: 0}
+  despawnDelay: 0.5
+  coinReward: 10
 --- !u!143 &5468975762695983989
 CharacterController:
   m_ObjectHideFlags: 0
@@ -663,6 +725,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyCombat
   attackDamage: 10
   attackCooldown: 1.5
+  attackRange: 2
   knockbackForce: 5
   hitStunDuration: 0.5
   telegraphDuration: 0.35
@@ -721,6 +784,21 @@ MonoBehaviour:
   owner: {fileID: 6021690092030721686}
   size: {x: 1, y: 2, z: 1}
   offset: {x: 0, y: 0, z: 0}
+--- !u!114 &2230627666308087388
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6021690092030721686}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd86fddc02b242f4c9a43e6f705c3a8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyScaler
+  metersPerDifficultyStep: 60
+  hpIncreasePerStep: 0.2
+  damageIncreasePerStep: 0.15
 --- !u!1001 &1700393430095983606
 PrefabInstance:
   m_ObjectHideFlags: 0

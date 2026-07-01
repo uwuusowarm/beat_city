@@ -59,6 +59,12 @@ public class Health : MonoBehaviour, IDamageable
         }
     }
 
+    public void SetMaxHealth(int newMax)
+    {
+        maxHealth = newMax;
+        Current = newMax;
+    }
+
     private void SpawnHitVfx(HitData hitData)
     {
         if (hitVfxPrefab == null) return;

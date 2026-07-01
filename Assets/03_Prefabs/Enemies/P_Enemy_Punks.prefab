@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 4508495242492750309}
   - component: {fileID: 2042207875787102780}
   - component: {fileID: 2601342243469647380}
+  - component: {fileID: 2489122815932124649}
   m_Layer: 0
   m_Name: Enemy_Punk_Green
   m_TagString: Enemy
@@ -56,7 +57,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Health
   maxHealth: 70
   uiHealth: {fileID: 0}
-  hitVfxPrefab: {fileID: 8782009059513614302, guid: 171dda363e9efd94ca9bc63e38ca9658, type: 3}
 --- !u!54 &4939497465824974754
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -115,10 +115,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a1f2d8570f90394783959550708db5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
-  meleeSettings: {fileID: 0}
-  rangedSettings: {fileID: 0}
+  moveSpeed: 3
+  stopDistance: 1.5
+  gravity: 16
   characterModel: {fileID: 4303948803056323079}
   animator: {fileID: 3709741302697047497}
+  attackDistance: 1.5
+  minRepositionTime: 1
+  maxRepositionTime: 3
+  comboHitStun: 1
+  kickStunDuration: 1.5
+  standUpDelay: 1
+  maxJugglingVelocity: 10
+  maxIncomingJugglingForce: 3
 --- !u!114 &4373587521813052635
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -131,7 +140,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e381a221fdc82d84c957fc1b981a9dc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyDeathHandler
-  settings: {fileID: 0}
+  despawnDelay: 0.5
+  coinReward: 10
 --- !u!143 &5372729411691060402
 CharacterController:
   m_ObjectHideFlags: 0
@@ -171,6 +181,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyCombat
   attackDamage: 10
   attackCooldown: 1.5
+  attackRange: 2
   knockbackForce: 5
   hitStunDuration: 0.5
   telegraphDuration: 0.35
@@ -229,6 +240,21 @@ MonoBehaviour:
   owner: {fileID: 4258013667167928621}
   size: {x: 1, y: 2, z: 1}
   offset: {x: 0, y: 0, z: 0}
+--- !u!114 &2489122815932124649
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4258013667167928621}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd86fddc02b242f4c9a43e6f705c3a8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyScaler
+  metersPerDifficultyStep: 60
+  hpIncreasePerStep: 0.2
+  damageIncreasePerStep: 0.15
 --- !u!1 &4430258380028963566
 GameObject:
   m_ObjectHideFlags: 0
@@ -248,6 +274,7 @@ GameObject:
   - component: {fileID: 4549447020717631931}
   - component: {fileID: 3020707098641335207}
   - component: {fileID: 7272270672865577764}
+  - component: {fileID: 7399932644628300542}
   m_Layer: 0
   m_Name: Enemy_Punk_Red
   m_TagString: Enemy
@@ -285,7 +312,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Health
   maxHealth: 70
   uiHealth: {fileID: 0}
-  hitVfxPrefab: {fileID: 8782009059513614302, guid: 171dda363e9efd94ca9bc63e38ca9658, type: 3}
 --- !u!54 &4097171099077128104
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -344,10 +370,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a1f2d8570f90394783959550708db5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
-  meleeSettings: {fileID: 0}
-  rangedSettings: {fileID: 0}
+  moveSpeed: 3
+  stopDistance: 1.5
+  gravity: 16
   characterModel: {fileID: 8504875112584385217}
   animator: {fileID: 9164090700482153694}
+  attackDistance: 1.5
+  minRepositionTime: 1
+  maxRepositionTime: 3
+  comboHitStun: 1
+  kickStunDuration: 1.5
+  standUpDelay: 1
+  maxJugglingVelocity: 10
+  maxIncomingJugglingForce: 3
 --- !u!114 &3039677471306222819
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -360,7 +395,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e381a221fdc82d84c957fc1b981a9dc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyDeathHandler
-  settings: {fileID: 0}
+  despawnDelay: 0.5
+  coinReward: 10
 --- !u!143 &743848624109747572
 CharacterController:
   m_ObjectHideFlags: 0
@@ -400,6 +436,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyCombat
   attackDamage: 10
   attackCooldown: 1.5
+  attackRange: 2
   knockbackForce: 5
   hitStunDuration: 0.5
   telegraphDuration: 0.35
@@ -458,6 +495,21 @@ MonoBehaviour:
   owner: {fileID: 4430258380028963566}
   size: {x: 1, y: 2, z: 1}
   offset: {x: 0, y: 0, z: 0}
+--- !u!114 &7399932644628300542
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4430258380028963566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd86fddc02b242f4c9a43e6f705c3a8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyScaler
+  metersPerDifficultyStep: 60
+  hpIncreasePerStep: 0.2
+  damageIncreasePerStep: 0.15
 --- !u!1 &5240710957646681254
 GameObject:
   m_ObjectHideFlags: 0
@@ -477,6 +529,7 @@ GameObject:
   - component: {fileID: 53892746632558273}
   - component: {fileID: 7103302030558446017}
   - component: {fileID: 5839068582402950430}
+  - component: {fileID: 8931456185388617600}
   m_Layer: 0
   m_Name: Enemy_Punk_Purple
   m_TagString: Enemy
@@ -514,7 +567,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Health
   maxHealth: 70
   uiHealth: {fileID: 0}
-  hitVfxPrefab: {fileID: 8782009059513614302, guid: 171dda363e9efd94ca9bc63e38ca9658, type: 3}
 --- !u!54 &4243018549154780851
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -573,10 +625,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a1f2d8570f90394783959550708db5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
-  meleeSettings: {fileID: 0}
-  rangedSettings: {fileID: 0}
+  moveSpeed: 3
+  stopDistance: 1.5
+  gravity: 16
   characterModel: {fileID: 738948854415703545}
   animator: {fileID: 5555856833809344594}
+  attackDistance: 1.5
+  minRepositionTime: 1
+  maxRepositionTime: 3
+  comboHitStun: 1
+  kickStunDuration: 1.5
+  standUpDelay: 1
+  maxJugglingVelocity: 10
+  maxIncomingJugglingForce: 3
 --- !u!114 &7337709837878212834
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -589,7 +650,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e381a221fdc82d84c957fc1b981a9dc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyDeathHandler
-  settings: {fileID: 0}
+  despawnDelay: 0.5
+  coinReward: 10
 --- !u!143 &4478651194448139553
 CharacterController:
   m_ObjectHideFlags: 0
@@ -629,6 +691,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyCombat
   attackDamage: 10
   attackCooldown: 1.5
+  attackRange: 2
   knockbackForce: 5
   hitStunDuration: 0.5
   telegraphDuration: 0.35
@@ -687,6 +750,21 @@ MonoBehaviour:
   owner: {fileID: 5240710957646681254}
   size: {x: 1, y: 2, z: 1}
   offset: {x: 0, y: 0, z: 0}
+--- !u!114 &8931456185388617600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5240710957646681254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd86fddc02b242f4c9a43e6f705c3a8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyScaler
+  metersPerDifficultyStep: 60
+  hpIncreasePerStep: 0.2
+  damageIncreasePerStep: 0.15
 --- !u!1 &6219036811190547938
 GameObject:
   m_ObjectHideFlags: 0

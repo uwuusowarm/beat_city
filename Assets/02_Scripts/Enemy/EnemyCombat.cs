@@ -7,6 +7,7 @@ public class EnemyCombat : MonoBehaviour
     [Header("Attack Settings")]
     [SerializeField] private int attackDamage = 10;
     [SerializeField] private float attackCooldown = 1.5f;
+    //[SerializeField] private float attackRange = 2f;
     [SerializeField] private float knockbackForce = 5f;
     [SerializeField] private float hitStunDuration = 0.5f;
     [SerializeField] private float telegraphDuration = 0.35f;
@@ -18,7 +19,6 @@ public class EnemyCombat : MonoBehaviour
     private bool _isTelegraphing;
     private Renderer[] _renderers;
     private Color[] _originalColors;
-    
 
     public bool IsReadyToAttack => Time.time >= _lastAttackTime + attackCooldown;
 
@@ -72,9 +72,7 @@ public class EnemyCombat : MonoBehaviour
     {
         if (_player == null || _isTelegraphing) return;
         if (_health != null && _health.Current <= 0) return;
-
         if (_movement != null && !_movement.CanAct) return;
-
         if (_movement != null && _movement.rangedSettings != null)
         {
             return;
@@ -91,6 +89,44 @@ public class EnemyCombat : MonoBehaviour
                 StartCoroutine(TelegraphAndAttack());
             }
         }
+    }
+
+    public void TryRangedAttack(RangedEnemySettings rangedSettings)
+    {
+        if (rangedSettings == null) return;
+        if (_player == null) return;
+        if (_health != null && _health.Current <= 0) return;
+        if (_movement != null && !_movement.CanAct) return;
+
+        ShootRanged(rangedSettings);
+        _lastAttackTime = Time.time;
+    }
+
+    private void ShootRanged(RangedEnemySettings rangedSettings)
+    {
+        Vector3 origin = transform.position + Vector3.up * 1f;
+
+        float dirX = _player.position.x >= transform.position.x ? 1f : -1f;
+        Vector3 direction = new Vector3(dirX, 0f, 0f);
+
+        if (Physics.Raycast(origin, direction, out RaycastHit hit, rangedSettings.rangedShootRange))
+        {
+            if (hit.transform.CompareTag("Player"))
+            {
+                Health playerHealth = hit.transform.GetComponent<Health>();
+
+                if (playerHealth != null)
+                {
+                    playerHealth.TakeDamage(new HitData
+                    {
+                        Damage = rangedSettings.rangedDamage,
+                        Source = gameObject
+                    });
+                }
+            }
+        }
+
+        Debug.DrawRay(origin, direction * rangedSettings.rangedShootRange, Color.red, 0.5f);
     }
 
     private IEnumerator TelegraphAndAttack()
@@ -172,41 +208,8 @@ public class EnemyCombat : MonoBehaviour
         }
     }
 
-    public void TryRangedAttack(RangedEnemySettings rangedSettings)
+    public void ScaleDamage(float multiplier)
     {
-        if (rangedSettings == null) return;
-        if (_player == null) return;
-        if (_health != null && _health.Current <= 0) return;
-        if (_movement != null && !_movement.CanAct) return;
-
-        ShootRanged(rangedSettings);
-        _lastAttackTime = Time.time;
-    }
-
-    private void ShootRanged(RangedEnemySettings rangedSettings)
-    {
-        Vector3 origin = transform.position + Vector3.up * 1f;
-
-        float dirX = _player.position.x >= transform.position.x ? 1f : -1f;
-        Vector3 direction = new Vector3(dirX, 0f, 0f);
-
-        if (Physics.Raycast(origin, direction, out RaycastHit hit, rangedSettings.rangedShootRange))
-        {
-            if (hit.transform.CompareTag("Player"))
-            {
-                Health playerHealth = hit.transform.GetComponent<Health>();
-
-                if (playerHealth != null)
-                {
-                    playerHealth.TakeDamage(new HitData
-                    {
-                        Damage = rangedSettings.rangedDamage,
-                        Source = gameObject
-                    });
-                }
-            }
-        }
-
-        Debug.DrawRay(origin, direction * rangedSettings.rangedShootRange, Color.red, 0.5f);
+        attackDamage = Mathf.RoundToInt(attackDamage * multiplier);
     }
 }
