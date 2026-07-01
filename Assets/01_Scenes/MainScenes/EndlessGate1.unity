@@ -444,6 +444,7 @@ GameObject:
   - component: {fileID: 817364590}
   - component: {fileID: 817364589}
   - component: {fileID: 817364591}
+  - component: {fileID: 817364592}
   m_Layer: 0
   m_Name: EndlessManager
   m_TagString: Untagged
@@ -508,6 +509,18 @@ MonoBehaviour:
   scoreText: {fileID: 1295399046}
   highscoreText: {fileID: 701158914}
   newHighscoreLabel: {fileID: 1672366995}
+--- !u!114 &817364592
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 817364588}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 378caa04406b5034c8a983f7d2e7955d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LevelStartTrigger
 --- !u!1001 &924295651
 PrefabInstance:
   m_ObjectHideFlags: 0

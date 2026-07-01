@@ -151,4 +151,9 @@ public class EnemyCombat : MonoBehaviour
                 _renderers[i].material.color = _originalColors[i];
         }
     }
+
+    public void ScaleDamage(float multiplier)
+    {
+        attackDamage = Mathf.RoundToInt(attackDamage * multiplier);
+    }
 }

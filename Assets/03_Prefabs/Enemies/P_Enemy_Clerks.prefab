@@ -53,6 +53,7 @@ GameObject:
   - component: {fileID: 1090865916532907376}
   - component: {fileID: 6656804542050624544}
   - component: {fileID: 7887967780279235466}
+  - component: {fileID: 6614944387370831897}
   m_Layer: 0
   m_Name: Enemy_Clerk_Green
   m_TagString: Enemy
@@ -174,6 +175,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyDeathHandler
   despawnDelay: 0.5
+  coinReward: 10
 --- !u!143 &6230549841718577859
 CharacterController:
   m_ObjectHideFlags: 0
@@ -272,6 +274,21 @@ MonoBehaviour:
   owner: {fileID: 2336674374545229697}
   size: {x: 1, y: 2, z: 1}
   offset: {x: 0, y: 0, z: 0}
+--- !u!114 &6614944387370831897
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2336674374545229697}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd86fddc02b242f4c9a43e6f705c3a8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyScaler
+  metersPerDifficultyStep: 60
+  hpIncreasePerStep: 0.2
+  damageIncreasePerStep: 0.15
 --- !u!1 &4655223023946547876
 GameObject:
   m_ObjectHideFlags: 0
@@ -291,6 +308,7 @@ GameObject:
   - component: {fileID: 2764346044753830265}
   - component: {fileID: 2225368458752613558}
   - component: {fileID: 1781233701951839861}
+  - component: {fileID: 8175133941580297914}
   m_Layer: 0
   m_Name: Enemy_Clerk_Purple
   m_TagString: Enemy
@@ -412,6 +430,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyDeathHandler
   despawnDelay: 0.5
+  coinReward: 10
 --- !u!143 &2213263406245777000
 CharacterController:
   m_ObjectHideFlags: 0
@@ -510,6 +529,21 @@ MonoBehaviour:
   owner: {fileID: 4655223023946547876}
   size: {x: 1, y: 2, z: 1}
   offset: {x: 0, y: 0, z: 0}
+--- !u!114 &8175133941580297914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4655223023946547876}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd86fddc02b242f4c9a43e6f705c3a8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyScaler
+  metersPerDifficultyStep: 60
+  hpIncreasePerStep: 0.2
+  damageIncreasePerStep: 0.15
 --- !u!1 &6021690092030721686
 GameObject:
   m_ObjectHideFlags: 0
@@ -529,6 +563,7 @@ GameObject:
   - component: {fileID: 7232115894334072915}
   - component: {fileID: 4861793013207294915}
   - component: {fileID: 8970979055086758525}
+  - component: {fileID: 2230627666308087388}
   m_Layer: 0
   m_Name: Enemy_Clerk_Red
   m_TagString: Enemy
@@ -650,6 +685,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyDeathHandler
   despawnDelay: 0.5
+  coinReward: 10
 --- !u!143 &5468975762695983989
 CharacterController:
   m_ObjectHideFlags: 0
@@ -748,6 +784,21 @@ MonoBehaviour:
   owner: {fileID: 6021690092030721686}
   size: {x: 1, y: 2, z: 1}
   offset: {x: 0, y: 0, z: 0}
+--- !u!114 &2230627666308087388
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6021690092030721686}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd86fddc02b242f4c9a43e6f705c3a8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyScaler
+  metersPerDifficultyStep: 60
+  hpIncreasePerStep: 0.2
+  damageIncreasePerStep: 0.15
 --- !u!1001 &1700393430095983606
 PrefabInstance:
   m_ObjectHideFlags: 0

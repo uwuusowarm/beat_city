@@ -5,6 +5,7 @@ using UnityEngine;
 public class EnemyDeathHandler : MonoBehaviour
 {
     [SerializeField] private float despawnDelay = 0.5f;
+    [SerializeField] private int coinReward = 10;
 
     private void Awake()
     {
@@ -13,6 +14,11 @@ public class EnemyDeathHandler : MonoBehaviour
 
     private void HandleDeath()
     {
+        if (PlayerStats.Instance != null)
+        {
+            PlayerStats.Instance.AddCoins(coinReward);
+        }
+        
         foreach (var r in GetComponentsInChildren<Renderer>())
         {
             r.enabled = false;

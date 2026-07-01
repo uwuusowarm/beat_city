@@ -56,4 +56,10 @@ public class Health : MonoBehaviour, IDamageable
             uiHealth.RefreshHealth();
         }
     }
+
+    public void SetMaxHealth(int newMax)
+    {
+        maxHealth = newMax;
+        Current = newMax;
+    }
 }

@@ -76,9 +76,16 @@ public class Hitbox : MonoBehaviour
                 var knockbackDir = (hurtbox.Owner.transform.position - owner.transform.position).normalized;
                 knockbackDir.y = 0f;
 
+                float damageMultiplier = 1f;
+                if (owner.CompareTag("Player") && PlayerStats.Instance != null && EndlessManager.Instance != null)
+                {
+                    damageMultiplier = PlayerStats.Instance.GetDamageMultiplier();
+                }
+                int finalDamage = Mathf.RoundToInt(damage * damageMultiplier);
+
                 damageable.TakeDamage(new HitData
                 {
-                    Damage = damage,
+                    Damage = finalDamage,
                     KnockbackDirection = knockbackDir,
                     KnockbackForce = knockbackForce,
                     KnockUpForce = knockUpForce,
