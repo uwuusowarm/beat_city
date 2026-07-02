@@ -121,18 +121,14 @@ public class PlayerCombat : MonoBehaviour
             hitbox.IsLauncher = isFinisher;
         }
 
-        hitbox.Activate();
-        OnAttackStarted?.Invoke();
+        yield break;
 
-        yield return new WaitForSeconds(activeTime);
+        //yield return new WaitForSeconds(activeTime);
 
-        hitbox.Deactivate();
-        OnAttackEnded?.Invoke();
 
-        yield return new WaitForSeconds(attackCooldown);
+        //yield return new WaitForSeconds(attackCooldown);
 
-        _isAttacking = false;
-        PlayerStateManager.Instance.ResetToIdle();
+
     }
 
     private IEnumerator DoKick()
@@ -152,15 +148,41 @@ public class PlayerCombat : MonoBehaviour
             hitbox.ShouldKnockdown = isFinisher;
         }
 
+        yield break;
+
+        //hitbox.Activate();
+        //OnAttackStarted?.Invoke();
+
+        //yield return new WaitForSeconds(activeTime);
+
+        //hitbox.Deactivate();
+        //OnAttackEnded?.Invoke();
+
+        //yield return new WaitForSeconds(attackCooldown);
+
+        //_isAttacking = false;
+        //PlayerStateManager.Instance.ResetToIdle();
+    }
+
+    public void EnableHitbox()
+    {
+
+        Debug.Log("[PlayerCombat] EnableHitbox called");
         hitbox.Activate();
         OnAttackStarted?.Invoke();
+    }
 
-        yield return new WaitForSeconds(activeTime);
+    public void DisableHitbox()
+    {
 
+        Debug.Log("[PlayerCombat] DisableHitbox called");
         hitbox.Deactivate();
         OnAttackEnded?.Invoke();
+    }
 
-        yield return new WaitForSeconds(attackCooldown);
+    public void FinishAttack()
+    {
+        Debug.Log("[PlayerCombat] FinishAttack called");
 
         _isAttacking = false;
         PlayerStateManager.Instance.ResetToIdle();

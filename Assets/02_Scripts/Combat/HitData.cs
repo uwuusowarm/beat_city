@@ -22,7 +22,8 @@ public struct HitData
     public float HitStunDuration;
     public bool ShouldKnockdown;
     public GameObject Source;
-    
+    public Vector3 HitPosition;
+
     public JuggleType JuggleType;
     
     public bool IsLauncher;
