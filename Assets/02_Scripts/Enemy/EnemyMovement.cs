@@ -43,6 +43,12 @@ public class EnemyMovement : MonoBehaviour
 
     private int _juggleCount;
     private float _juggleDecayMultiplier = 1f;
+    private float _hoverTimer;
+
+    private float _squashTimer;
+    private const float SquashDuration = 0.12f;
+    private static readonly Vector3 SquashScale = new Vector3(1.3f, 0.7f, 1.3f);
+    private const float HoverDriftSpeed = -0.5f;
     
     private bool _isBeingThrown;
     public bool IsBeingThrown => _isBeingThrown;
@@ -95,6 +101,7 @@ public class EnemyMovement : MonoBehaviour
     private float JuggleFalloff => meleeSettings != null ? meleeSettings.juggleFalloffPerHit : 0.15f;
     private float JuggleMinScale => meleeSettings != null ? meleeSettings.juggleMinScale : 0.30f;
     private int MaxJuggleCount => meleeSettings != null ? meleeSettings.maxJuggleCount : 10;
+    private float JuggleHoverDuration => meleeSettings != null ? meleeSettings.juggleHoverDuration : 0.5f;
     private float KnockdownDuration => meleeSettings != null ? meleeSettings.knockdownDuration : 1.0f;
     private float StandUpDuration => meleeSettings != null ? meleeSettings.standUpDuration : 1.0f;
     private float GroundCheckDistance => meleeSettings != null ? meleeSettings.groundCheckDistance : 0.2f;
@@ -249,8 +256,12 @@ public class EnemyMovement : MonoBehaviour
     {
         _juggleCount = 0;
         _juggleDecayMultiplier = 1f;
+        _hoverTimer = 0f;
+        _squashTimer = 0f;
         hitStunTimer = 0f;
         _wasThrownSkipReset = false;
+        if (characterModel != null)
+            characterModel.localScale = Vector3.one;
     }
     
     private bool IsGroundedRaycast()
@@ -319,7 +330,7 @@ public class EnemyMovement : MonoBehaviour
         {
             HandleLauncherHit(hitData, effectiveKnockUp, isGrounded);
         }
-        else if (wasAirborne && (effectiveKnockUp > 0.5f || verticalVelocity > 0f))
+        else if (wasAirborne && (_hoverTimer > 0f || effectiveKnockUp > 0.5f || verticalVelocity > 0f))
         {
             HandleJuggleHit(hitData, effectiveKnockUp);
         }
@@ -368,25 +379,23 @@ public class EnemyMovement : MonoBehaviour
     private void HandleJuggleHit(HitData hitData, float effectiveForce)
     {
         _juggleCount++;
-        
+
         float currentHeight = transform.position.y - _groundYPosition;
-        float heightRatio = Mathf.Clamp01(currentHeight / MaxJuggleHeight);
-        
-        float heightScale = Mathf.Lerp(1f, 0.2f, heightRatio);
-        float scaledForce = effectiveForce * heightScale;
-        
-        float velocityBonus = verticalVelocity > 0 ? verticalVelocity * 0.2f : 0f;
-        float targetVelocity = scaledForce + velocityBonus;
-        verticalVelocity = Mathf.Min(targetVelocity, MaxJugglingVelocity);
-        
-        if (verticalVelocity > 0.5f)
-            SetState(EnemyState.Launched);
-        else if (verticalVelocity > 0)
-            SetState(EnemyState.Airborne);
-        else
-            SetState(EnemyState.Airborne);
-        
-        Debug.Log($"[EnemyMovement] {gameObject.name} JUGGLED! Count: {_juggleCount}, Height: {currentHeight:F2}/{MaxJuggleHeight:F2}, Velocity: {verticalVelocity:F2}");
+        float remainingHeight = MaxJuggleHeight - currentHeight;
+
+        float bounceForce = Mathf.Max(effectiveForce * 0.4f, 1.5f);
+        bounceForce = Mathf.Min(bounceForce, MaxJugglingVelocity * 0.3f);
+
+        if (remainingHeight < 1f)
+            bounceForce *= Mathf.Clamp01(remainingHeight);
+
+        verticalVelocity = bounceForce;
+        _hoverTimer = JuggleHoverDuration;
+        _squashTimer = SquashDuration;
+
+        SetState(EnemyState.Launched);
+
+        Debug.Log($"[EnemyMovement] {gameObject.name} JUGGLED! Count: {_juggleCount}, Height: {currentHeight:F2}/{MaxJuggleHeight:F2}, Bounce: {verticalVelocity:F2}, Hover: {JuggleHoverDuration:F2}s");
     }
     
     private void HandleKnockdownHit(HitData hitData, float effectiveForce)
@@ -468,6 +477,24 @@ public class EnemyMovement : MonoBehaviour
                 ApplyGravityAndMove(Vector3.zero);
                 break;
         }
+
+        UpdateSquashAndStretch();
+    }
+
+    private void UpdateSquashAndStretch()
+    {
+        if (characterModel == null) return;
+
+        if (_squashTimer > 0f)
+        {
+            _squashTimer -= Time.deltaTime;
+            float t = Mathf.Clamp01(_squashTimer / SquashDuration);
+            characterModel.localScale = Vector3.Lerp(Vector3.one, SquashScale, t);
+        }
+        else if (characterModel.localScale != Vector3.one)
+        {
+            characterModel.localScale = Vector3.one;
+        }
     }
 
     #region State Updates
@@ -516,14 +543,24 @@ public class EnemyMovement : MonoBehaviour
             float currentHeight = transform.position.y - _groundYPosition;
             if (currentHeight >= MaxJuggleHeight && verticalVelocity > 0f)
             {
-                verticalVelocity = 0f; 
+                verticalVelocity = 0f;
+                if (_hoverTimer <= 0f)
+                    _hoverTimer = JuggleHoverDuration;
             }
-            
-            ApplyGravityAndMove(Vector3.zero);
+
+            if (_hoverTimer > 0f && verticalVelocity <= 0f)
+            {
+                _hoverTimer -= Time.deltaTime;
+                ApplyHoverMove();
+            }
+            else
+            {
+                ApplyGravityAndMove(Vector3.zero);
+            }
         }
         UpdateJugglingAnimation();
-        
-        if (!_isBeingThrown && verticalVelocity <= 0f)
+
+        if (!_isBeingThrown && _hoverTimer <= 0f && verticalVelocity <= 0f)
         {
             SetState(EnemyState.Airborne);
         }
@@ -533,11 +570,19 @@ public class EnemyMovement : MonoBehaviour
     {
         if (!_isBeingThrown)
         {
-            ApplyGravityAndMove(Vector3.zero);
+            if (_hoverTimer > 0f && verticalVelocity <= 0f)
+            {
+                _hoverTimer -= Time.deltaTime;
+                ApplyHoverMove();
+            }
+            else
+            {
+                ApplyGravityAndMove(Vector3.zero);
+            }
         }
         UpdateJugglingAnimation();
-        
-        if (!_isBeingThrown && IsGroundedRaycast() && verticalVelocity <= 0f)
+
+        if (!_isBeingThrown && _hoverTimer <= 0f && IsGroundedRaycast() && verticalVelocity <= 0f)
         {
             OnLanded();
         }
@@ -559,15 +604,25 @@ public class EnemyMovement : MonoBehaviour
                     animator.speed = 1f;
                     return;
                 }
-                
+
+                if (_hoverTimer > 0f && verticalVelocity <= 0f)
+                {
+                    if (stateInfo.normalizedTime >= FallHoldPoint)
+                    {
+                        animator.Play("Fall", 0, FallHoldPoint);
+                        animator.speed = 0f;
+                    }
+                    return;
+                }
+
                 if (stateInfo.normalizedTime >= FallHoldPoint)
                 {
                     _wobblePhase += Time.deltaTime * FallWobbleSpeed;
-                    
+
                     float wobbleSpeed = Mathf.Cos(_wobblePhase) * FallWobbleIntensity;
 
                     float drift = stateInfo.normalizedTime - FallHoldPoint;
-                    
+
                     if (drift > 0.05f)
                     {
                         Debug.Log($"[EnemyMovement] {gameObject.name} RESETTING FALL to HoldPoint in UpdateJugglingAnimation - drift={drift:F3}");
@@ -577,14 +632,14 @@ public class EnemyMovement : MonoBehaviour
                     }
                     else
                     {
-                        wobbleSpeed -= drift * 5.0f; 
+                        wobbleSpeed -= drift * 5.0f;
                         animator.speed = wobbleSpeed;
                     }
                 }
                 else
                 {
                     animator.speed = 1f;
-                    _wobblePhase = 0f; 
+                    _wobblePhase = 0f;
                 }
             }
             else
@@ -863,6 +918,23 @@ public class EnemyMovement : MonoBehaviour
         }
         
         return avoidance;
+    }
+
+    private void ApplyHoverMove()
+    {
+        if (controller == null || !controller.enabled) return;
+
+        verticalVelocity = HoverDriftSpeed;
+
+        Vector3 totalMovement = externalForce;
+        totalMovement.y = verticalVelocity;
+
+        controller.Move(totalMovement * Time.deltaTime);
+
+        if (externalForce.magnitude > 0.01f)
+            externalForce -= externalForce * (horizontalDrag * Time.deltaTime);
+        else
+            externalForce = Vector3.zero;
     }
 
     private void ApplyGravityAndMove(Vector3 moveVelocity)

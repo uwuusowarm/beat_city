@@ -104,7 +104,7 @@ public class Hitbox : MonoBehaviour
                     Damage = finalDamage,
                     KnockbackDirection = knockbackDir,
                     KnockbackForce = knockbackForce,
-                    KnockUpForce = knockUpForce,
+                    KnockUpForce = effectiveKnockUp,
                     HitStunDuration = hitStunDuration,
                     ShouldKnockdown = shouldKnockdown,
                     IsLauncher = isLauncher,

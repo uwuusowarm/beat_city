@@ -46,6 +46,9 @@ public class RangedEnemySettings : ScriptableObject
     [Tooltip("Maximum number of juggle hits before forced knockdown")]
     public int maxJuggleCount = 10;
 
+    [Tooltip("How long the enemy hovers in the air after a juggle hit (seconds)")]
+    public float juggleHoverDuration = 0.5f;
+
     [Header("Gravity")]
     public float baseGravity = 20f;
     
