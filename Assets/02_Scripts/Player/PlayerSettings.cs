@@ -65,6 +65,17 @@ public class PlayerSettings : ScriptableObject
     [Tooltip("Distance enemy is held in front of player")]
     public float holdOffset = 1.2f;
 
+    [Tooltip("Extra distance added to backward throw to compensate for hold offset")]
+    public float backwardThrowOffset = 2.4f;
+
+    [Tooltip("At what % of the Headbutt animation the enemy starts flying (0-1)")]
+    [Range(0f, 1f)]
+    public float headbuttLaunchPoint = 0.8f;
+
+    [Tooltip("At what % of the Throw animation the enemy starts flying (0-1)")]
+    [Range(0f, 1f)]
+    public float throwLaunchPoint = 0f;
+
     [Header("Throw Projectile (Enemy hits other enemies)")]
     [Tooltip("Damage dealt when thrown enemy hits another enemy")]
     public int projectileDamage = 10;
