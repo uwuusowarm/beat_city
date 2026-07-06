@@ -53,6 +53,7 @@ GameObject:
   - component: {fileID: 3491211979302437245}
   - component: {fileID: 3179065876100757259}
   - component: {fileID: 7522853543613000676}
+  - component: {fileID: 1322119640187401673}
   m_Layer: 0
   m_Name: Enemy_Bastard_Purple
   m_TagString: Enemy
@@ -166,6 +167,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyDeathHandler
   settings: {fileID: 0}
+  coinReward: 10
 --- !u!143 &7918181634591893009
 CharacterController:
   m_ObjectHideFlags: 0
@@ -263,6 +265,21 @@ MonoBehaviour:
   owner: {fileID: 2341932926542406260}
   size: {x: 1, y: 2, z: 1}
   offset: {x: 0, y: 0, z: 0}
+--- !u!114 &1322119640187401673
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2341932926542406260}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd86fddc02b242f4c9a43e6f705c3a8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyScaler
+  metersPerDifficultyStep: 60
+  hpIncreasePerStep: 0.2
+  damageIncreasePerStep: 0.15
 --- !u!1 &5993968919127322692
 GameObject:
   m_ObjectHideFlags: 0
@@ -282,6 +299,7 @@ GameObject:
   - component: {fileID: 3749036164731209299}
   - component: {fileID: 8081174850741081342}
   - component: {fileID: 3390125541619468304}
+  - component: {fileID: 2909339999984141916}
   m_Layer: 0
   m_Name: Enemy_Bastard_Red
   m_TagString: Enemy
@@ -395,6 +413,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyDeathHandler
   settings: {fileID: 0}
+  coinReward: 10
 --- !u!143 &5396851611655128706
 CharacterController:
   m_ObjectHideFlags: 0
@@ -492,6 +511,21 @@ MonoBehaviour:
   owner: {fileID: 5993968919127322692}
   size: {x: 1, y: 2, z: 1}
   offset: {x: 0, y: 0, z: 0}
+--- !u!114 &2909339999984141916
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5993968919127322692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd86fddc02b242f4c9a43e6f705c3a8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyScaler
+  metersPerDifficultyStep: 60
+  hpIncreasePerStep: 0.2
+  damageIncreasePerStep: 0.15
 --- !u!1 &6431816695687519032
 GameObject:
   m_ObjectHideFlags: 0
@@ -511,6 +545,7 @@ GameObject:
   - component: {fileID: 1774888253067404212}
   - component: {fileID: 8280926895975012122}
   - component: {fileID: 7021295248373446994}
+  - component: {fileID: 3643230125674805888}
   m_Layer: 0
   m_Name: Enemy_Bastard_Green
   m_TagString: Enemy
@@ -624,6 +659,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyDeathHandler
   settings: {fileID: 0}
+  coinReward: 10
 --- !u!143 &4833180996534090380
 CharacterController:
   m_ObjectHideFlags: 0
@@ -721,6 +757,21 @@ MonoBehaviour:
   owner: {fileID: 6431816695687519032}
   size: {x: 1, y: 2, z: 1}
   offset: {x: 0, y: 0, z: 0}
+--- !u!114 &3643230125674805888
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6431816695687519032}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd86fddc02b242f4c9a43e6f705c3a8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyScaler
+  metersPerDifficultyStep: 60
+  hpIncreasePerStep: 0.2
+  damageIncreasePerStep: 0.15
 --- !u!1 &8558134004750198491
 GameObject:
   m_ObjectHideFlags: 0

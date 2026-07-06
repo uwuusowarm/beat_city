@@ -11,6 +11,9 @@ public class EnemyEntrance : MonoBehaviour
     [SerializeField] private float jumpHeight = 2f;
     [SerializeField] private Behaviour[] componentsToDisable;
     
+    [SerializeField] private Transform player;
+    [SerializeField] private float stopDistance = 1f;
+    
     [SerializeField] private Animator animator;
     [SerializeField] private string speedParam = "Speed";
 
@@ -32,6 +35,10 @@ public class EnemyEntrance : MonoBehaviour
     {
         Vector3 start = transform.position;
         Vector3 end = target != null ? target.position : start;
+        
+        Vector3 approachDir = end - start;
+        approachDir.y = 0f;
+        approachDir = approachDir.sqrMagnitude > 0.0001f ? approachDir.normalized : transform.forward;
 
         FaceTowards(end);
         
@@ -59,7 +66,8 @@ public class EnemyEntrance : MonoBehaviour
             transform.position = pos;
             yield return null;
         }
-
+        
+        end = KeepClearOfPlayer(end, approachDir);
         transform.position = end;
 
         if (animator != null && entranceType == EntranceType.Walk)
@@ -84,6 +92,37 @@ public class EnemyEntrance : MonoBehaviour
         if (componentsToDisable == null) return;
         foreach (var c in componentsToDisable)
             if (c != null) c.enabled = value;
+    }
+    
+    private Vector3 KeepClearOfPlayer(Vector3 desired, Vector3 approachDir)
+    {
+        Transform p = ResolvePlayer();
+        if (p == null) return desired;
+
+        Vector3 flatDesired = new Vector3(desired.x, 0f, desired.z);
+        Vector3 flatPlayer  = new Vector3(p.position.x, 0f, p.position.z);
+
+        if (Vector3.Distance(flatDesired, flatPlayer) >= stopDistance)
+            return desired;
+        
+        Vector3 away = flatDesired - flatPlayer;
+        if (away.sqrMagnitude < 0.0001f)
+            away = -approachDir;
+        if (away.sqrMagnitude < 0.0001f)
+            away = Vector3.right;
+
+        away.Normalize();
+
+        Vector3 result = flatPlayer + away * stopDistance;
+        result.y = desired.y;
+        return result;
+    }
+
+    private Transform ResolvePlayer()
+    {
+        if (player != null) return player;
+        GameObject found = GameObject.FindGameObjectWithTag("Player");
+        return found != null ? found.transform : null;
     }
 
     private void OnDrawGizmos()

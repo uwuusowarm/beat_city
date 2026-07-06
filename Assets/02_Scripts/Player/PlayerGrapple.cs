@@ -15,6 +15,7 @@ public class PlayerGrapple : MonoBehaviour
 
     [Header("Visuals")]
     [SerializeField] private Transform characterModel;
+    [SerializeField] private Animator animator;
     [SerializeField] private bool showProjectileGizmos = true;
 
     private bool _isGrappling;
@@ -23,6 +24,7 @@ public class PlayerGrapple : MonoBehaviour
     private GameObject _currentProjectile;
     private MovementPlayer _movement;
     private PlayerCombat _combat;
+    private InputBuffer _inputBuffer;
 
     private void Awake()
     {
@@ -31,8 +33,11 @@ public class PlayerGrapple : MonoBehaviour
 
         _movement = GetComponent<MovementPlayer>();
         _combat = GetComponent<PlayerCombat>();
+        _inputBuffer = GetComponent<InputBuffer>();
         if (characterModel == null)
             characterModel = transform.Find("Model");
+        if (animator == null)
+            animator = GetComponentInChildren<Animator>();
         
         if (grappleHitbox != null)
         {
@@ -68,6 +73,7 @@ public class PlayerGrapple : MonoBehaviour
             }
         }
         if (_isGrappling && PlayerStateManager.Instance != null) PlayerStateManager.Instance.ResetToIdle();
+        if (animator != null) animator.SetBool("IsGrabbing", false);
     }
 
     private void FixedUpdate()
@@ -158,14 +164,19 @@ public class PlayerGrapple : MonoBehaviour
 
         _heldTarget = target;
         PlayerStateManager.Instance.SetState(PlayerState.Holding);
-        
+
         if (target.TryGetComponent<EnemyMovement>(out var em))
         {
             em.SetState(EnemyState.Grabbed);
         }
-        
+
+        if (animator != null)
+        {
+            animator.SetBool("IsGrabbing", true);
+        }
+
         StartCoroutine(HoldTarget(target));
-        
+
         Debug.Log($"[PlayerGrapple] Target {target.name} caught and being held.");
     }
 
@@ -191,6 +202,7 @@ public class PlayerGrapple : MonoBehaviour
         PlayerStateManager.Instance.SetState(PlayerState.Grappling);
 
         Vector3 throwDir = characterModel.forward;
+        bool isBackwardThrow = false;
         if (_movement != null)
         {
             Vector3 inputDir = _movement.GetInputDirection();
@@ -198,6 +210,7 @@ public class PlayerGrapple : MonoBehaviour
             {
                 if (Vector3.Dot(characterModel.forward, inputDir) < -0.5f)
                 {
+                    isBackwardThrow = true;
                     throwDir = inputDir;
                     characterModel.rotation = Quaternion.LookRotation(new Vector3(throwDir.x, 0, 0));
                 }
@@ -209,7 +222,31 @@ public class PlayerGrapple : MonoBehaviour
             }
         }
 
-        yield return StartCoroutine(AnimateThrow(target, throwDir));
+        if (animator != null)
+        {
+            animator.SetBool("IsGrabbing", false);
+            string animName = isBackwardThrow ? "Throw" : "Headbutt";
+            float launchPoint = isBackwardThrow ? settings.throwLaunchPoint : settings.headbuttLaunchPoint;
+            animator.SetTrigger(animName);
+
+            if (launchPoint > 0f)
+            {
+                yield return null;
+                AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
+                while (!state.IsName(animName))
+                {
+                    yield return null;
+                    state = animator.GetCurrentAnimatorStateInfo(0);
+                }
+                while (state.IsName(animName) && state.normalizedTime < launchPoint)
+                {
+                    yield return null;
+                    state = animator.GetCurrentAnimatorStateInfo(0);
+                }
+            }
+        }
+
+        yield return StartCoroutine(AnimateThrow(target, throwDir, isBackwardThrow));
 
 
         if (target != null)
@@ -253,16 +290,18 @@ public class PlayerGrapple : MonoBehaviour
             }
         }
         
+        if (_inputBuffer != null) _inputBuffer.Clear();
         PlayerStateManager.Instance.ResetToIdle();
         _nextGrappleTime = Time.time + settings.grappleCooldown;
     }
 
-    private IEnumerator AnimateThrow(GameObject target, Vector3 throwDir)
+    private IEnumerator AnimateThrow(GameObject target, Vector3 throwDir, bool isBackwardThrow = false)
     {
         if (target == null) yield break;
 
         Vector3 startPos = target.transform.position;
-        Vector3 targetPos = startPos + throwDir * settings.throwDistance;
+        float distance = settings.throwDistance + (isBackwardThrow ? settings.backwardThrowOffset : 0f);
+        Vector3 targetPos = startPos + throwDir * distance;
         
         CharacterController cc = target.GetComponent<CharacterController>();
         Rigidbody rb = target.GetComponent<Rigidbody>();
