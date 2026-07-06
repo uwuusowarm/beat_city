@@ -77,6 +77,9 @@ public class EnemyMovement : MonoBehaviour
 
     private Health _health;
     private EnemyCombat _combat;
+    //
+    private EnemyObstacleAvoidance _obstacleAvoidance;
+    //
     
     public float moveSpeed => meleeSettings != null ? meleeSettings.moveSpeed : 3f;
     private float StopDistance => meleeSettings != null ? meleeSettings.stopDistance : 1.5f;
@@ -106,6 +109,10 @@ public class EnemyMovement : MonoBehaviour
 
     private void Start()
     {
+        //
+        _combat = GetComponent<EnemyCombat>();
+        TryGetComponent(out _obstacleAvoidance);
+        //
         controller = GetComponent<CharacterController>();
         _health = GetComponent<Health>();
         _combat = GetComponent<EnemyCombat>();
@@ -718,7 +725,10 @@ public class EnemyMovement : MonoBehaviour
         {
             Vector3 desiredDirection = directionToTarget.normalized;
             Vector3 avoidance = CalculateAvoidance();
-            Vector3 finalDirection = (desiredDirection + avoidance).normalized;
+            //
+            Vector3 steered = (desiredDirection + avoidance).normalized;
+            //
+            Vector3 finalDirection = _obstacleAvoidance != null ? _obstacleAvoidance.Adjust(steered) : steered;
             moveVelocity = finalDirection * moveSpeed; 
             normalizedSpeed = 1f;
         }
