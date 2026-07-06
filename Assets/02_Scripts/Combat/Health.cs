@@ -64,5 +64,17 @@ public class Health : MonoBehaviour, IDamageable
         if (hitVfxPrefab == null) return;
 
         GameObject vfx = Instantiate(hitVfxPrefab, hitData.HitPosition, Quaternion.identity);
+        Destroy(vfx, 0.5f);
+    }
+
+    public void SetMaxHealth(int value)
+    {
+        maxHealth = value;
+        Current = maxHealth;
+
+        if (uiHealth != null)
+        {
+            uiHealth.RefreshHealth();
+        }
     }
 }

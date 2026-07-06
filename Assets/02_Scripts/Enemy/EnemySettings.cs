@@ -83,4 +83,5 @@ public class EnemySettings : ScriptableObject
     [Tooltip("Time before the enemy object is destroyed after death")]
     public float despawnDelay = 3.0f;
 
+
 }
