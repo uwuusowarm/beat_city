@@ -53,6 +53,7 @@ public class Arena : MonoBehaviour
             : transform.position + Vector3.right * (index * 2f);
 
         var go = Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
+        ApplyDifficulty(go);
         _aliveCount++;
         _spawnedCount++;
 
@@ -82,6 +83,26 @@ public class Arena : MonoBehaviour
         {
             CameraFollow.Instance?.Unlock();
             Debug.Log($"[Arena] {gameObject.name} done. Camera unlocked");
+        }
+    }
+
+    private void ApplyDifficulty(GameObject enemy)
+    {
+        if (DifficultyManager.Instance == null) return;
+
+        float healthMultiplier = DifficultyManager.Instance.GetHealthMultiplier();
+        float damageMultiplier = DifficultyManager.Instance.GetDamageMultiplier();
+
+        if (enemy.TryGetComponent<Health>(out var health))
+        {
+            int newMaxHealth = Mathf.RoundToInt(health.Max * healthMultiplier);
+            health.SetMaxHealth(newMaxHealth);
+        }
+
+        if (enemy.TryGetComponent<Hitbox>(out var hitbox))
+        {
+            int newDamage = Mathf.RoundToInt(hitbox.Damage * damageMultiplier);
+            hitbox.Damage = newDamage;
         }
     }
 
