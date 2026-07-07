@@ -24,6 +24,7 @@ public class CustomGravity : MonoBehaviour
 
         if (TryGetComponent<EnemyMovement>(out _))
         {
+            _rb.isKinematic = true;
             enabled = false;
             return;
         }

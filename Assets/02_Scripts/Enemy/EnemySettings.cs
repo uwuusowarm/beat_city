@@ -101,4 +101,14 @@ public class EnemySettings : ScriptableObject
     [Range(0f, 1f)]
     public float telegraphMoveSpeedMultiplier = 0f;
 
+    [Header("Attack Hitbox")]
+    [Tooltip("Size of the melee attack hitbox")]
+    public Vector3 hitboxSize = new Vector3(1.2f, 1.6f, 1.2f);
+
+    [Tooltip("How far in front of the enemy the hitbox is placed")]
+    public float hitboxForwardOffset = 0.75f;
+
+    [Tooltip("Height offset of the hitbox relative to the enemy's origin")]
+    public float hitboxHeight = 0.3f;
+
 }

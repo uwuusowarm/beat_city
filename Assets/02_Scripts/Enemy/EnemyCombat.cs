@@ -15,7 +15,7 @@ public class EnemyCombat : MonoBehaviour
     [Header("Hitbox")]
     [SerializeField] private Vector3 hitboxSize = new Vector3(1.2f, 1.6f, 1.2f);
     [SerializeField] private float hitboxForwardOffset = 0.75f;
-    [SerializeField] private float hitboxHeight = 1f;
+    [SerializeField] private float hitboxHeight = 0.3f;
 
     private float _lastAttackTime;
     private Transform _player;
@@ -32,6 +32,18 @@ public class EnemyCombat : MonoBehaviour
     private float TelegraphDuration => (_movement != null && _movement.meleeSettings != null)
         ? _movement.meleeSettings.telegraphDuration
         : telegraphDuration;
+
+    private Vector3 HitboxSize => (_movement != null && _movement.meleeSettings != null)
+        ? _movement.meleeSettings.hitboxSize
+        : hitboxSize;
+
+    private float HitboxForwardOffset => (_movement != null && _movement.meleeSettings != null)
+        ? _movement.meleeSettings.hitboxForwardOffset
+        : hitboxForwardOffset;
+
+    private float HitboxHeight => (_movement != null && _movement.meleeSettings != null)
+        ? _movement.meleeSettings.hitboxHeight
+        : hitboxHeight;
 
     private void Start()
     {
@@ -55,8 +67,8 @@ public class EnemyCombat : MonoBehaviour
         hitboxObj.transform.SetParent(transform, false);
         _attackHitbox = hitboxObj.AddComponent<Hitbox>();
         _attackHitbox.Owner = gameObject;
-        _attackHitbox.Size = hitboxSize;
-        _attackHitbox.Offset = Vector3.forward * hitboxForwardOffset;
+        _attackHitbox.Size = HitboxSize;
+        _attackHitbox.Offset = Vector3.forward * HitboxForwardOffset;
         _attackHitbox.ApplyDamage = true;
         _attackHitbox.ShouldKnockdown = false;
         _attackHitboxTransform = hitboxObj.transform;
@@ -209,9 +221,11 @@ public class EnemyCombat : MonoBehaviour
         if (_attackHitbox == null || _player == null) return;
 
         float dirX = _player.position.x >= transform.position.x ? 1f : -1f;
-        _attackHitboxTransform.position = transform.position + Vector3.up * hitboxHeight;
+        _attackHitboxTransform.position = transform.position + Vector3.up * HitboxHeight;
         _attackHitboxTransform.rotation = Quaternion.LookRotation(new Vector3(dirX, 0f, 0f));
 
+        _attackHitbox.Size = HitboxSize;
+        _attackHitbox.Offset = Vector3.forward * HitboxForwardOffset;
         _attackHitbox.Damage = attackDamage;
         _attackHitbox.KnockbackForce = knockbackForce;
         _attackHitbox.HitStunDuration = hitStunDuration;

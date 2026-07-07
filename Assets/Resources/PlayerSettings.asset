@@ -33,9 +33,9 @@ MonoBehaviour:
   throwHeight: 2
   throwDuration: 0.4
   grappleCooldown: 0.5
-  holdOffset: 1
+  holdOffset: 1.36
   backwardThrowOffset: 2.4
-  headbuttLaunchPoint: 0.8
+  headbuttLaunchPoint: 0.397
   throwLaunchPoint: 0.06
   projectileDamage: 10
   projectileKnockback: 3
