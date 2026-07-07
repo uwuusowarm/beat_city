@@ -187,7 +187,7 @@ public class PlayerCombat : MonoBehaviour
         if (specialVFXPrefab == null) return;
 
         GameObject vfx = Instantiate(specialVFXPrefab, vfxSpawnPoint.position, Quaternion.identity);
-        Destroy(vfx, 0.5f);
+        Destroy(vfx, 20.0f);
     }
 
     private Hitbox GetCurrentHitbox()
@@ -238,6 +238,12 @@ public class PlayerCombat : MonoBehaviour
     public void SetSpecialChainActive(bool active)
     {
         _inSpecialChain = active;
+    }
+
+    public void SetSpecialChainAttack(CombatInputType type, int comboStep)
+    {
+        CurrentAttackType = type;
+        _comboStep = comboStep;
     }
 
     public void ResetCombo()

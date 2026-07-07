@@ -327,7 +327,7 @@ MonoBehaviour:
   inputBuffer: {fileID: 0}
   animator: {fileID: 6014817348757299699}
   audioManager: {fileID: 0}
-  specialVFXPrefab: {fileID: 3042519775331041172, guid: 841004c4c6a39e244abe2257394de913, type: 3}
+  specialVFXPrefab: {fileID: 4593184484909914552, guid: 2e1e9506f5904a64b81744324fb7cd50, type: 3}
   vfxSpawnPoint: {fileID: 8420107355081625463}
   specialMeter: {fileID: 0}
   specialMove: {fileID: 4308366570326131633}
@@ -358,7 +358,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Health
   maxHealth: 200
   uiHealth: {fileID: 0}
-  hitVfxPrefab: {fileID: 0}
+  hitVfxPrefab: {fileID: 5669246471909640947, guid: bfd016bff164dfc4aac33a0563922772, type: 3}
 --- !u!114 &-3002893363729806011
 MonoBehaviour:
   m_ObjectHideFlags: 0

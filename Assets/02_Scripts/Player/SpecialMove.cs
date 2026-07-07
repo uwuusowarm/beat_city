@@ -99,6 +99,9 @@ public class SpecialMove : MonoBehaviour
 
             int comboStep = isLast ? maxComboSteps : (i % (maxComboSteps - 1)) + 1;
 
+            if (playerCombat != null)
+                playerCombat.SetSpecialChainAttack(chainType, comboStep);
+
             if (animator != null)
             {
                 animator.SetInteger("ComboStep", comboStep);

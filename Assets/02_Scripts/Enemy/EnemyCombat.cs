@@ -120,7 +120,8 @@ public class EnemyCombat : MonoBehaviour
                     playerHealth.TakeDamage(new HitData
                     {
                         Damage = rangedSettings.rangedDamage,
-                        Source = gameObject
+                        Source = gameObject,
+                        HitPosition = hit.point
                     });
                 }
             }
@@ -194,7 +195,8 @@ public class EnemyCombat : MonoBehaviour
                 KnockUpForce = 0f,
                 HitStunDuration = hitStunDuration,
                 ShouldKnockdown = false,
-                Source = gameObject
+                Source = gameObject,
+                HitPosition = _player.position
             });
         }
     }
