@@ -376,11 +376,12 @@ public class EnemyMovement : MonoBehaviour
     {
         _juggleCount = 1;
         _juggleDecayMultiplier = 1f;
-        
-        verticalVelocity = Mathf.Min(effectiveForce, MaxJugglingVelocity);
+
+        float maxVelocityForHeight = Mathf.Sqrt(2f * Gravity * MaxJuggleHeight);
+        verticalVelocity = Mathf.Min(effectiveForce, Mathf.Min(MaxJugglingVelocity, maxVelocityForHeight));
         SetState(EnemyState.Launched);
-        
-        Debug.Log($"[EnemyMovement] {gameObject.name} LAUNCHED! Force: {effectiveForce:F2}, Velocity: {verticalVelocity:F2}");
+
+        Debug.Log($"[EnemyMovement] {gameObject.name} LAUNCHED! Force: {effectiveForce:F2}, Velocity: {verticalVelocity:F2}, MaxHeight: {MaxJuggleHeight:F2}");
     }
     
     private void HandleJuggleHit(HitData hitData, float effectiveForce)
@@ -409,11 +410,12 @@ public class EnemyMovement : MonoBehaviour
     {
         if (hitData.JuggleType == JuggleType.Spike)
         {
-            verticalVelocity = -effectiveForce; 
+            verticalVelocity = -effectiveForce;
         }
         else
         {
-            verticalVelocity = effectiveForce;
+            float maxVelocityForHeight = Mathf.Sqrt(2f * Gravity * MaxJuggleHeight);
+            verticalVelocity = Mathf.Min(effectiveForce, maxVelocityForHeight);
         }
         
         SetState(EnemyState.Airborne);

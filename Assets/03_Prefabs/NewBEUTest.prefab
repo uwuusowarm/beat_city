@@ -64,6 +64,7 @@ MonoBehaviour:
   punchAction: {fileID: 1120369429361536294, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   kickAction: {fileID: 7040659881675835329, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   specialAction: {fileID: 2050728961456626914, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  specialChainAction: {fileID: 5626552114006436483, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   bufferTime: 0.5
 --- !u!114 &1579721176041507327
 MonoBehaviour:

@@ -100,6 +100,34 @@ public class PlayerSettings : ScriptableObject
     [Tooltip("Collision radius for thrown enemy")]
     public float projectileRadius = 1f;
 
+    [Header("Special Chain Move")]
+    [Tooltip("Meter cost to activate a special move")]
+    public float specialMeterCost = 50f;
+
+    [Tooltip("Number of punches in the special punch chain")]
+    public int specialPunchCount = 3;
+
+    [Tooltip("Number of kicks in the special kick chain")]
+    public int specialKickCount = 3;
+
+    [Tooltip("Damage per punch in the special chain")]
+    public int specialPunchDamage = 15;
+
+    [Tooltip("Damage per kick in the special chain")]
+    public int specialKickDamage = 20;
+
+    [Tooltip("Knockup force on the final punch of the special chain")]
+    public float specialFinisherKnockup = 8f;
+
+    [Tooltip("Knockback force on the final kick of the special chain")]
+    public float specialFinisherKnockback = 10f;
+
+    [Tooltip("Time window to choose punch or kick after pressing special")]
+    public float specialInputWindow = 1f;
+
+    [Tooltip("Animation speed multiplier during special chain (1 = normal, 2 = double speed)")]
+    public float specialAnimSpeed = 1.5f;
+
     [Header("Throw Impact (On thrown enemy)")]
     [Tooltip("Knockback applied to thrown enemy on landing")]
     public float impactKnockback = 0f;

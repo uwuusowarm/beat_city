@@ -17,6 +17,9 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private Transform vfxSpawnPoint;
     [SerializeField] private Meter specialMeter;
 
+    [Header("Special Move")]
+    [SerializeField] private SpecialMove specialMove;
+
     [Header("Combo")]
     private PlayerSettings _settings;
 
@@ -36,6 +39,7 @@ public class PlayerCombat : MonoBehaviour
     private float _lastAttackTime;
 
     private int _punchIndex;
+    private bool _inSpecialChain;
 
     private float _fist1InitialZ;
     private float _fist2InitialZ;
@@ -59,7 +63,7 @@ public class PlayerCombat : MonoBehaviour
 
     private void Update()
     {
-        if (_isAttacking) return;
+        if (_isAttacking || _inSpecialChain) return;
         if (!PlayerStateManager.Instance.CanPerformAction()) return;
 
         if (inputBuffer.TryConsume(out CombatInputType input))
@@ -81,7 +85,15 @@ public class PlayerCombat : MonoBehaviour
                     {
                         Debug.Log("Need more specialPoints");
                     }
-                        break;
+                    break;
+                case CombatInputType.SpecialChain:
+                    if (specialMove != null)
+                    {
+                        _isAttacking = true;
+                        if (!specialMove.TryActivate())
+                            _isAttacking = false;
+                    }
+                    break;
             }
         }
     }
@@ -212,10 +224,21 @@ public class PlayerCombat : MonoBehaviour
         Debug.Log("[PlayerCombat] FinishAttack called");
 
         _isAttacking = false;
+
+        if (_inSpecialChain)
+        {
+            if (specialMove != null)
+                specialMove.OnChainHitFinished();
+            return;
+        }
+
         PlayerStateManager.Instance.ResetToIdle();
     }
 
-
+    public void SetSpecialChainActive(bool active)
+    {
+        _inSpecialChain = active;
+    }
 
     public void ResetCombo()
     {
