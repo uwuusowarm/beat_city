@@ -39,4 +39,9 @@ public class AnimationEventRelay : MonoBehaviour
 
         playerCombat.FinishAttack();
     }
+
+    public void SpawnSpecialVFX()
+    {
+        playerCombat.SpawnSpecialVfx();
+    }
 }

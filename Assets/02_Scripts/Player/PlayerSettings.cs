@@ -33,6 +33,17 @@ public class PlayerSettings : ScriptableObject
     [Tooltip("Knockback force for kick finisher")]
     public float kickFinisherKnockback = 8f;
 
+    [Header("Special Combat")]
+    [Tooltip("Damage dealt by special attack")]
+    public int specialDamage = 5;
+
+    [Tooltip("Knockup force for special attack")]
+    public float specialKnockup = 5f;
+
+    [Tooltip("Amount needed to use special attack")]
+    public int specialCost = 30;
+
+
     [Header("Combo System")]
     [Tooltip("Maximum number of hits in a combo")]
     public int maxComboSteps = 3;

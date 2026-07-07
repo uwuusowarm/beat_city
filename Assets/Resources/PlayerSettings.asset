@@ -21,6 +21,8 @@ MonoBehaviour:
   kickDamage: 15
   kickBaseKnockback: 0
   kickFinisherKnockback: 6
+  specialDamage: 5
+  specialKnockup: 8
   maxComboSteps: 3
   comboResetTime: 1
   jugglingForce: 4
@@ -31,6 +33,9 @@ MonoBehaviour:
   throwDuration: 0.4
   grappleCooldown: 0.5
   holdOffset: 1
+  backwardThrowOffset: 2.4
+  headbuttLaunchPoint: 0.8
+  throwLaunchPoint: 0
   projectileDamage: 10
   projectileKnockback: 3
   projectileKnockUp: 5
