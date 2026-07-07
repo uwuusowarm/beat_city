@@ -7,7 +7,8 @@ public enum CombatInputType
     None,
     Punch,
     Kick,
-    Special
+    Special,
+    SpecialChain
 }
 
 public class InputBuffer : MonoBehaviour
@@ -16,7 +17,7 @@ public class InputBuffer : MonoBehaviour
     [SerializeField] private InputActionReference punchAction;
     [SerializeField] private InputActionReference kickAction;
     [SerializeField] private InputActionReference specialAction;
-
+    [SerializeField] private InputActionReference specialChainAction;
 
     [Header("Buffer")]
     [SerializeField] private float bufferTime = 0.5f;
@@ -44,6 +45,12 @@ public class InputBuffer : MonoBehaviour
             specialAction.action.performed += OnSpecial;
             specialAction.action.Enable();
         }
+
+        if (specialChainAction != null)
+        {
+            specialChainAction.action.performed += OnSpecialChain;
+            specialChainAction.action.Enable();
+        }
     }
 
     private void OnDisable()
@@ -64,6 +71,12 @@ public class InputBuffer : MonoBehaviour
         {
             specialAction.action.performed -= OnSpecial;
             specialAction.action.Disable();
+        }
+
+        if (specialChainAction != null)
+        {
+            specialChainAction.action.performed -= OnSpecialChain;
+            specialChainAction.action.Disable();
         }
     }
 
@@ -96,6 +109,12 @@ public class InputBuffer : MonoBehaviour
     {
         if (!context.ReadValueAsButton()) return;
         Buffer(CombatInputType.Special);
+    }
+
+    private void OnSpecialChain(InputAction.CallbackContext context)
+    {
+        if (!context.ReadValueAsButton()) return;
+        Buffer(CombatInputType.SpecialChain);
     }
 
     private void Buffer(CombatInputType input)

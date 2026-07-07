@@ -113,6 +113,9 @@ public class Hitbox : MonoBehaviour
                     HitPosition = col.ClosestPoint(worldCenter)
                 });
 
+                if (owner.CompareTag("Player"))
+                    ScreenShake.Instance?.Shake(finalDamage);
+
                 if (owner.CompareTag("Player") && damageable is Health enemyHealth)
                 {
                     Debug.Log($"[DEBUG_LOG] Hitbox: Player hit enemy {hurtbox.Owner.name}.");

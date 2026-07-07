@@ -50,10 +50,11 @@ MonoBehaviour:
   sfxSource: {fileID: 4667260958754158351}
   musicEntries:
   - musicType: 0
-    musicClips: []
+    musicClips:
+    - {fileID: 8300000, guid: 54e81da2526b30d47a5f52fb260b34b3, type: 3}
   - musicType: 1
     musicClips:
-    - {fileID: 8300000, guid: a5502c37df586ce42a77ddc34ed0d4b3, type: 3}
+    - {fileID: 8300000, guid: 9392098146e0a9348b95cea3e5db1602, type: 3}
   sfxEntries:
   - sfxType: 0
     sfxClips:
