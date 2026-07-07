@@ -6,11 +6,19 @@ using UnityEngine.InputSystem;
 public class PlayerCombat : MonoBehaviour
 {
     [SerializeField] private Hitbox hitbox;
+    [SerializeField] private Hitbox specialHitbox;
     [SerializeField] private float activeTime = 0.2f;
     [SerializeField] private float attackCooldown = 0.1f;
+    [SerializeField] private float vfxSpawnDistance = 1.5f;
     [SerializeField] private InputBuffer inputBuffer;
     [SerializeField] private Animator animator;
     [SerializeField] private AudioManager audioManager;
+    [SerializeField] private GameObject specialVFXPrefab;
+    [SerializeField] private Transform vfxSpawnPoint;
+    [SerializeField] private Meter specialMeter;
+
+    [Header("Special Move")]
+    [SerializeField] private SpecialMove specialMove;
 
     [Header("Combo")]
     private PlayerSettings _settings;
@@ -31,6 +39,7 @@ public class PlayerCombat : MonoBehaviour
     private float _lastAttackTime;
 
     private int _punchIndex;
+    private bool _inSpecialChain;
 
     private float _fist1InitialZ;
     private float _fist2InitialZ;
@@ -54,7 +63,7 @@ public class PlayerCombat : MonoBehaviour
 
     private void Update()
     {
-        if (_isAttacking) return;
+        if (_isAttacking || _inSpecialChain) return;
         if (!PlayerStateManager.Instance.CanPerformAction()) return;
 
         if (inputBuffer.TryConsume(out CombatInputType input))
@@ -62,13 +71,28 @@ public class PlayerCombat : MonoBehaviour
             switch (input)
             {
                 case CombatInputType.Punch:
-                    StartCoroutine(DoPunch());
+                    DoPunch();
                     break;
                 case CombatInputType.Kick:
-                    StartCoroutine(DoKick());
+                    DoKick();
                     break;
                 case CombatInputType.Special:
-                    //StartCoroutineSpecial - Need to be implemented yet
+                    if (specialMeter.TrySpend(_settings.specialCost))
+                    {
+                        DoSpecial();
+                    }
+                    else
+                    {
+                        Debug.Log("Need more specialPoints");
+                    }
+                    break;
+                case CombatInputType.SpecialChain:
+                    if (specialMove != null)
+                    {
+                        _isAttacking = true;
+                        if (!specialMove.TryActivate())
+                            _isAttacking = false;
+                    }
                     break;
             }
         }
@@ -103,7 +127,7 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
-    private IEnumerator DoPunch()
+    private void DoPunch()
     {
         _isAttacking = true;
         PlayerStateManager.Instance.SetState(PlayerState.Attacking);
@@ -120,18 +144,9 @@ public class PlayerCombat : MonoBehaviour
             hitbox.ShouldKnockdown = false;
             hitbox.IsLauncher = isFinisher;
         }
-
-        yield break;
-
-        //yield return new WaitForSeconds(activeTime);
-
-
-        //yield return new WaitForSeconds(attackCooldown);
-
-
     }
 
-    private IEnumerator DoKick()
+    private void DoKick()
     {
         _isAttacking = true;
         PlayerStateManager.Instance.SetState(PlayerState.Attacking);
@@ -147,28 +162,50 @@ public class PlayerCombat : MonoBehaviour
             hitbox.JugglingForce = _settings.jugglingForce;
             hitbox.ShouldKnockdown = isFinisher;
         }
+    }
 
-        yield break;
+    private void DoSpecial()
+    {
+        _isAttacking = true;
+        PlayerStateManager.Instance.SetState(PlayerState.Attacking);
 
-        //hitbox.Activate();
-        //OnAttackStarted?.Invoke();
+        AdvanceCombo(CombatInputType.Special);
 
-        //yield return new WaitForSeconds(activeTime);
+        if (_settings != null)
+        {
+            specialHitbox.Damage = _settings.specialDamage + _settings.punchDamage;
+            specialHitbox.KnockbackForce = 0;
+            specialHitbox.KnockUpForce = _settings.specialKnockup;
+            specialHitbox.JugglingForce = _settings.jugglingForce;
+            specialHitbox.ShouldKnockdown = true;
+            specialHitbox.IsLauncher = true;
+        }
+    }
 
-        //hitbox.Deactivate();
-        //OnAttackEnded?.Invoke();
+    public void SpawnSpecialVfx()
+    {
+        if (specialVFXPrefab == null) return;
 
-        //yield return new WaitForSeconds(attackCooldown);
+        GameObject vfx = Instantiate(specialVFXPrefab, vfxSpawnPoint.position, Quaternion.identity);
+        Destroy(vfx, 0.5f);
+    }
 
-        //_isAttacking = false;
-        //PlayerStateManager.Instance.ResetToIdle();
+    private Hitbox GetCurrentHitbox()
+    {
+        if (CurrentAttackType == CombatInputType.Special && specialHitbox != null)
+        {
+            return specialHitbox;
+        }
+        return hitbox; 
     }
 
     public void EnableHitbox()
     {
 
         Debug.Log("[PlayerCombat] EnableHitbox called");
-        hitbox.Activate();
+
+        Hitbox activeHitbox = GetCurrentHitbox();
+        activeHitbox.Activate();
         OnAttackStarted?.Invoke();
     }
 
@@ -176,7 +213,9 @@ public class PlayerCombat : MonoBehaviour
     {
 
         Debug.Log("[PlayerCombat] DisableHitbox called");
-        hitbox.Deactivate();
+
+        Hitbox activeHitbox = GetCurrentHitbox();
+        activeHitbox.Deactivate();
         OnAttackEnded?.Invoke();
     }
 
@@ -185,7 +224,20 @@ public class PlayerCombat : MonoBehaviour
         Debug.Log("[PlayerCombat] FinishAttack called");
 
         _isAttacking = false;
+
+        if (_inSpecialChain)
+        {
+            if (specialMove != null)
+                specialMove.OnChainHitFinished();
+            return;
+        }
+
         PlayerStateManager.Instance.ResetToIdle();
+    }
+
+    public void SetSpecialChainActive(bool active)
+    {
+        _inSpecialChain = active;
     }
 
     public void ResetCombo()
@@ -226,6 +278,8 @@ public class PlayerCombat : MonoBehaviour
 
             case CombatInputType.Kick:
                 audioManager.PlaySfx(SfxType.Kick, index);
+                break;
+            case CombatInputType.Special:
                 break;
         }
     }

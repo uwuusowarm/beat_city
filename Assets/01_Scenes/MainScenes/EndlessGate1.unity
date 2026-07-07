@@ -196,6 +196,10 @@ PrefabInstance:
       propertyPath: inputBuffer
       value: 
       objectReference: {fileID: 517442368}
+    - target: {fileID: 1908867706107061876, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
+      propertyPath: specialMeter
+      value: 
+      objectReference: {fileID: 510086307}
     - target: {fileID: 4799275800366551407, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.24969329
