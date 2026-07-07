@@ -28,8 +28,11 @@ public class Hitbox : MonoBehaviour
     public JuggleType JuggleType { get => juggleType; set => juggleType = value; }
 
     public bool ApplyDamage { get => applyDamage; set => applyDamage = value; }
-    public Vector3 Size => size;
-    public Vector3 Offset => offset;
+    public float HitStunDuration { get => hitStunDuration; set => hitStunDuration = value; }
+    public float HitStopDuration { get => hitStopDuration; set => hitStopDuration = value; }
+    public Vector3 Size { get => size; set => size = value; }
+    public Vector3 Offset { get => offset; set => offset = value; }
+    public GameObject Owner { get => owner; set => owner = value; }
 
     public event Action<GameObject> OnHitLanded;
 
@@ -71,6 +74,11 @@ public class Hitbox : MonoBehaviour
             if (hurtbox.Owner == owner)
             {
                 Debug.Log($"[Hitbox] -> Self-Hit ignored ({owner.name})");
+                continue;
+            }
+            if (hurtbox.Owner.CompareTag(owner.tag))
+            {
+                Debug.Log($"[Hitbox] -> Same-faction hit ignored ({owner.name} -> {hurtbox.Owner.name})");
                 continue;
             }
 

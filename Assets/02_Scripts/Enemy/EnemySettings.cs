@@ -3,6 +3,10 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "EnemySettings", menuName = "ScriptableObjects/EnemySettings")]
 public class EnemySettings : ScriptableObject
 {
+    [Header("Health")]
+    [Tooltip("Maximum health of the enemy")]
+    public int maxHealth = 100;
+
     [Header("Movement")]
     [Tooltip("Base movement speed")]
     public float moveSpeed = 3f;
@@ -86,5 +90,15 @@ public class EnemySettings : ScriptableObject
     [Tooltip("Time before the enemy object is destroyed after death")]
     public float despawnDelay = 3.0f;
 
+    [Header("Attack Commit")]
+    [Tooltip("How long the enemy telegraphs (winds up) before an attack actually lands, in seconds")]
+    public float telegraphDuration = 0.35f;
+
+    [Tooltip("If true, the enemy stops repositioning while telegraphing (winding up) an attack, giving the player a chance to escape the attack range")]
+    public bool freezeDuringTelegraph = true;
+
+    [Tooltip("Movement speed multiplier applied while telegraphing an attack (0 = fully frozen, 1 = normal speed). Only used if freezeDuringTelegraph is enabled")]
+    [Range(0f, 1f)]
+    public float telegraphMoveSpeedMultiplier = 0f;
 
 }

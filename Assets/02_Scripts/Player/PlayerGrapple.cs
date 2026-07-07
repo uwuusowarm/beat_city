@@ -134,13 +134,22 @@ public class PlayerGrapple : MonoBehaviour
         
         
         grappleHitbox.Activate();
-        
+
+        if (PlayerStateManager.Instance.CurrentState == PlayerState.Grappling)
+        {
+            grappleHitbox.Deactivate();
+            _isGrappling = false;
+            PlayerStateManager.Instance.ResetToIdle();
+            _nextGrappleTime = Time.time + settings.grappleCooldown;
+            yield break;
+        }
+
         yield return new WaitForSeconds(settings.grappleActiveTime);
-        
+
         grappleHitbox.Deactivate();
-        
+
         _isGrappling = false;
-        
+
         if (PlayerStateManager.Instance.CurrentState == PlayerState.Grappling)
         {
             PlayerStateManager.Instance.ResetToIdle();

@@ -84,6 +84,10 @@ public class EnemyMovement : MonoBehaviour
     private Health _health;
     private EnemyCombat _combat;
 
+    private bool _isAttackWindingUp;
+    private bool FreezeDuringTelegraph => meleeSettings != null ? meleeSettings.freezeDuringTelegraph : true;
+    private float TelegraphMoveSpeedMultiplier => meleeSettings != null ? meleeSettings.telegraphMoveSpeedMultiplier : 0f;
+
     private EnemyObstacleAvoidance _obstacleAvoidance;
     
     public float moveSpeed => meleeSettings != null ? meleeSettings.moveSpeed : 3f;
@@ -147,10 +151,15 @@ public class EnemyMovement : MonoBehaviour
 
         if (TryGetComponent<Health>(out var health))
         {
+            int settingsMaxHealth = rangedSettings != null ? rangedSettings.maxHealth
+                : meleeSettings != null ? meleeSettings.maxHealth
+                : health.Max;
+            health.SetMaxHealth(settingsMaxHealth);
+
             health.OnHit += OnHit;
         }
 
-        
+
 
         if (rangedSettings != null)
         {
@@ -441,6 +450,11 @@ public class EnemyMovement : MonoBehaviour
     public void ForceRecalculateTactic()
     {
         tacticTimer = 0f;
+    }
+
+    public void SetAttackWindupActive(bool active)
+    {
+        _isAttackWindingUp = active;
     }
 
     private void Update()
@@ -781,7 +795,9 @@ public class EnemyMovement : MonoBehaviour
 
         Vector3 moveVelocity = Vector3.zero;
         float normalizedSpeed = 0f;
-        if (distance > 0.1f)
+        float windupSpeedMultiplier = (_isAttackWindingUp && FreezeDuringTelegraph) ? TelegraphMoveSpeedMultiplier : 1f;
+
+        if (distance > 0.1f && windupSpeedMultiplier > 0f)
         {
             Vector3 desiredDirection = directionToTarget.normalized;
             Vector3 avoidance = CalculateAvoidance();
@@ -789,10 +805,10 @@ public class EnemyMovement : MonoBehaviour
             Vector3 steered = (desiredDirection + avoidance).normalized;
 
             Vector3 finalDirection = _obstacleAvoidance != null ? _obstacleAvoidance.Adjust(steered) : steered;
-            moveVelocity = finalDirection * moveSpeed; 
-            normalizedSpeed = 1f;
+            moveVelocity = finalDirection * moveSpeed * windupSpeedMultiplier;
+            normalizedSpeed = windupSpeedMultiplier;
         }
-        
+
         ApplyGravityAndMove(moveVelocity);
         if (animator != null)
         {

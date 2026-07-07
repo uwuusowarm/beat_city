@@ -22,6 +22,12 @@ public class CustomGravity : MonoBehaviour
         _rb = GetComponent<Rigidbody>();
         _rb.useGravity = false;
 
+        if (TryGetComponent<EnemyMovement>(out _))
+        {
+            enabled = false;
+            return;
+        }
+
         if (TryGetComponent<Health>(out var health))
             health.OnHit += OnHit;
     }

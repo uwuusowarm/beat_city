@@ -23,7 +23,7 @@ MonoBehaviour:
   kickFinisherKnockback: 6
   specialDamage: 5
   specialKnockup: 8
-  specialCost: 30
+  specialCost: 0
   maxComboSteps: 3
   comboResetTime: 1
   jugglingForce: 4
@@ -36,13 +36,13 @@ MonoBehaviour:
   holdOffset: 1
   backwardThrowOffset: 2.4
   headbuttLaunchPoint: 0.8
-  throwLaunchPoint: 0
+  throwLaunchPoint: 0.06
   projectileDamage: 10
   projectileKnockback: 3
   projectileKnockUp: 5
   projectileRadius: 1
   specialMeterCost: 0
-  specialPunchCount: 3
+  specialPunchCount: 5
   specialKickCount: 3
   specialPunchDamage: 15
   specialKickDamage: 20
