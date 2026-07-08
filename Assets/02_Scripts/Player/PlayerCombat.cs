@@ -17,6 +17,8 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private Transform vfxSpawnPoint;
     [SerializeField] private Meter specialMeter;
 
+    public SpecialAttackSO equippedSpecial;
+
     [Header("Special Move")]
     [SerializeField] private SpecialMove specialMove;
 
@@ -77,14 +79,7 @@ public class PlayerCombat : MonoBehaviour
                     DoKick();
                     break;
                 case CombatInputType.Special:
-                    if (specialMeter.TrySpend(_settings.specialCost))
-                    {
-                        DoSpecial();
-                    }
-                    else
-                    {
-                        Debug.Log("Need more specialPoints");
-                    }
+                    if (equippedSpecial != null) StartCoroutine(DoSpecialAttack(equippedSpecial));
                     break;
                 case CombatInputType.SpecialChain:
                     if (specialMove != null)
@@ -287,6 +282,65 @@ public class PlayerCombat : MonoBehaviour
                 break;
             case CombatInputType.Special:
                 break;
+        }
+    }
+
+    private IEnumerator DoSpecialAttack(SpecialAttackSO special)
+    {
+        _isAttacking = true;
+        PlayerStateManager.Instance.SetState(PlayerState.Attacking);
+        OnAttackStarted?.Invoke();
+
+        if (animator != null) animator.SetTrigger(special.animatorTrigger);
+
+        if (special.moveForward && TryGetComponent<CharacterController>(out var cc))
+        {
+            StartCoroutine(PerformSpecialDash(cc, special.dashSpeed, special.totalDuration));
+        }
+
+        if (special.isProjectile && special.projectilePrefab != null)
+        {
+            Instantiate(special.projectilePrefab, transform.position + transform.forward, transform.rotation);
+            yield return new WaitForSeconds(special.totalDuration);
+        }
+        else
+        {
+            if (hitbox != null)
+            {
+                hitbox.SetDimensions(special.hitboxSize, special.hitboxOffset);
+
+                for (int i = 0; i < special.hitCount; i++)
+                {
+                    bool isFinisher = (i == special.hitCount - 1); 
+
+                    hitbox.Damage = special.damagePerHit;
+                    hitbox.KnockbackForce = isFinisher ? special.finalKnockback : 1f;
+                    hitbox.KnockUpForce = isFinisher ? special.finalKnockup : 0f;
+                    hitbox.ShouldKnockdown = isFinisher && special.finalHitShouldKnockdown;
+
+                    hitbox.Activate();
+                    yield return new WaitForSeconds(0.05f); 
+                    hitbox.Deactivate();
+
+                    if (!isFinisher) yield return new WaitForSeconds(special.timeBetweenHits);
+                }
+            }
+        }
+
+        yield return new WaitForSeconds(attackCooldown);
+        _isAttacking = false;
+        PlayerStateManager.Instance.ResetToIdle();
+        OnAttackEnded?.Invoke();
+    }
+
+    private IEnumerator PerformSpecialDash(CharacterController cc, float speed, float duration)
+    {
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            cc.Move(transform.forward * speed * Time.deltaTime);
+            elapsed += Time.deltaTime;
+            yield return null;
         }
     }
 }

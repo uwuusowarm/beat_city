@@ -159,4 +159,10 @@ public class Hitbox : MonoBehaviour
 
         Gizmos.DrawWireCube(offset, size);
     }
+
+    public void SetDimensions(Vector3 newSize, Vector3 newOffset)
+    {
+        size = newSize;
+        offset = newOffset;
+    }
 }
