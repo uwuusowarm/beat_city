@@ -20,11 +20,12 @@ MonoBehaviour:
   comboHitStun: 0.5
   kickStunDuration: 1.5
   maxJugglingVelocity: 8
-  maxJuggleHeight: 4
+  maxJuggleHeight: 1
   launchThreshold: 3.5
   juggleFalloffPerHit: 0.2
   juggleMinScale: 0.3
   maxJuggleCount: 2147483647
+  juggleHoverDuration: 0.5
   baseGravity: 16
   useGravityScaling: 0
   fallGravityMultiplier: 1.5

@@ -8,7 +8,8 @@ public enum PlayerState
     Grappling,
     Holding,
     Dashing,
-    Stunned
+    Stunned,
+    SpecialAttacking
 }
 
 public class PlayerStateManager : MonoBehaviour

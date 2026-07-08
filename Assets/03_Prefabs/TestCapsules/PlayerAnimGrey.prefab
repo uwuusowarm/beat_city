@@ -1,5 +1,96 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &975342807509654739
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2751693642510612401}
+  - component: {fileID: 2967659709457547770}
+  m_Layer: 0
+  m_Name: Hitbox_Special
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2751693642510612401
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 975342807509654739}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.351, z: -0.166}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4799275800366551407}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2967659709457547770
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 975342807509654739}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be482ebd44724597b3eafc3cd25745a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Hitbox
+  owner: {fileID: 1662536712636653983}
+  size: {x: 4, y: 3, z: 4}
+  offset: {x: 0, y: 0, z: 0.29}
+  damage: 10
+  knockbackForce: 0
+  knockUpForce: 5
+  jugglingForce: 0
+  hitStunDuration: 0.08
+  hitStopDuration: 0.08
+  shouldKnockdown: 0
+  isLauncher: 0
+  juggleType: 1
+  applyDamage: 1
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 4294967295
+--- !u!1 &1573026273063831611
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8420107355081625463}
+  m_Layer: 0
+  m_Name: VFXSpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8420107355081625463
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1573026273063831611}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.268, y: -1.034, z: 0.184}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4799275800366551407}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1662536712636653983
 GameObject:
   m_ObjectHideFlags: 0
@@ -23,6 +114,8 @@ GameObject:
   - component: {fileID: -3002893363729806011}
   - component: {fileID: 1035578852233614060}
   - component: {fileID: 8612664414132317126}
+  - component: {fileID: 9141774141328228895}
+  - component: {fileID: 4308366570326131633}
   m_Layer: 0
   m_Name: PlayerAnimGrey
   m_TagString: Player
@@ -44,8 +137,10 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5387828486214582420}
+  - {fileID: 2751693642510612401}
   - {fileID: 8887407231781088451}
   - {fileID: 403283643339176841}
+  - {fileID: 8420107355081625463}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &2938898237578596607
@@ -225,11 +320,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCombat
   hitbox: {fileID: 2382808346673060664}
+  specialHitbox: {fileID: 2967659709457547770}
   activeTime: 0.2
   attackCooldown: 0.1
+  vfxSpawnDistance: 1.5
   inputBuffer: {fileID: 0}
   animator: {fileID: 6014817348757299699}
   audioManager: {fileID: 0}
+  specialVFXPrefab: {fileID: 3042519775331041172, guid: 841004c4c6a39e244abe2257394de913, type: 3}
+  vfxSpawnPoint: {fileID: 8420107355081625463}
+  specialMeter: {fileID: 0}
+  specialMove: {fileID: 4308366570326131633}
 --- !u!114 &-3982840628395845413
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -276,6 +377,7 @@ MonoBehaviour:
   - {fileID: 7040659881675835329, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   - {fileID: 1120369429361536294, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   characterModel: {fileID: 4799275800366551407}
+  animator: {fileID: 0}
   showProjectileGizmos: 1
 --- !u!114 &1035578852233614060
 MonoBehaviour:
@@ -293,7 +395,7 @@ MonoBehaviour:
   - {fileID: -3002893363729806011}
   - {fileID: 1908867706107061876}
   - {fileID: 4850563744316324283}
-  animator: {fileID: 0}
+  animator: {fileID: 6014817348757299699}
 --- !u!114 &8612664414132317126
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -306,6 +408,42 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e36d2d56d645932499a890bac32c6a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Money
+--- !u!114 &9141774141328228895
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1662536712636653983}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92a7cb317d2e4f04b997151927752c56, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AfterimageEffect
+  characterModel: {fileID: 4799275800366551407}
+  ghostShader: {fileID: 4800000, guid: 96b5788296864d843a4f0e34ae048a18, type: 3}
+  ghostColor: {r: 0.2, g: 0.5, b: 1, a: 0.6}
+  spawnInterval: 0.05
+  ghostLifetime: 0.4
+  startAlpha: 0.24
+--- !u!114 &4308366570326131633
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1662536712636653983}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a839c25877be78458ad64268dbb25c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpecialMove
+  playerCombat: {fileID: 1908867706107061876}
+  hitbox: {fileID: 2382808346673060664}
+  inputBuffer: {fileID: 0}
+  animator: {fileID: 6014817348757299699}
+  meter: {fileID: 0}
+  afterimageEffect: {fileID: 9141774141328228895}
 --- !u!1 &7937538812829366670
 GameObject:
   m_ObjectHideFlags: 0
