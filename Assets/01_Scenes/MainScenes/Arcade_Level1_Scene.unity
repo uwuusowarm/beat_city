@@ -418,6 +418,14 @@ PrefabInstance:
       propertyPath: audioManager
       value: 
       objectReference: {fileID: 686246682}
+    - target: {fileID: 4308366570326131633, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
+      propertyPath: meter
+      value: 
+      objectReference: {fileID: 1078076608}
+    - target: {fileID: 4308366570326131633, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
+      propertyPath: inputBuffer
+      value: 
+      objectReference: {fileID: 812365572}
     - target: {fileID: 4799275800366551407, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
       propertyPath: m_LocalPosition.x
       value: -167.8

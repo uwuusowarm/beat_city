@@ -184,9 +184,16 @@ public class EnemyMovement : MonoBehaviour
         EnemyState previousState = CurrentState;
         CurrentState = newState;
         _stateTimer = 0f;
-        
+
         Debug.Log($"[EnemyMovement] {gameObject.name} State: {previousState} -> {newState}");
-        
+
+        bool couldActBefore = previousState == EnemyState.Grounded || previousState == EnemyState.HitStun;
+        bool canActNow = newState == EnemyState.Grounded || newState == EnemyState.HitStun;
+        if (couldActBefore && !canActNow)
+        {
+            _combat?.CancelAttackWindup();
+        }
+
         switch (newState)
         {
             case EnemyState.Grounded:
