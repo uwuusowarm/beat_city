@@ -29,4 +29,9 @@ public class SpecialAttackSO : ScriptableObject
     [Header("Projectile")]
     public bool isProjectile = false;
     public GameObject projectilePrefab; 
+
+    [Header("Shop & System")]
+    public string id = "new_special";
+    public int shopCost = 500;
+    public bool unlockedByDefault = false;
 }

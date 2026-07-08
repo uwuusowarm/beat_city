@@ -15,6 +15,10 @@ public class PlayerStats : MonoBehaviour
     [SerializeField] private int hpBonusPerLevel = 20;
     [SerializeField] private float damageBonusPerLevel = 0.15f; 
 
+    [Header("Special Attacks")]
+    public SpecialAttackSO[] allSpecialAttacks; 
+    public string equippedSpecialId = "";
+
     private void Awake()
     {
         if (Instance == null)
@@ -44,6 +48,45 @@ public class PlayerStats : MonoBehaviour
             int baseHp = health.Max;
             int upgradedHp = baseHp + ((healthLevel - 1) * hpBonusPerLevel);
             health.SetMaxHealth(upgradedHp);
+        }
+    }
+
+    public SpecialAttackSO GetSpecialById(string searchId)
+    {
+        foreach(var special in allSpecialAttacks)
+        {
+            if (special.id == searchId) return special;
+        }
+        return null;
+    }
+
+    public bool IsSpecialUnlocked(SpecialAttackSO special)
+    {
+        if (special.unlockedByDefault) return true;
+        return PlayerPrefs.GetInt("SpecialUnlocked_" + special.id, 0) == 1; 
+    }
+
+    public bool BuySpecial(SpecialAttackSO special)
+    {
+        if (IsSpecialUnlocked(special)) return false;
+        
+        if (coins >= special.shopCost)
+        {
+            coins -= special.shopCost;
+            PlayerPrefs.SetInt("SpecialUnlocked_" + special.id, 1);
+            SaveStats();
+            return true;
+        }
+        return false;
+    }
+
+    public void EquipSpecial(SpecialAttackSO special)
+    {
+        if (IsSpecialUnlocked(special))
+        {
+            equippedSpecialId = special.id;
+            PlayerPrefs.SetString("EquippedSpecial", equippedSpecialId);
+            PlayerPrefs.Save();
         }
     }
 
@@ -102,5 +145,7 @@ public class PlayerStats : MonoBehaviour
         coins = PlayerPrefs.GetInt("PlayerCoins", 0);
         healthLevel = PlayerPrefs.GetInt("StatHealthLevel", 1);
         damageLevel = PlayerPrefs.GetInt("StatDamageLevel", 1);
+
+        equippedSpecialId = PlayerPrefs.GetString("EquippedSpecial", "");
     }
 }
