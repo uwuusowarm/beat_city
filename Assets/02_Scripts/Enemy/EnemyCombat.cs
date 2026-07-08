@@ -12,6 +12,11 @@ public class EnemyCombat : MonoBehaviour
     [SerializeField] private float hitStunDuration = 0.5f;
     [SerializeField] private float telegraphDuration = 0.35f;
 
+    [Header("Hitbox")]
+    [SerializeField] private Vector3 hitboxSize = new Vector3(1.2f, 1.6f, 1.2f);
+    [SerializeField] private float hitboxForwardOffset = 0.75f;
+    [SerializeField] private float hitboxHeight = 0.3f;
+
     private float _lastAttackTime;
     private Transform _player;
     private EnemyMovement _movement;
@@ -19,8 +24,26 @@ public class EnemyCombat : MonoBehaviour
     private bool _isTelegraphing;
     private Renderer[] _renderers;
     private Color[] _originalColors;
+    private Hitbox _attackHitbox;
+    private Transform _attackHitboxTransform;
 
     public bool IsReadyToAttack => Time.time >= _lastAttackTime + attackCooldown;
+
+    private float TelegraphDuration => (_movement != null && _movement.meleeSettings != null)
+        ? _movement.meleeSettings.telegraphDuration
+        : telegraphDuration;
+
+    private Vector3 HitboxSize => (_movement != null && _movement.meleeSettings != null)
+        ? _movement.meleeSettings.hitboxSize
+        : hitboxSize;
+
+    private float HitboxForwardOffset => (_movement != null && _movement.meleeSettings != null)
+        ? _movement.meleeSettings.hitboxForwardOffset
+        : hitboxForwardOffset;
+
+    private float HitboxHeight => (_movement != null && _movement.meleeSettings != null)
+        ? _movement.meleeSettings.hitboxHeight
+        : hitboxHeight;
 
     private void Start()
     {
@@ -39,6 +62,16 @@ public class EnemyCombat : MonoBehaviour
         if (playerObj != null) _player = playerObj.transform;
 
         if (_health != null) _health.OnHit += HandleHit;
+
+        var hitboxObj = new GameObject("MeleeHitbox");
+        hitboxObj.transform.SetParent(transform, false);
+        _attackHitbox = hitboxObj.AddComponent<Hitbox>();
+        _attackHitbox.Owner = gameObject;
+        _attackHitbox.Size = HitboxSize;
+        _attackHitbox.Offset = Vector3.forward * HitboxForwardOffset;
+        _attackHitbox.ApplyDamage = true;
+        _attackHitbox.ShouldKnockdown = false;
+        _attackHitboxTransform = hitboxObj.transform;
     }
 
     private void OnDestroy()
@@ -60,12 +93,12 @@ public class EnemyCombat : MonoBehaviour
         if (_isTelegraphing)
         {
             StopAllCoroutines();
-            _isTelegraphing = false;
-            ResetVisuals();
         }
-        if (BeatEmUpDirector.Instance != null) BeatEmUpDirector.Instance.ReleaseToken(this);
-
-        if (_movement != null) _movement.ForceRecalculateTactic();
+        else
+        {
+            if (BeatEmUpDirector.Instance != null) BeatEmUpDirector.Instance.ReleaseToken(this);
+            if (_movement != null) _movement.ForceRecalculateTactic();
+        }
     }
 
     private void Update()
@@ -120,7 +153,8 @@ public class EnemyCombat : MonoBehaviour
                     playerHealth.TakeDamage(new HitData
                     {
                         Damage = rangedSettings.rangedDamage,
-                        Source = gameObject
+                        Source = gameObject,
+                        HitPosition = hit.point
                     });
                 }
             }
@@ -132,38 +166,41 @@ public class EnemyCombat : MonoBehaviour
     private IEnumerator TelegraphAndAttack()
     {
         _isTelegraphing = true;
-        foreach (var r in _renderers)
+        if (_movement != null) _movement.SetAttackWindupActive(true);
+        try
         {
-            if (r != null && r.material.HasProperty("_Color"))
-                r.material.color = Color.red;
-        }
-
-        float elapsed = 0f;
-        while (elapsed < telegraphDuration)
-        {
-            if (_movement != null && !_movement.CanAct)
+            foreach (var r in _renderers)
             {
-                ResetVisuals();
-                _isTelegraphing = false;
-                if (BeatEmUpDirector.Instance != null) BeatEmUpDirector.Instance.ReleaseToken(this);
-                yield break;
+                if (r != null && r.material.HasProperty("_Color"))
+                    r.material.color = Color.red;
             }
-            elapsed += Time.deltaTime;
-            yield return null;
+
+            float elapsed = 0f;
+            while (elapsed < TelegraphDuration)
+            {
+                if (_movement != null && !_movement.CanAct)
+                {
+                    yield break;
+                }
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+
+            if (_health != null && _health.Current > 0 && _movement != null && _movement.CanAct)
+            {
+                Attack();
+            }
+
+            _lastAttackTime = Time.time;
         }
-        
-        if (_health != null && _health.Current > 0 && _movement != null && _movement.CanAct)
+        finally
         {
-            Attack();
+            ResetVisuals();
+            _isTelegraphing = false;
+            if (_movement != null) _movement.SetAttackWindupActive(false);
+            if (BeatEmUpDirector.Instance != null) BeatEmUpDirector.Instance.ReleaseToken(this);
+            if (_movement != null) _movement.ForceRecalculateTactic();
         }
-
-        ResetVisuals();
-        _isTelegraphing = false;
-        _lastAttackTime = Time.time;
-        if (BeatEmUpDirector.Instance != null) BeatEmUpDirector.Instance.ReleaseToken(this);
-
-        if (BeatEmUpDirector.Instance != null) BeatEmUpDirector.Instance.ReleaseToken(this);
-        if (_movement != null) _movement.ForceRecalculateTactic();
     }
 
     private void Attack()
@@ -181,22 +218,20 @@ public class EnemyCombat : MonoBehaviour
             animator.Play(randomAttack, 0, 0f);
         }
 
-        if (_player.TryGetComponent<Health>(out var playerHealth))
-        {
-            Vector3 knockbackDir = (_player.position - transform.position).normalized;
-            knockbackDir.y = 0f;
+        if (_attackHitbox == null || _player == null) return;
 
-            playerHealth.TakeDamage(new HitData
-            {
-                Damage = attackDamage,
-                KnockbackDirection = knockbackDir,
-                KnockbackForce = knockbackForce,
-                KnockUpForce = 0f,
-                HitStunDuration = hitStunDuration,
-                ShouldKnockdown = false,
-                Source = gameObject
-            });
-        }
+        float dirX = _player.position.x >= transform.position.x ? 1f : -1f;
+        _attackHitboxTransform.position = transform.position + Vector3.up * HitboxHeight;
+        _attackHitboxTransform.rotation = Quaternion.LookRotation(new Vector3(dirX, 0f, 0f));
+
+        _attackHitbox.Size = HitboxSize;
+        _attackHitbox.Offset = Vector3.forward * HitboxForwardOffset;
+        _attackHitbox.Damage = attackDamage;
+        _attackHitbox.KnockbackForce = knockbackForce;
+        _attackHitbox.HitStunDuration = hitStunDuration;
+
+        _attackHitbox.Activate();
+        _attackHitbox.Deactivate();
     }
 
     private void ResetVisuals()

@@ -44,12 +44,6 @@ public class EnemyDeathHandler : MonoBehaviour
             _movement.SetState(EnemyState.Dead);
         }
 
-        if (_animator != null)
-        {
-            _animator.SetBool("IsFalling", true);
-            _animator.speed = 1f;
-        }
-
         foreach (var c in GetComponentsInChildren<Collider>())
         {
             c.enabled = false;

@@ -3,6 +3,10 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "RangedEnemySettings", menuName = "ScriptableObjects/RangedEnemySettings")]
 public class RangedEnemySettings : ScriptableObject
 {
+    [Header("Health")]
+    [Tooltip("Maximum health of the enemy")]
+    public int maxHealth = 100;
+
     [Header("Movement")]
     [Tooltip("Base movement speed")]
     public float moveSpeed = 3f;
