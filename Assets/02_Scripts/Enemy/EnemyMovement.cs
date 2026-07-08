@@ -201,6 +201,7 @@ public class EnemyMovement : MonoBehaviour
 
             case EnemyState.Launched:
             case EnemyState.Airborne:
+                if (animator != null) animator.ResetTrigger("Hit");
                 UpdateAnimatorFalling(true);
                 break;
                 
@@ -219,8 +220,8 @@ public class EnemyMovement : MonoBehaviour
                 _stateTimer = StandUpDuration;
                 if (animator != null)
                 {
-                    animator.speed = 1f; 
-                    UpdateAnimatorFalling(false); 
+                    animator.speed = 1f;
+                    UpdateAnimatorFalling(false);
                     animator.SetTrigger("StandUp");
                 }
                 break;
