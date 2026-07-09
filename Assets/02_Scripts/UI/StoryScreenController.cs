@@ -1,8 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement; // Wichtig fürs Szenenladen!
-
+using UnityEngine.SceneManagement; 
 public class StoryScreenController : MonoBehaviour
 {
     [Header("UI Referenzen")]
@@ -26,7 +25,6 @@ public class StoryScreenController : MonoBehaviour
         if (textCanvasGroup != null && textCanvasGroup.gameObject != null) textCanvasGroup.gameObject.SetActive(false);
     }
 
-    // Erwartet jetzt den Namen der nächsten Szene
     public void TriggerStorySequence(string sceneToLoad)
     {
         if (!isSequenceRunning)
@@ -41,13 +39,10 @@ public class StoryScreenController : MonoBehaviour
 
         if (textCanvasGroup != null) textCanvasGroup.alpha = 0f;
 
-        // STEP 1: Schwarzer Hintergrund knallt sofort rein
         if (blackBackground != null) blackBackground.SetActive(true);
 
-        // STEP 2: Delay vor dem Bild
         yield return new WaitForSecondsRealtime(delayBeforeImage);
 
-        // STEP 3: Story-Bild aktivieren und einfaden
         if (storyImageObject != null) storyImageObject.SetActive(true);
 
         float timer = 0f;
@@ -62,10 +57,8 @@ public class StoryScreenController : MonoBehaviour
             imageCanvasGroup.alpha = 1f;
         }
 
-        // STEP 4: Atempause vor dem Text
         yield return new WaitForSecondsRealtime(delayBeforeText);
 
-        // STEP 5: Text aktivieren und einfaden
         if (textCanvasGroup != null && textCanvasGroup.gameObject != null) textCanvasGroup.gameObject.SetActive(true);
 
         timer = 0f;
@@ -80,7 +73,6 @@ public class StoryScreenController : MonoBehaviour
             textCanvasGroup.alpha = 1f;
         }
 
-        // STEP 6: Warten auf Tastendruck/Mausklick
         bool inputDetected = false;
         while (!inputDetected)
         {
@@ -96,7 +88,6 @@ public class StoryScreenController : MonoBehaviour
             yield return null;
         }
 
-        // STEP 7: Alles ausmachen
         if (blackBackground != null) blackBackground.SetActive(false);
         if (storyImageObject != null)
         {
@@ -111,8 +102,7 @@ public class StoryScreenController : MonoBehaviour
 
         isSequenceRunning = false;
 
-        // STEP 8: Zeit zurücksetzen und nächste Szene laden!
-        Time.timeScale = 1f; // Ganz wichtig, damit das neue Level nicht pausiert startet!
+        Time.timeScale = 1f; 
         SceneManager.LoadScene(sceneToLoad);
     }
 }
