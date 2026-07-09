@@ -53346,8 +53346,13 @@ MonoBehaviour:
   - {fileID: 2127207921}
   player: {fileID: 131228852}
   stopDistance: 1
-  animator: {fileID: 0}
+  animator: {fileID: 2127207915}
   speedParam: Speed
+--- !u!95 &2127207915 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 2007466405565452480, guid: e24ef14a0058f084e9446a405616825a, type: 3}
+  m_PrefabInstance: {fileID: 2127207911}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &2127207921 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1904045261264573344, guid: e24ef14a0058f084e9446a405616825a, type: 3}
