@@ -34,4 +34,9 @@ public class SpecialAttackSO : ScriptableObject
     public string id = "new_special";
     public int shopCost = 500;
     public bool unlockedByDefault = false;
+
+    [Header("Custom Animation Sequence")]
+    public bool isComboSequence = false;
+    public string[] animationSequence;
+    public float animationPlaybackSpeed = 1.0f;
 }

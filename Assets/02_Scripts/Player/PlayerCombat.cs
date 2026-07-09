@@ -305,8 +305,13 @@ public class PlayerCombat : MonoBehaviour
         _isAttacking = true;
         PlayerStateManager.Instance.SetState(PlayerState.Attacking);
         OnAttackStarted?.Invoke();
-
-        if (animator != null) animator.SetTrigger(special.animatorTrigger);
+        float originalAnimSpeed = animator != null ? animator.speed : 1f;
+        
+        if (special.isComboSequence && animator != null)
+        {
+            animator.speed = special.animationPlaybackSpeed;
+        }
+        else if (animator != null) animator.SetTrigger(special.animatorTrigger);
 
         if (special.moveForward && TryGetComponent<CharacterController>(out var cc))
         {
@@ -328,6 +333,12 @@ public class PlayerCombat : MonoBehaviour
                 {
                     bool isFinisher = (i == special.hitCount - 1); 
 
+                    if (special.isComboSequence && special.animationSequence != null && special.animationSequence.Length > 0 && animator != null)
+                    {
+                        string animToPlay = special.animationSequence[i % special.animationSequence.Length];
+                        animator.Play(animToPlay, 0, 0f); 
+                    }
+
                     hitbox.Damage = special.damagePerHit;
                     hitbox.KnockbackForce = isFinisher ? special.finalKnockback : 1f;
                     hitbox.KnockUpForce = isFinisher ? special.finalKnockup : 0f;
@@ -341,6 +352,8 @@ public class PlayerCombat : MonoBehaviour
                 }
             }
         }
+
+        if (animator != null) animator.speed = originalAnimSpeed;
 
         yield return new WaitForSeconds(attackCooldown);
         _isAttacking = false;
