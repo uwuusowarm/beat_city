@@ -682,21 +682,21 @@ MonoBehaviour:
   shopPanel: {fileID: 884536641}
   pauseWhenOpen: 1
   upgrades:
-  - Name: Damage
+  - Name: Damage Up
     Cost: 0
     CostMod: 0
     MaxLevel: 0
     Button: {fileID: 1726515930}
     Label: {fileID: 704738927}
     Level: 0
-  - Name: Special
+  - Name: Special Up
     Cost: 0
     CostMod: 0
     MaxLevel: 0
     Button: {fileID: 1942786459}
     Label: {fileID: 1272266221}
     Level: 0
-  - Name: Health
+  - Name: Max Health
     Cost: 0
     CostMod: 0
     MaxLevel: 0
