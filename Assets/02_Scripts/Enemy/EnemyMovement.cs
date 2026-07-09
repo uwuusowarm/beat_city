@@ -184,9 +184,16 @@ public class EnemyMovement : MonoBehaviour
         EnemyState previousState = CurrentState;
         CurrentState = newState;
         _stateTimer = 0f;
-        
+
         Debug.Log($"[EnemyMovement] {gameObject.name} State: {previousState} -> {newState}");
-        
+
+        bool couldActBefore = previousState == EnemyState.Grounded || previousState == EnemyState.HitStun;
+        bool canActNow = newState == EnemyState.Grounded || newState == EnemyState.HitStun;
+        if (couldActBefore && !canActNow)
+        {
+            _combat?.CancelAttackWindup();
+        }
+
         switch (newState)
         {
             case EnemyState.Grounded:
@@ -201,6 +208,7 @@ public class EnemyMovement : MonoBehaviour
 
             case EnemyState.Launched:
             case EnemyState.Airborne:
+                if (animator != null) animator.ResetTrigger("Hit");
                 UpdateAnimatorFalling(true);
                 break;
                 
@@ -219,8 +227,8 @@ public class EnemyMovement : MonoBehaviour
                 _stateTimer = StandUpDuration;
                 if (animator != null)
                 {
-                    animator.speed = 1f; 
-                    UpdateAnimatorFalling(false); 
+                    animator.speed = 1f;
+                    UpdateAnimatorFalling(false);
                     animator.SetTrigger("StandUp");
                 }
                 break;

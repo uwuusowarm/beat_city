@@ -1,20 +1,47 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+
 public class WinAndLose : MonoBehaviour
 {
-    public GameObject winScreen;    
+    public GameObject winScreen;
+    [SerializeField] private StoryScreenController storyController;
+    [SerializeField] private string nextSceneName = string.Empty;
+    
     void Start()
     {
-        winScreen.SetActive(false);
+        if (winScreen != null)
+        {
+            winScreen.SetActive(false);
+        }
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
-            winScreen.SetActive(true);
-            Time.timeScale = 0f; 
+            ShowWinScreen();
+        }
+    }
+
+    public void ShowWinScreen()
+    {
+        if (winScreen != null) winScreen.SetActive(true);
+        Time.timeScale = 0f;
+    }
+
+    public void ContinueGame()
+    {
+        if (winScreen != null) winScreen.SetActive(false);
+
+        if (storyController != null)
+        {
+            storyController.TriggerStorySequence(nextSceneName);
+        }
+        else
+        {
+            Time.timeScale = 1f;
+            SceneManager.LoadScene(nextSceneName);
         }
     }
 

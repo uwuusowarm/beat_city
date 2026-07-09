@@ -55,6 +55,7 @@ public class PlayerCombat : MonoBehaviour
             audioManager = FindFirstObjectByType<AudioManager>();
         }
         hitbox.OnHitLanded += HandleHitLanded;
+        specialHitbox.OnHitLanded += HandleHitLanded;
     }
 
     private void HandleHitLanded(GameObject target)
@@ -177,6 +178,19 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
+    private void EnsureAudioManager()
+    {
+        if (audioManager == null)
+        {
+            audioManager = AudioManager.Instance;
+        }
+
+        if (audioManager == null)
+        {
+            audioManager = FindFirstObjectByType<AudioManager>();
+        }
+    }
+
     public void SpawnSpecialVfx()
     {
         if (specialVFXPrefab == null) return;
@@ -198,6 +212,15 @@ public class PlayerCombat : MonoBehaviour
     {
 
         Debug.Log("[PlayerCombat] EnableHitbox called");
+
+        if (CurrentAttackType == CombatInputType.Special)
+        {
+            EnsureAudioManager();
+            if (audioManager != null)
+            {
+                audioManager.PlaySfx(SfxType.Special, 0);
+            }
+        }
 
         Hitbox activeHitbox = GetCurrentHitbox();
         activeHitbox.Activate();
@@ -252,17 +275,8 @@ public class PlayerCombat : MonoBehaviour
 
     private void PlayAttackSfx(CombatInputType input)
     {
-        if (audioManager == null)
-        {
-            audioManager = AudioManager.Instance;
-        }
+        EnsureAudioManager();
 
-        if (audioManager == null)
-        {
-            Debug.LogWarning("[PlayerCombat] PlayAttackSfx: audioManager is still null! Trying to find it now...");
-            audioManager = FindFirstObjectByType<AudioManager>();
-        }
-        
         if (audioManager == null)
         {
             Debug.LogError("[PlayerCombat] PlayAttackSfx: NO AudioManager found in scene or via Instance!");
@@ -281,6 +295,7 @@ public class PlayerCombat : MonoBehaviour
                 audioManager.PlaySfx(SfxType.Kick, index);
                 break;
             case CombatInputType.Special:
+                audioManager.PlaySfx(SfxType.Punch, index);
                 break;
         }
     }

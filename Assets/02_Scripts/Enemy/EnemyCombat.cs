@@ -90,15 +90,20 @@ public class EnemyCombat : MonoBehaviour
 
     private void HandleHit(HitData data)
     {
+        CancelAttackWindup();
+        if (_movement != null) _movement.ForceRecalculateTactic();
+    }
+
+    public void CancelAttackWindup()
+    {
         if (_isTelegraphing)
         {
             StopAllCoroutines();
+            _isTelegraphing = false;
+            ResetVisuals();
+            if (_movement != null) _movement.SetAttackWindupActive(false);
         }
-        else
-        {
-            if (BeatEmUpDirector.Instance != null) BeatEmUpDirector.Instance.ReleaseToken(this);
-            if (_movement != null) _movement.ForceRecalculateTactic();
-        }
+        if (BeatEmUpDirector.Instance != null) BeatEmUpDirector.Instance.ReleaseToken(this);
     }
 
     private void Update()
