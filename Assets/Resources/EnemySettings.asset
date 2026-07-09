@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61a846eafdc48844cbaaf86ad04ea77f, type: 3}
   m_Name: EnemySettings
   m_EditorClassIdentifier: Assembly-CSharp::EnemySettings
+  maxHealth: 100
   moveSpeed: 3
   stopDistance: 1.5
   attackDistance: 1.5
@@ -39,3 +40,6 @@ MonoBehaviour:
   fallWobbleIntensity: 0.3
   fallAnimationHoldPoint: 0.2
   despawnDelay: 3
+  telegraphDuration: 4.07
+  freezeDuringTelegraph: 1
+  telegraphMoveSpeedMultiplier: 0

@@ -6,7 +6,8 @@ public enum SfxType
     Kick,
     Jump,
     EnemyDeath,
-    PlayerDeath
+    PlayerDeath,
+    Special
 }
 
 public enum MusicType

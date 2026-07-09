@@ -115,9 +115,15 @@ public class PlayerGrapple : MonoBehaviour
 
     private void OnThrowInput(InputAction.CallbackContext context)
     {
-        if (PlayerStateManager.Instance.CurrentState == PlayerState.Holding && _heldTarget != null)
+        if (PlayerStateManager.Instance.CurrentState != PlayerState.Holding) return;
+
+        if (_heldTarget != null)
         {
             StartCoroutine(PerformThrow(_heldTarget));
+        }
+        else
+        {
+            ReleaseHold();
         }
     }
 
@@ -128,13 +134,22 @@ public class PlayerGrapple : MonoBehaviour
         
         
         grappleHitbox.Activate();
-        
+
+        if (PlayerStateManager.Instance.CurrentState == PlayerState.Grappling)
+        {
+            grappleHitbox.Deactivate();
+            _isGrappling = false;
+            PlayerStateManager.Instance.ResetToIdle();
+            _nextGrappleTime = Time.time + settings.grappleCooldown;
+            yield break;
+        }
+
         yield return new WaitForSeconds(settings.grappleActiveTime);
-        
+
         grappleHitbox.Deactivate();
-        
+
         _isGrappling = false;
-        
+
         if (PlayerStateManager.Instance.CurrentState == PlayerState.Grappling)
         {
             PlayerStateManager.Instance.ResetToIdle();
@@ -185,14 +200,35 @@ public class PlayerGrapple : MonoBehaviour
         CharacterController cc = target.GetComponent<CharacterController>();
         if (cc != null) cc.enabled = false;
 
+        target.TryGetComponent<Health>(out var targetHealth);
+
         while (PlayerStateManager.Instance.CurrentState == PlayerState.Holding && _heldTarget == target)
         {
+            if (target == null || (targetHealth != null && targetHealth.Current <= 0))
+            {
+                ReleaseHold();
+                yield break;
+            }
+
             Vector3 targetPos = transform.position + characterModel.forward * settings.holdOffset;
             target.transform.position = targetPos;
-            
+
             target.transform.LookAt(transform.position);
-            
+
             yield return null;
+        }
+    }
+
+    private void ReleaseHold()
+    {
+        _heldTarget = null;
+
+        if (animator != null) animator.SetBool("IsGrabbing", false);
+
+        if (PlayerStateManager.Instance.CurrentState == PlayerState.Holding)
+        {
+            PlayerStateManager.Instance.ResetToIdle();
+            _nextGrappleTime = Time.time + settings.grappleCooldown;
         }
     }
 

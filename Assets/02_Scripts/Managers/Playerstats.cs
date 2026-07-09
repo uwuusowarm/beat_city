@@ -63,6 +63,15 @@ public class PlayerStats : MonoBehaviour
         SaveStats();
     }
 
+    public bool TrySpend(int amount)
+    {
+        if (coins < amount) return false;
+
+        coins -= amount;
+        SaveStats();
+        return true;
+    }
+
     public bool BuyHealthUpgrade()
     {
         int cost = GetUpgradeCost(healthLevel);

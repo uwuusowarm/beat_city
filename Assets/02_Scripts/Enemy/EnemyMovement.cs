@@ -83,9 +83,12 @@ public class EnemyMovement : MonoBehaviour
 
     private Health _health;
     private EnemyCombat _combat;
-    //
+
+    private bool _isAttackWindingUp;
+    private bool FreezeDuringTelegraph => meleeSettings != null ? meleeSettings.freezeDuringTelegraph : true;
+    private float TelegraphMoveSpeedMultiplier => meleeSettings != null ? meleeSettings.telegraphMoveSpeedMultiplier : 0f;
+
     private EnemyObstacleAvoidance _obstacleAvoidance;
-    //
     
     public float moveSpeed => meleeSettings != null ? meleeSettings.moveSpeed : 3f;
     private float StopDistance => meleeSettings != null ? meleeSettings.stopDistance : 1.5f;
@@ -116,10 +119,9 @@ public class EnemyMovement : MonoBehaviour
 
     private void Start()
     {
-        //
         _combat = GetComponent<EnemyCombat>();
         TryGetComponent(out _obstacleAvoidance);
-        //
+
         controller = GetComponent<CharacterController>();
         _health = GetComponent<Health>();
         _combat = GetComponent<EnemyCombat>();
@@ -149,10 +151,15 @@ public class EnemyMovement : MonoBehaviour
 
         if (TryGetComponent<Health>(out var health))
         {
+            int settingsMaxHealth = rangedSettings != null ? rangedSettings.maxHealth
+                : meleeSettings != null ? meleeSettings.maxHealth
+                : health.Max;
+            health.SetMaxHealth(settingsMaxHealth);
+
             health.OnHit += OnHit;
         }
 
-        
+
 
         if (rangedSettings != null)
         {
@@ -177,9 +184,16 @@ public class EnemyMovement : MonoBehaviour
         EnemyState previousState = CurrentState;
         CurrentState = newState;
         _stateTimer = 0f;
-        
+
         Debug.Log($"[EnemyMovement] {gameObject.name} State: {previousState} -> {newState}");
-        
+
+        bool couldActBefore = previousState == EnemyState.Grounded || previousState == EnemyState.HitStun;
+        bool canActNow = newState == EnemyState.Grounded || newState == EnemyState.HitStun;
+        if (couldActBefore && !canActNow)
+        {
+            _combat?.CancelAttackWindup();
+        }
+
         switch (newState)
         {
             case EnemyState.Grounded:
@@ -194,6 +208,7 @@ public class EnemyMovement : MonoBehaviour
 
             case EnemyState.Launched:
             case EnemyState.Airborne:
+                if (animator != null) animator.ResetTrigger("Hit");
                 UpdateAnimatorFalling(true);
                 break;
                 
@@ -212,8 +227,8 @@ public class EnemyMovement : MonoBehaviour
                 _stateTimer = StandUpDuration;
                 if (animator != null)
                 {
-                    animator.speed = 1f; 
-                    UpdateAnimatorFalling(false); 
+                    animator.speed = 1f;
+                    UpdateAnimatorFalling(false);
                     animator.SetTrigger("StandUp");
                 }
                 break;
@@ -226,13 +241,18 @@ public class EnemyMovement : MonoBehaviour
                 break;
 
             case EnemyState.Dead:
-                if (!controller.isGrounded)
+                if (animator != null)
                 {
-                    UpdateAnimatorFalling(true);
-                }
-                else
-                {
-                    UpdateAnimatorFalling(false);
+                    if (!animator.GetBool("IsFalling"))
+                    {
+                        animator.SetBool("IsFalling", true);
+                        animator.Play("Fall", 0, 0f);
+                        animator.speed = 1f;
+                    }
+                    else if (previousState != EnemyState.Knockdown)
+                    {
+                        animator.speed = 1f;
+                    }
                 }
                 _stateTimer = DespawnDelay;
                 break;
@@ -438,6 +458,11 @@ public class EnemyMovement : MonoBehaviour
     public void ForceRecalculateTactic()
     {
         tacticTimer = 0f;
+    }
+
+    public void SetAttackWindupActive(bool active)
+    {
+        _isAttackWindingUp = active;
     }
 
     private void Update()
@@ -778,18 +803,20 @@ public class EnemyMovement : MonoBehaviour
 
         Vector3 moveVelocity = Vector3.zero;
         float normalizedSpeed = 0f;
-        if (distance > 0.1f)
+        float windupSpeedMultiplier = (_isAttackWindingUp && FreezeDuringTelegraph) ? TelegraphMoveSpeedMultiplier : 1f;
+
+        if (distance > 0.1f && windupSpeedMultiplier > 0f)
         {
             Vector3 desiredDirection = directionToTarget.normalized;
             Vector3 avoidance = CalculateAvoidance();
-            //
+
             Vector3 steered = (desiredDirection + avoidance).normalized;
-            //
+
             Vector3 finalDirection = _obstacleAvoidance != null ? _obstacleAvoidance.Adjust(steered) : steered;
-            moveVelocity = finalDirection * moveSpeed; 
-            normalizedSpeed = 1f;
+            moveVelocity = finalDirection * moveSpeed * windupSpeedMultiplier;
+            normalizedSpeed = windupSpeedMultiplier;
         }
-        
+
         ApplyGravityAndMove(moveVelocity);
         if (animator != null)
         {
