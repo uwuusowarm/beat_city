@@ -176,6 +176,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 22d0099fb3d04ea4681fa020bf31f5bd, type: 3}
+--- !u!1 &325570765 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2432341337888984365, guid: 1af5b74b0dcaab34bb401bd7e2be1eaa, type: 3}
+  m_PrefabInstance: {fileID: 520818487}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &325570766 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6536730602705667021, guid: 1af5b74b0dcaab34bb401bd7e2be1eaa, type: 3}
@@ -316,7 +321,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2432341337888984365, guid: 1af5b74b0dcaab34bb401bd7e2be1eaa, type: 3}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2696187489785916774, guid: 1af5b74b0dcaab34bb401bd7e2be1eaa, type: 3}
+      propertyPath: m_fontColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2696187489785916774, guid: 1af5b74b0dcaab34bb401bd7e2be1eaa, type: 3}
+      propertyPath: m_fontColor.g
+      value: 0.7762758
+      objectReference: {fileID: 0}
+    - target: {fileID: 2696187489785916774, guid: 1af5b74b0dcaab34bb401bd7e2be1eaa, type: 3}
+      propertyPath: m_fontColor.r
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2696187489785916774, guid: 1af5b74b0dcaab34bb401bd7e2be1eaa, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4278241023
+      objectReference: {fileID: 0}
+    - target: {fileID: 4500227463255348475, guid: 1af5b74b0dcaab34bb401bd7e2be1eaa, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 368
+      objectReference: {fileID: 0}
+    - target: {fileID: 4500227463255348475, guid: 1af5b74b0dcaab34bb401bd7e2be1eaa, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 249
       objectReference: {fileID: 0}
     - target: {fileID: 6536730602705667021, guid: 1af5b74b0dcaab34bb401bd7e2be1eaa, type: 3}
       propertyPath: m_Pivot.x
@@ -678,41 +707,36 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UpgradeShop
   shopAction: {fileID: 5032114770025236389, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  playerMoney: {fileID: 1304769524}
-  shopPanel: {fileID: 884536641}
+  shopPanel: {fileID: 325570765}
   pauseWhenOpen: 1
   upgrades:
   - Name: Damage Up
-    Cost: 0
-    CostMod: 0
-    MaxLevel: 0
+    Cost: 5
+    CostMod: 1
+    MaxLevel: 10
     Button: {fileID: 1726515930}
     Label: {fileID: 704738927}
     Level: 0
   - Name: Special Up
-    Cost: 0
-    CostMod: 0
-    MaxLevel: 0
+    Cost: 5
+    CostMod: 100
+    MaxLevel: 1
     Button: {fileID: 1942786459}
     Label: {fileID: 1272266221}
     Level: 0
   - Name: Max Health
-    Cost: 0
-    CostMod: 0
-    MaxLevel: 0
+    Cost: 5
+    CostMod: 1
+    MaxLevel: 10
     Button: {fileID: 1216382139}
     Label: {fileID: 587169138}
     Level: 0
+  moneyText: {fileID: 1939550671}
   special: {fileID: 510086307}
   specialBoost: 1
   health: {fileID: 1304769519}
   _settings: {fileID: 11400000, guid: c0dcd7301d4e72d46be870438824e773, type: 2}
   damageBoost: 1
---- !u!1 &884536641 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1295028567361169531, guid: 657481147422a37418123f320e560f25, type: 3}
-  m_PrefabInstance: {fileID: 737657283}
-  m_PrefabAsset: {fileID: 0}
 --- !u!224 &884536642 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3935501410915414547, guid: 657481147422a37418123f320e560f25, type: 3}
@@ -873,17 +897,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c90a008bb54b674cb6371fbbf1ede7b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCombat
---- !u!114 &1304769524 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8612664414132317126, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
-  m_PrefabInstance: {fileID: 341897364}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e36d2d56d645932499a890bac32c6a63, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Money
 --- !u!114 &1327577481 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 605783626459870476, guid: 657481147422a37418123f320e560f25, type: 3}
@@ -1108,6 +1121,17 @@ PrefabInstance:
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5068379119265941975, guid: 657481147422a37418123f320e560f25, type: 3}
   m_PrefabInstance: {fileID: 737657283}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+--- !u!114 &1939550671 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2696187489785916774, guid: 1af5b74b0dcaab34bb401bd7e2be1eaa, type: 3}
+  m_PrefabInstance: {fileID: 520818487}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
