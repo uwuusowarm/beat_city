@@ -274,7 +274,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9d2133455e252e419fb7dc96b008617, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Hurtbox
-  owner: {fileID: 0}
+  owner: {fileID: 1662536712636653983}
   size: {x: 1, y: 2, z: 1}
   offset: {x: 0, y: 0, z: 0}
 --- !u!114 &4120568060040060487
@@ -356,7 +356,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a8d1e53402ec17418391ed73f486df1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
-  maxHealth: 200
+  maxHealth: 500
   uiHealth: {fileID: 0}
   hitVfxPrefab: {fileID: 5669246471909640947, guid: bfd016bff164dfc4aac33a0563922772, type: 3}
 --- !u!114 &-3002893363729806011
