@@ -6,6 +6,8 @@ public class MainMenuManager : MonoBehaviour
     void Start()
     {
         AudioManager.Instance.PlayMusic(MusicType.MainMenu);
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
     }
 
     // Update is called once per frame

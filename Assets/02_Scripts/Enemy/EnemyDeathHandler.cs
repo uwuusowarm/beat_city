@@ -46,6 +46,7 @@ public class EnemyDeathHandler : MonoBehaviour
 
         foreach (var c in GetComponentsInChildren<Collider>())
         {
+            if (c is CharacterController) continue;
             c.enabled = false;
         }
 

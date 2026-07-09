@@ -6,6 +6,7 @@ public class LevelStartTrigger : MonoBehaviour
     {
         if (PlayerStats.Instance != null)
         {
+            PlayerStats.Instance.ResetCoins();
             PlayerStats.Instance.ApplyStatsToPlayer();
         }
     }

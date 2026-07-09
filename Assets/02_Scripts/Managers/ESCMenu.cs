@@ -15,6 +15,7 @@ public class ESCMenu : MonoBehaviour
         escMenuUI.SetActive(false);
         Time.timeScale = 1f;
         isPaused = false;
+        CursorState.Refresh();
     }
 
     void Update()
@@ -42,6 +43,7 @@ public class ESCMenu : MonoBehaviour
         Time.timeScale = 1f;
         isPaused = false;
         EventSystem.current.SetSelectedGameObject(null);
+        CursorState.Refresh();
     }
 
     public void Pause()
@@ -52,6 +54,7 @@ public class ESCMenu : MonoBehaviour
         isPaused = true;
         EventSystem.current.SetSelectedGameObject(null);
         EventSystem.current.SetSelectedGameObject(firstSelectedButton);
+        CursorState.Refresh();
     }
 
     public void LoadMainMenu()

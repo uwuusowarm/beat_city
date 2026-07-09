@@ -116,7 +116,6 @@ GameObject:
   - component: {fileID: 8612664414132317126}
   - component: {fileID: 9141774141328228895}
   - component: {fileID: 4308366570326131633}
-  - component: {fileID: 3017595488714093560}
   m_Layer: 0
   m_Name: PlayerAnimGrey
   m_TagString: Player
@@ -445,23 +444,6 @@ MonoBehaviour:
   animator: {fileID: 4255781138198214351}
   meter: {fileID: 0}
   afterimageEffect: {fileID: 9141774141328228895}
---- !u!114 &3017595488714093560
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1662536712636653983}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 800900cedc791304ab546916ab0462ed, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
-  coins: 0
-  healthLevel: 1
-  damageLevel: 1
-  hpBonusPerLevel: 20
-  damageBonusPerLevel: 0.15
 --- !u!1 &7937538812829366670
 GameObject:
   m_ObjectHideFlags: 0

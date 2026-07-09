@@ -57,6 +57,12 @@ public class PlayerStats : MonoBehaviour
         return currentLevel * 75; 
     }
 
+    public void ResetCoins()
+    {
+        coins = 0;
+        SaveStats();
+    }
+
     public void AddCoins(int amount)
     {
         coins += amount;

@@ -40,6 +40,9 @@ MonoBehaviour:
   fallWobbleIntensity: 0.3
   fallAnimationHoldPoint: 0.2
   despawnDelay: 3
-  telegraphDuration: 4.07
+  telegraphDuration: 2
   freezeDuringTelegraph: 1
   telegraphMoveSpeedMultiplier: 0
+  hitboxSize: {x: 1.2, y: 1.6, z: 1.2}
+  hitboxForwardOffset: 0.75
+  hitboxHeight: 0.3

@@ -25,6 +25,7 @@ public class PlayerGrapple : MonoBehaviour
     private MovementPlayer _movement;
     private PlayerCombat _combat;
     private InputBuffer _inputBuffer;
+    private bool _stateSubscribed;
 
     private void Awake()
     {
@@ -60,6 +61,7 @@ public class PlayerGrapple : MonoBehaviour
                 actionRef.action.Enable();
             }
         }
+        EnsureStateSubscription();
     }
 
     private void OnDisable()
@@ -74,11 +76,46 @@ public class PlayerGrapple : MonoBehaviour
         }
         if (_isGrappling && PlayerStateManager.Instance != null) PlayerStateManager.Instance.ResetToIdle();
         if (animator != null) animator.SetBool("IsGrabbing", false);
+
+        if (_stateSubscribed && PlayerStateManager.Instance != null)
+        {
+            PlayerStateManager.Instance.OnStateChanged -= HandlePlayerStateChanged;
+        }
+        _stateSubscribed = false;
+    }
+    
+    private void EnsureStateSubscription()
+    {
+        if (_stateSubscribed || PlayerStateManager.Instance == null) return;
+        PlayerStateManager.Instance.OnStateChanged += HandlePlayerStateChanged;
+        _stateSubscribed = true;
+    }
+    
+    private void HandlePlayerStateChanged(PlayerState newState)
+    {
+        if (newState == PlayerState.Holding) return;
+
+        if (animator != null) animator.SetBool("IsGrabbing", false);
+
+        if (_heldTarget != null)
+        {
+            if (_heldTarget.TryGetComponent<CharacterController>(out var cc))
+                cc.enabled = true;
+
+            if (_heldTarget.TryGetComponent<EnemyMovement>(out var em) &&
+                em.CurrentState == EnemyState.Grabbed)
+            {
+                em.SetState(EnemyState.Airborne);
+            }
+
+            _heldTarget = null;
+        }
     }
 
     private void FixedUpdate()
     {
         if (PlayerStateManager.Instance == null) return;
+        EnsureStateSubscription();
 
         if (PlayerStateManager.Instance.CurrentState == PlayerState.Idle && Time.time >= _nextGrappleTime && !_isGrappling)
         {

@@ -28,6 +28,8 @@ public class WinAndLose : MonoBehaviour
     {
         if (winScreen != null) winScreen.SetActive(true);
         Time.timeScale = 0f;
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
     }
 
     public void ContinueGame()
