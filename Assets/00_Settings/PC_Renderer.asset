@@ -18,10 +18,10 @@ MonoBehaviour:
     renderPassEvent: 300
     outlineEnabled: 1
     outlineColor: {r: 0, g: 0, b: 0, a: 1}
-    thickness: 1.09
+    thickness: 2.19
     depthThreshold: 0.02
     normalThreshold: 6.56
-    grazingSuppression: 1
+    grazingSuppression: 10.67
     outlineTintFromScene: 0
     posterizeEnabled: 1
     posterizeAmount: 0.145
