@@ -22,8 +22,12 @@ public class MovementPlayer : MonoBehaviour
     
     void Awake()
     {
+        settings = SettingsResolver.ResolvePlayerSettings(settings);
+
         if (settings == null)
-            settings = Resources.Load<PlayerSettings>("PlayerSettings");
+        {
+            Debug.LogWarning("[MovementPlayer] No PlayerSettings found (provider/inspector/resources).");
+        }
     }
 
     void Start()

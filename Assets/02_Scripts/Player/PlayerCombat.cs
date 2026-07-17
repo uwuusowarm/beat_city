@@ -46,12 +46,27 @@ public class PlayerCombat : MonoBehaviour
 
     private void Awake()
     {
-        _settings = Resources.Load<PlayerSettings>("PlayerSettings");
+        _settings = SettingsResolver.ResolvePlayerSettings();
+
+        if (_settings == null)
+        {
+            Debug.LogWarning("[PlayerCombat] No PlayerSettings found (provider/resources).");
+        }
 
         if (audioManager == null)
         {
             audioManager = FindFirstObjectByType<AudioManager>();
         }
+
+        if (_settings != null)
+        {
+            if (hitbox != null)
+                hitbox.HitStopDuration = _settings.combatHitStop;
+
+            if (specialHitbox != null)
+                specialHitbox.HitStopDuration = _settings.combatHitStop;
+        }
+
         hitbox.OnHitLanded += HandleHitLanded;
         specialHitbox.OnHitLanded += HandleHitLanded;
     }

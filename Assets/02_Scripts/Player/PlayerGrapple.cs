@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -29,8 +29,7 @@ public class PlayerGrapple : MonoBehaviour
 
     private void Awake()
     {
-        if (settings == null)
-            settings = Resources.Load<PlayerSettings>("PlayerSettings");
+        settings = SettingsResolver.ResolvePlayerSettings(settings);
 
         _movement = GetComponent<MovementPlayer>();
         _combat = GetComponent<PlayerCombat>();
@@ -48,6 +47,11 @@ public class PlayerGrapple : MonoBehaviour
         else
         {
             Debug.LogError($"[PlayerGrapple] grappleHitbox is NOT assigned on {gameObject.name}!");
+        }
+
+        if (settings == null)
+        {
+            Debug.LogWarning("[PlayerGrapple] No PlayerSettings found (provider/inspector/resources).");
         }
     }
 
@@ -96,6 +100,7 @@ public class PlayerGrapple : MonoBehaviour
         if (newState == PlayerState.Holding) return;
 
         if (animator != null) animator.SetBool("IsGrabbing", false);
+        Debug.Log("Player is no longer holding");
 
         if (_heldTarget != null)
         {
@@ -225,6 +230,7 @@ public class PlayerGrapple : MonoBehaviour
         if (animator != null)
         {
             animator.SetBool("IsGrabbing", true);
+            Debug.Log("Player is holding");
         }
 
         StartCoroutine(HoldTarget(target));
@@ -247,7 +253,11 @@ public class PlayerGrapple : MonoBehaviour
                 yield break;
             }
 
-            Vector3 targetPos = transform.position + characterModel.forward * settings.holdOffset;
+            Vector3 targetPos = transform.position
+                                + characterModel.forward * settings.holdOffset
+                                + characterModel.right * settings.grappleHoldOffset.x
+                                + Vector3.up * settings.grappleHoldOffset.y
+                                + characterModel.forward * settings.grappleHoldOffset.z;
             target.transform.position = targetPos;
 
             target.transform.LookAt(transform.position);
@@ -261,6 +271,7 @@ public class PlayerGrapple : MonoBehaviour
         _heldTarget = null;
 
         if (animator != null) animator.SetBool("IsGrabbing", false);
+        Debug.Log("Player is no longer holding");
 
         if (PlayerStateManager.Instance.CurrentState == PlayerState.Holding)
         {
@@ -298,6 +309,7 @@ public class PlayerGrapple : MonoBehaviour
         if (animator != null)
         {
             animator.SetBool("IsGrabbing", false);
+            Debug.Log("Player is no longer holding");
             string animName = isBackwardThrow ? "Throw" : "Headbutt";
             float launchPoint = isBackwardThrow ? settings.throwLaunchPoint : settings.headbuttLaunchPoint;
             animator.SetTrigger(animName);
@@ -321,6 +333,10 @@ public class PlayerGrapple : MonoBehaviour
 
         yield return StartCoroutine(AnimateThrow(target, throwDir, isBackwardThrow));
 
+        if (ScreenShake.Instance != null)
+        {
+            ScreenShake.Instance.Shake(settings.grappleDamage);
+        }
 
         if (target != null)
         {
@@ -338,6 +354,11 @@ public class PlayerGrapple : MonoBehaviour
                     SuppressHitAnimation = true,
                     Source = gameObject
                 });
+
+                if (settings != null)
+                {
+                    HitStop.Instance?.Do(settings.grappleImpactHitStop);
+                }
 
                 if (damageable is Health enemyHealth)
                 {
@@ -435,9 +456,17 @@ public class PlayerGrapple : MonoBehaviour
                                 ShouldKnockdown = true,
                                 Source = target 
                             });
+
+                            if (ScreenShake.Instance != null)
+                            {
+                                ScreenShake.Instance.Shake(settings.projectileDamage);
+                            }
                             
                             Debug.Log($"[PlayerGrapple] Thrown target {target.name} hit {otherEnemy.name} during flight!");
-                            HitStop.Instance?.Do(0.05f);
+                            if (settings != null)
+                            {
+                                HitStop.Instance?.Do(settings.grappleProjectileHitStop);
+                            }
                         }
                     }
                 }

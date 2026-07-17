@@ -38,9 +38,11 @@ public class UpgradeShop : MonoBehaviour
 
     private void Awake()
     {
+        _settings = SettingsResolver.ResolvePlayerSettings(_settings);
+
         if (_settings == null)
         {
-            _settings = Resources.Load<PlayerSettings>("PlayerSettings");
+            Debug.LogWarning("[UpgradeShop] No PlayerSettings found (provider/inspector/resources).");
         }
 
         if (special == null)

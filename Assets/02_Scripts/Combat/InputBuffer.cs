@@ -95,6 +95,7 @@ public class InputBuffer : MonoBehaviour
     private void OnPunch(InputAction.CallbackContext context)
     {
         if (!context.ReadValueAsButton()) return;
+        if (ShouldIgnoreMouseClickInput(context)) return;
         Buffer(CombatInputType.Punch);
         
     }
@@ -102,19 +103,38 @@ public class InputBuffer : MonoBehaviour
     private void OnKick(InputAction.CallbackContext context)
     {
         if (!context.ReadValueAsButton()) return;
+        if (ShouldIgnoreMouseClickInput(context)) return;
         Buffer(CombatInputType.Kick);
     }
 
     private void OnSpecial(InputAction.CallbackContext context)
     {
         if (!context.ReadValueAsButton()) return;
+        if (ShouldIgnoreMouseClickInput(context)) return;
         Buffer(CombatInputType.Special);
     }
 
     private void OnSpecialChain(InputAction.CallbackContext context)
     {
         if (!context.ReadValueAsButton()) return;
+        if (ShouldIgnoreMouseClickInput(context)) return;
         Buffer(CombatInputType.SpecialChain);
+    }
+
+    private bool ShouldIgnoreMouseClickInput(InputAction.CallbackContext context)
+    {
+        if (!(context.control?.device is Mouse))
+        {
+            return false;
+        }
+
+        if (!SettingsRuntimePanel.IsMouseOverVisiblePanel())
+        {
+            return false;
+        }
+
+        Clear();
+        return true;
     }
 
     private void Buffer(CombatInputType input)

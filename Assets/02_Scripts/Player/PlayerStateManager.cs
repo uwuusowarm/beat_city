@@ -49,5 +49,6 @@ public class PlayerStateManager : MonoBehaviour
     public void ResetToIdle()
     {
         SetState(PlayerState.Idle);
+        Debug.Log("Player state reset to idle");
     }
 }

@@ -11,6 +11,8 @@ public class EnemyMovement : MonoBehaviour
     [Header("Visuals")]
     public Transform characterModel;
     [SerializeField] private Animator animator;
+    [Header("Grabbed Animation")]
+    [SerializeField, Min(0.01f)] private float grabbedFallPlaybackSpeed = 1f;
     
     public EnemyState CurrentState { get; private set; } = EnemyState.Grounded;
     
@@ -54,6 +56,7 @@ public class EnemyMovement : MonoBehaviour
     public bool IsBeingThrown => _isBeingThrown;
     
     private bool _wasThrownSkipReset;
+    private Coroutine _grabbedFallCoroutine;
     
     private float _groundYPosition;
     
@@ -137,12 +140,11 @@ public class EnemyMovement : MonoBehaviour
         
         _groundYPosition = transform.position.y;
 
+        meleeSettings = SettingsResolver.ResolveEnemySettings(meleeSettings);
+        rangedSettings = null;
+
         if (meleeSettings == null && rangedSettings == null)
-        {
-            meleeSettings = Resources.Load<EnemySettings>("EnemySettings");
-            if (meleeSettings == null)
-                Debug.LogWarning("[EnemyMovement] No EnemySettings assigned or found in Resources folder.");
-        }
+            Debug.LogWarning("[EnemyMovement] No enemy settings found (provider/inspector/resources).");
 
         if (rangedSettings == null)
         {
@@ -184,6 +186,11 @@ public class EnemyMovement : MonoBehaviour
         EnemyState previousState = CurrentState;
         CurrentState = newState;
         _stateTimer = 0f;
+
+        if (previousState == EnemyState.Grabbed && newState != EnemyState.Grabbed)
+        {
+            StopGrabbedFallAnimation(true);
+        }
 
         Debug.Log($"[EnemyMovement] {gameObject.name} State: {previousState} -> {newState}");
 
@@ -237,6 +244,7 @@ public class EnemyMovement : MonoBehaviour
                 if (animator != null)
                 {
                     animator.SetFloat("Speed", 0f);
+                    StartGrabbedFallAnimation();
                 }
                 break;
 
@@ -302,6 +310,7 @@ public class EnemyMovement : MonoBehaviour
     {
         _isBeingThrown = true;
         _wasThrownSkipReset = true;
+        StopGrabbedFallAnimation(true);
         
         UpdateAnimatorFalling(true);
         _wobblePhase = 0f;
@@ -313,6 +322,62 @@ public class EnemyMovement : MonoBehaviour
     {
         _isBeingThrown = false;
         Debug.Log($"[EnemyMovement] {gameObject.name} EndThrowAnimation called - Physics resumed");
+    }
+
+    private void StartGrabbedFallAnimation()
+    {
+        if (animator == null) return;
+
+        StopGrabbedFallAnimation(false);
+        _grabbedFallCoroutine = StartCoroutine(PlayAndPauseGrabbedFall());
+    }
+
+    private void StopGrabbedFallAnimation(bool resumeAnimator)
+    {
+        if (_grabbedFallCoroutine != null)
+        {
+            StopCoroutine(_grabbedFallCoroutine);
+            _grabbedFallCoroutine = null;
+        }
+
+        if (animator != null && resumeAnimator)
+        {
+            animator.speed = 1f;
+        }
+    }
+
+    private IEnumerator PlayAndPauseGrabbedFall()
+    {
+        if (animator == null) yield break;
+
+        float pausePoint = Mathf.Clamp01(FallHoldPoint);
+        float playbackSpeed = Mathf.Max(0.01f, grabbedFallPlaybackSpeed);
+
+        animator.SetBool("IsFalling", true);
+        animator.Play("Fall", 0, 0f);
+        animator.speed = playbackSpeed;
+
+        yield return null;
+
+        AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
+        while (CurrentState == EnemyState.Grabbed && !state.IsName("Fall"))
+        {
+            yield return null;
+            state = animator.GetCurrentAnimatorStateInfo(0);
+        }
+
+        while (CurrentState == EnemyState.Grabbed && state.IsName("Fall") && state.normalizedTime < pausePoint)
+        {
+            yield return null;
+            state = animator.GetCurrentAnimatorStateInfo(0);
+        }
+
+        if (CurrentState == EnemyState.Grabbed && animator != null)
+        {
+            animator.speed = 0f;
+        }
+
+        _grabbedFallCoroutine = null;
     }
     
 

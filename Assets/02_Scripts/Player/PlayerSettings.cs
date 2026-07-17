@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿﻿using UnityEngine;
 
 [CreateAssetMenu(fileName = "PlayerSettings", menuName = "ScriptableObjects/PlayerSettings", order = 1)]
 public class PlayerSettings : ScriptableObject
@@ -76,6 +76,9 @@ public class PlayerSettings : ScriptableObject
     [Tooltip("Distance enemy is held in front of player")]
     public float holdOffset = 1.2f;
 
+    [Tooltip("Local position offset applied while holding a grabbed enemy")]
+    public Vector3 grappleHoldOffset = Vector3.zero;
+
     [Tooltip("Extra distance added to backward throw to compensate for hold offset")]
     public float backwardThrowOffset = 2.4f;
 
@@ -134,4 +137,14 @@ public class PlayerSettings : ScriptableObject
     
     [Tooltip("Upward force applied to thrown enemy on landing")]
     public float impactKnockUp = 0f;
+
+    [Header("Hit Stop")]
+    [Tooltip("Freeze-frame duration when player attacks damage enemies")]
+    public float combatHitStop = 0.05f;
+
+    [Tooltip("Freeze-frame duration when thrown enemy collides with another enemy")]
+    public float grappleProjectileHitStop = 0.05f;
+
+    [Tooltip("Freeze-frame duration when thrown enemy takes the final impact hit")]
+    public float grappleImpactHitStop = 0.08f;
 }

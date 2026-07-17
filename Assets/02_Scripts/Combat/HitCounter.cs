@@ -12,7 +12,12 @@ public class HitCounter : MonoBehaviour
 
     private void Awake()
     {
-        _settings = Resources.Load<PlayerSettings>("PlayerSettings");
+        _settings = SettingsResolver.ResolvePlayerSettings();
+
+        if (_settings == null)
+        {
+            Debug.LogWarning("[HitCounter] No PlayerSettings found (provider/resources).");
+        }
         
         foreach (var hitbox in GetComponentsInChildren<Hitbox>(includeInactive: true))
         {

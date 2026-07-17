@@ -19,7 +19,12 @@ public class SpecialMove : MonoBehaviour
 
     private void Awake()
     {
-        _settings = Resources.Load<PlayerSettings>("PlayerSettings");
+        _settings = SettingsResolver.ResolvePlayerSettings();
+
+        if (_settings == null)
+        {
+            Debug.LogWarning("[SpecialMove] No PlayerSettings found (provider/resources).");
+        }
     }
     
     public bool TryActivate()
@@ -122,6 +127,8 @@ public class SpecialMove : MonoBehaviour
     private void ConfigureHitbox(CombatInputType chainType, bool isLast)
     {
         if (hitbox == null || _settings == null) return;
+
+        hitbox.HitStopDuration = _settings.combatHitStop;
 
         if (chainType == CombatInputType.Punch)
         {
