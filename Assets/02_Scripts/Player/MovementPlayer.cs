@@ -22,6 +22,8 @@ public class MovementPlayer : MonoBehaviour
     
     void Awake()
     {
+        CharacterHighlightLayer.Ensure(gameObject);
+
         settings = SettingsResolver.ResolvePlayerSettings(settings);
 
         if (settings == null)

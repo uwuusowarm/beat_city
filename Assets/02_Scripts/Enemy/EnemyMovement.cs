@@ -122,6 +122,8 @@ public class EnemyMovement : MonoBehaviour
 
     private void Start()
     {
+        CharacterHighlightLayer.Ensure(gameObject);
+
         _combat = GetComponent<EnemyCombat>();
         TryGetComponent(out _obstacleAvoidance);
 

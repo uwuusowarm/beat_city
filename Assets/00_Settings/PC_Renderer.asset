@@ -65,7 +65,8 @@ MonoBehaviour:
   m_RendererFeatures:
   - {fileID: 7833122117494664109}
   - {fileID: -1851006341108312508}
-  m_RendererFeatureMap: ad6b866f10d7b46c44563e318ae74fe6
+  - {fileID: 2470536069627100851}
+  m_RendererFeatureMap: ad6b866f10d7b46c44563e318ae74fe6b3bee942771b4922
   m_UseNativeRenderPass: 1
   xrSystemData: {fileID: 0}
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
@@ -94,6 +95,43 @@ MonoBehaviour:
   m_DepthTextureFormat: 0
   m_AccurateGbufferNormals: 0
   m_IntermediateTextureMode: 0
+--- !u!114 &2470536069627100851
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43f034574ccb5d14c92acf7a221b86db, type: 3}
+  m_Name: FresnelHighlightFeature
+  m_EditorClassIdentifier: Assembly-CSharp::FresnelHighlightFeature
+  m_Active: 1
+  shader: {fileID: 4800000, guid: 65835d5bfe0ae994281a9173c7b1155d, type: 3}
+  renderPassEvent: 300
+  shaderTags:
+  - UniversalForward
+  player:
+    enabled: 1
+    renderingLayer:
+      serializedVersion: 0
+      m_Bits: 256
+    color: {r: 1, g: 1, b: 1, a: 1}
+    power: 4.8
+    threshold: 0.486
+    smoothness: 0.264
+    intensity: 2.33
+  enemy:
+    enabled: 1
+    renderingLayer:
+      serializedVersion: 0
+      m_Bits: 512
+    color: {r: 1, g: 0.16509432, b: 0.16509432, a: 1}
+    power: 1.76
+    threshold: 0.586
+    smoothness: 0.25
+    intensity: 1.2
 --- !u!114 &7833122117494664109
 MonoBehaviour:
   m_ObjectHideFlags: 0
