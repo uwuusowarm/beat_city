@@ -53,6 +53,32 @@ public class EnemySettings : ScriptableObject
     [Tooltip("How long the enemy hovers in the air after a juggle hit (seconds)")]
     public float juggleHoverDuration = 0.5f;
 
+    [Tooltip("Vertical drift speed while hovering after a juggle hit (negative = slow sink)")]
+    public float juggleHoverDriftSpeed = -0.5f;
+
+    [Tooltip("Safety net: max seconds an enemy may stay Launched/Airborne before a forced landing")]
+    public float maxAirborneDuration = 3f;
+
+    [Header("Juggle Pop (mid-air re-hit)")]
+    [Tooltip("Guaranteed minimum upward velocity of a mid-air hit, so every hit reads as a pop")]
+    public float jugglePopVelocity = 3.5f;
+
+    [Tooltip("Share of the hit's effective KnockUpForce that feeds into the pop")]
+    public float jugglePopForceScale = 0.4f;
+
+    [Tooltip("Pop velocity cap as a share of maxJugglingVelocity")]
+    public float jugglePopMaxVelocityScale = 0.5f;
+
+    [Tooltip("How far above maxJuggleHeight a pop may carry the enemy. 0 = hard ceiling")]
+    public float jugglePopHeadroom = 0.4f;
+
+    [Tooltip("Distance below the pop ceiling over which the pop fades out")]
+    public float jugglePopFadeRange = 0.4f;
+
+    [Tooltip("Lower bound of the fade factor, so a hit right at the ceiling still pops")]
+    [Range(0f, 1f)]
+    public float jugglePopMinFade = 0.35f;
+
     [Header("Gravity")]
     public float baseGravity = 20f;
     

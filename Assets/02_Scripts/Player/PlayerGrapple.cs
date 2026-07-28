@@ -244,25 +244,36 @@ public class PlayerGrapple : MonoBehaviour
         if (cc != null) cc.enabled = false;
 
         target.TryGetComponent<Health>(out var targetHealth);
-
-        while (PlayerStateManager.Instance.CurrentState == PlayerState.Holding && _heldTarget == target)
+        
+        try
         {
-            if (target == null || (targetHealth != null && targetHealth.Current <= 0))
+            while (PlayerStateManager.Instance.CurrentState == PlayerState.Holding && _heldTarget == target)
             {
-                ReleaseHold();
-                yield break;
+                if (target == null || (targetHealth != null && targetHealth.Current <= 0))
+                {
+                    ReleaseHold();
+                    yield break;
+                }
+
+                Vector3 targetPos = transform.position
+                                    + characterModel.forward * settings.holdOffset
+                                    + characterModel.right * settings.grappleHoldOffset.x
+                                    + Vector3.up * settings.grappleHoldOffset.y
+                                    + characterModel.forward * settings.grappleHoldOffset.z;
+                target.transform.position = targetPos;
+
+                target.transform.LookAt(transform.position);
+
+                yield return null;
             }
+        }
+        finally
+        {
+            bool midThrow = target != null
+                            && target.TryGetComponent<EnemyMovement>(out var thrownEm)
+                            && thrownEm.IsBeingThrown;
 
-            Vector3 targetPos = transform.position
-                                + characterModel.forward * settings.holdOffset
-                                + characterModel.right * settings.grappleHoldOffset.x
-                                + Vector3.up * settings.grappleHoldOffset.y
-                                + characterModel.forward * settings.grappleHoldOffset.z;
-            target.transform.position = targetPos;
-
-            target.transform.LookAt(transform.position);
-
-            yield return null;
+            if (cc != null && !midThrow) cc.enabled = true;
         }
     }
 
@@ -407,95 +418,100 @@ public class PlayerGrapple : MonoBehaviour
         }
 
         if (cc != null) cc.enabled = false;
-
-        _currentProjectile = target;
-        HashSet<IDamageable> hitTargetsDuringFlight = new HashSet<IDamageable>();
-
-        float elapsed = 0f;
-        while (elapsed < settings.throwDuration)
+        
+        try
         {
-            if (target == null) yield break;
-            if (em != null && !em.IsInThrowState) break;
+            _currentProjectile = target;
+            HashSet<IDamageable> hitTargetsDuringFlight = new HashSet<IDamageable>();
 
-            elapsed += Time.deltaTime;
-            float t = elapsed / settings.throwDuration;
-
-            Vector3 currentPos = Vector3.Lerp(startPos, targetPos, t);
-            float heightOffset = 4 * settings.throwHeight * t * (1 - t);
-            currentPos.y += heightOffset;
-
-            if (rb != null) rb.position = currentPos;
-            target.transform.position = currentPos;
-
-            Collider[] hits = Physics.OverlapSphere(currentPos, settings.projectileRadius);
-            foreach (var hit in hits)
+            float elapsed = 0f;
+            while (elapsed < settings.throwDuration)
             {
-                if (hit == null) continue;
-                if (hit.TryGetComponent<Hurtbox>(out var hurtbox))
+                if (target == null) yield break;
+                if (em != null && !em.IsInThrowState) break;
+
+                elapsed += Time.deltaTime;
+                float t = elapsed / settings.throwDuration;
+
+                Vector3 currentPos = Vector3.Lerp(startPos, targetPos, t);
+                float heightOffset = 4 * settings.throwHeight * t * (1 - t);
+                currentPos.y += heightOffset;
+
+                if (rb != null) rb.position = currentPos;
+                target.transform.position = currentPos;
+
+                Collider[] hits = Physics.OverlapSphere(currentPos, settings.projectileRadius);
+                foreach (var hit in hits)
                 {
-                    GameObject otherEnemy = hurtbox.Owner;
-
-                    if (otherEnemy == null || otherEnemy == target || otherEnemy == gameObject) continue;
-
-                    if (otherEnemy.TryGetComponent<IDamageable>(out var damageable))
+                    if (hit == null) continue;
+                    if (hit.TryGetComponent<Hurtbox>(out var hurtbox))
                     {
-                        if (hitTargetsDuringFlight.Add(damageable))
+                        GameObject otherEnemy = hurtbox.Owner;
+
+                        if (otherEnemy == null || otherEnemy == target || otherEnemy == gameObject) continue;
+
+                        if (otherEnemy.TryGetComponent<IDamageable>(out var damageable))
                         {
-                            if (target == null) break; 
-                            Vector3 knockbackDir = (otherEnemy.transform.position - target.transform.position).normalized;
-                            knockbackDir.y = 0f;
-                            if (knockbackDir == Vector3.zero) knockbackDir = throwDir;
+                            if (hitTargetsDuringFlight.Add(damageable))
+                            {
+                                if (target == null) break;
+                                Vector3 knockbackDir = (otherEnemy.transform.position - target.transform.position).normalized;
+                                knockbackDir.y = 0f;
+                                if (knockbackDir == Vector3.zero) knockbackDir = throwDir;
 
-                            damageable.TakeDamage(new HitData
-                            {
-                                Damage = settings.projectileDamage,
-                                KnockbackDirection = knockbackDir.normalized,
-                                KnockbackForce = settings.projectileKnockback,
-                                KnockUpForce = settings.projectileKnockUp,
-                                HitStunDuration = 0.3f,
-                                ShouldKnockdown = true,
-                                Source = target 
-                            });
+                                damageable.TakeDamage(new HitData
+                                {
+                                    Damage = settings.projectileDamage,
+                                    KnockbackDirection = knockbackDir.normalized,
+                                    KnockbackForce = settings.projectileKnockback,
+                                    KnockUpForce = settings.projectileKnockUp,
+                                    HitStunDuration = 0.3f,
+                                    ShouldKnockdown = true,
+                                    Source = target
+                                });
 
-                            if (ScreenShake.Instance != null)
-                            {
-                                ScreenShake.Instance.Shake(settings.projectileDamage);
-                            }
-                            
-                            Debug.Log($"[PlayerGrapple] Thrown target {target.name} hit {otherEnemy.name} during flight!");
-                            if (settings != null)
-                            {
-                                HitStop.Instance?.Do(settings.grappleProjectileHitStop);
+                                if (ScreenShake.Instance != null)
+                                {
+                                    ScreenShake.Instance.Shake(settings.projectileDamage);
+                                }
+
+                                Debug.Log($"[PlayerGrapple] Thrown target {target.name} hit {otherEnemy.name} during flight!");
+                                if (settings != null)
+                                {
+                                    HitStop.Instance?.Do(settings.grappleProjectileHitStop);
+                                }
                             }
                         }
                     }
                 }
-            }
-            
-            yield return null;
-        }
 
-        if (target != null)
-        {
-            bool interrupted = em != null && !em.IsInThrowState;
-            
-            if (!interrupted)
-            {
-                target.transform.position = targetPos;
+                yield return null;
             }
 
-            if (cc != null) cc.enabled = true;
-
-            if (em != null)
+            if (target != null)
             {
+                bool interrupted = em != null && !em.IsInThrowState;
+
                 if (!interrupted)
                 {
-                    em.SetState(EnemyState.Airborne);
+                    target.transform.position = targetPos;
+                }
+
+                if (em != null)
+                {
+                    if (!interrupted)
+                    {
+                        em.SetState(EnemyState.Airborne);
+                    }
                 }
             }
-        }
 
-        _currentProjectile = null;
+            _currentProjectile = null;
+        }
+        finally
+        {
+            if (cc != null) cc.enabled = true;
+        }
     }
 
     private void OnDrawGizmos()

@@ -4,6 +4,8 @@ using System.Collections;
 [RequireComponent(typeof(EnemyMovement), typeof(Health))]
 public class EnemyCombat : MonoBehaviour
 {
+    private const float WindupRampFloor = 0.25f;
+
     [Header("Attack Settings")]
     [SerializeField] private int attackDamage = 10;
     [SerializeField] private float attackCooldown = 1.5f;
@@ -22,8 +24,7 @@ public class EnemyCombat : MonoBehaviour
     private EnemyMovement _movement;
     private Health _health;
     private bool _isTelegraphing;
-    private Renderer[] _renderers;
-    private Color[] _originalColors;
+    private CharacterHighlightLayer _highlight;
     private Hitbox _attackHitbox;
     private Transform _attackHitboxTransform;
 
@@ -49,15 +50,10 @@ public class EnemyCombat : MonoBehaviour
     {
         _movement = GetComponent<EnemyMovement>();
         _health = GetComponent<Health>();
-        _renderers = GetComponentsInChildren<Renderer>();
         
-        _originalColors = new Color[_renderers.Length];
-        for (int i = 0; i < _renderers.Length; i++)
-        {
-            if (_renderers[i].material.HasProperty("_Color"))
-                _originalColors[i] = _renderers[i].material.color;
-        }
-        
+        CharacterHighlightLayer.Ensure(gameObject);
+        _highlight = GetComponent<CharacterHighlightLayer>();
+
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         if (playerObj != null) _player = playerObj.transform;
 
@@ -81,6 +77,10 @@ public class EnemyCombat : MonoBehaviour
 
     private void OnDisable()
     {
+        _isTelegraphing = false;
+        ResetVisuals();
+        if (_movement != null) _movement.SetAttackWindupActive(false);
+
         if (BeatEmUpDirector.Instance != null)
         {
             BeatEmUpDirector.Instance.ReleaseToken(this);
@@ -174,19 +174,23 @@ public class EnemyCombat : MonoBehaviour
         if (_movement != null) _movement.SetAttackWindupActive(true);
         try
         {
-            foreach (var r in _renderers)
-            {
-                if (r != null && r.material.HasProperty("_Color"))
-                    r.material.color = Color.red;
-            }
+            if (_highlight != null) _highlight.SetWindup(true, WindupRampFloor);
 
+            float duration = Mathf.Max(TelegraphDuration, 0.0001f);
             float elapsed = 0f;
-            while (elapsed < TelegraphDuration)
+            while (elapsed < duration)
             {
                 if (_movement != null && !_movement.CanAct)
                 {
                     yield break;
                 }
+
+                if (_highlight != null)
+                {
+                    float t = elapsed / duration;
+                    _highlight.SetWindupRamp(Mathf.Lerp(WindupRampFloor, 1f, t * t));
+                }
+
                 elapsed += Time.deltaTime;
                 yield return null;
             }
@@ -241,11 +245,7 @@ public class EnemyCombat : MonoBehaviour
 
     private void ResetVisuals()
     {
-        for (int i = 0; i < _renderers.Length; i++)
-        {
-            if (_renderers[i] != null && _renderers[i].material.HasProperty("_Color"))
-                _renderers[i].material.color = _originalColors[i];
-        }
+        if (_highlight != null) _highlight.SetWindup(false);
     }
 
     public void ScaleDamage(float multiplier)
