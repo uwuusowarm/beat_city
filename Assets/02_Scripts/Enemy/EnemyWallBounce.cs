@@ -110,7 +110,6 @@ public class EnemyWallBounce : MonoBehaviour
             
             if (bounced)
             {
-                _enemyMovement.IsInThrowState = false;
                 _enemyMovement.ApplyImpulse(bounceKnockUpForce, force, bounceHitStun);
 
                 if (_health != null && bounceDamage > 0)

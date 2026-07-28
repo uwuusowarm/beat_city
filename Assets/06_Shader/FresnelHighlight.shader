@@ -1,7 +1,3 @@
-// Fresnel rim used as an override material by FresnelHighlightFeature.
-// Drawn as a second additive pass over characters after the opaque queue,
-// so it never replaces their real shading. Deliberately mirrors the rim
-// math in Custom/Toon Lit so both looks match.
 Shader "Hidden/Custom/Fresnel Highlight"
 {
     Properties
@@ -11,6 +7,7 @@ Shader "Hidden/Custom/Fresnel Highlight"
         _FresnelThreshold ("Rim Size", Range(0,1)) = 0.5
         _FresnelSmoothness ("Rim Softness", Range(0.001,1)) = 0.25
         _FresnelIntensity ("Intensity", Range(0,4)) = 1
+        _FresnelRamp ("Ramp", Range(0,1)) = 1
     }
 
     SubShader
@@ -22,9 +19,9 @@ Shader "Hidden/Custom/Fresnel Highlight"
             Name "FresnelHighlight"
             Tags { "LightMode" = "UniversalForward" }
 
-            Blend One One   // additive glow on top of the existing shading
+            Blend One One   
             ZWrite Off
-            ZTest LEqual    // equal depth passes; occluded fragments drop out
+            ZTest LEqual    
             Cull Back
 
             HLSLPROGRAM
@@ -41,6 +38,7 @@ Shader "Hidden/Custom/Fresnel Highlight"
                 half  _FresnelThreshold;
                 half  _FresnelSmoothness;
                 half  _FresnelIntensity;
+                half  _FresnelRamp;
             CBUFFER_END
 
             struct Attributes
@@ -84,7 +82,7 @@ Shader "Hidden/Custom/Fresnel Highlight"
                 half rimMask = smoothstep(_FresnelThreshold - _FresnelSmoothness,
                                           _FresnelThreshold + _FresnelSmoothness, fresnel);
 
-                return half4(_FresnelColor.rgb * rimMask * _FresnelIntensity, 1.0h);
+                return half4(_FresnelColor.rgb * rimMask * _FresnelIntensity * _FresnelRamp, 1.0h);
             }
             ENDHLSL
         }

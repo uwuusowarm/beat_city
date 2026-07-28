@@ -48,10 +48,22 @@ public class FresnelHighlightFeature : ScriptableRendererFeature
         color = new Color(1f, 0.2f, 0.2f)
     };
 
+    [Tooltip("Drawn instead of the enemy rim while that enemy is winding up an attack. " +
+             "CharacterHighlightLayer swaps the rendering layer bit, so an enemy is only ever " +
+             "in one of the two lists.")]
+    public FactionSettings enemyWindup = new FactionSettings
+    {
+        renderingLayer = 1u << 10,
+        color = new Color(1f, 0.35f, 0.05f),
+        intensity = 3f
+    };
+
     private Material _playerMaterial;
     private Material _enemyMaterial;
+    private Material _enemyWindupMaterial;
     private FresnelPass _playerPass;
     private FresnelPass _enemyPass;
+    private FresnelPass _enemyWindupPass;
     private readonly List<ShaderTagId> _shaderTagIds = new List<ShaderTagId>();
 
     public override void Create()
@@ -61,16 +73,18 @@ public class FresnelHighlightFeature : ScriptableRendererFeature
         if (shader == null)
             return;
         
-        _playerMaterial = CoreUtils.CreateEngineMaterial(shader);
-        _enemyMaterial  = CoreUtils.CreateEngineMaterial(shader);
+        _playerMaterial      = CoreUtils.CreateEngineMaterial(shader);
+        _enemyMaterial       = CoreUtils.CreateEngineMaterial(shader);
+        _enemyWindupMaterial = CoreUtils.CreateEngineMaterial(shader);
 
-        _playerPass = new FresnelPass(_playerMaterial, "Fresnel Highlight (Player)");
-        _enemyPass  = new FresnelPass(_enemyMaterial, "Fresnel Highlight (Enemy)");
+        _playerPass      = new FresnelPass(_playerMaterial, "Fresnel Highlight (Player)");
+        _enemyPass       = new FresnelPass(_enemyMaterial, "Fresnel Highlight (Enemy)");
+        _enemyWindupPass = new FresnelPass(_enemyWindupMaterial, "Fresnel Highlight (Enemy Windup)");
     }
 
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
     {
-        if (_playerPass == null || _enemyPass == null)
+        if (_playerPass == null || _enemyPass == null || _enemyWindupPass == null)
             return;
 
         var cameraType = renderingData.cameraData.cameraType;
@@ -94,6 +108,13 @@ public class FresnelHighlightFeature : ScriptableRendererFeature
             _enemyPass.Setup(enemy, _shaderTagIds);
             renderer.EnqueuePass(_enemyPass);
         }
+
+        if (enemyWindup.enabled)
+        {
+            _enemyWindupPass.renderPassEvent = renderPassEvent;
+            _enemyWindupPass.Setup(enemyWindup, _shaderTagIds);
+            renderer.EnqueuePass(_enemyWindupPass);
+        }
     }
     
     private void RebuildShaderTags()
@@ -113,6 +134,7 @@ public class FresnelHighlightFeature : ScriptableRendererFeature
     {
         CoreUtils.Destroy(_playerMaterial);
         CoreUtils.Destroy(_enemyMaterial);
+        CoreUtils.Destroy(_enemyWindupMaterial);
     }
 
     private class FresnelPass : ScriptableRenderPass
