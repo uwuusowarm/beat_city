@@ -712,7 +712,7 @@ MonoBehaviour:
   upgrades:
   - Name: Damage Up
     Cost: 5
-    CostMod: 1
+    CostMod: 2
     MaxLevel: 10
     Button: {fileID: 1726515930}
     Label: {fileID: 704738927}
@@ -720,13 +720,13 @@ MonoBehaviour:
   - Name: Special Up
     Cost: 5
     CostMod: 100
-    MaxLevel: 1
+    MaxLevel: 2
     Button: {fileID: 1942786459}
     Label: {fileID: 1272266221}
     Level: 0
   - Name: Max Health
     Cost: 5
-    CostMod: 1
+    CostMod: 2
     MaxLevel: 10
     Button: {fileID: 1216382139}
     Label: {fileID: 587169138}

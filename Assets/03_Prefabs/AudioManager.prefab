@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7994358371711348412}
   - component: {fileID: 4667260958754158351}
   - component: {fileID: 4850821595043226066}
+  - component: {fileID: 7921563270516333146}
   m_Layer: 0
   m_Name: AudioManager
   m_TagString: Untagged
@@ -263,3 +264,20 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &7921563270516333146
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8312074545324063102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 800900cedc791304ab546916ab0462ed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
+  coins: 0
+  healthLevel: 1
+  damageLevel: 1
+  hpBonusPerLevel: 20
+  damageBonusPerLevel: 0.15

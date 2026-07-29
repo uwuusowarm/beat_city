@@ -32,6 +32,8 @@ public class UpgradeShop : MonoBehaviour
     [SerializeField] private PlayerSettings _settings;
     [SerializeField] private int damageBoost = 1;
 
+    public static bool IsOpen { get; private set; }
+
     private bool _isOpen;
 
     private void Awake()
@@ -50,6 +52,8 @@ public class UpgradeShop : MonoBehaviour
     private void Start()
     {
         shopPanel.SetActive(false);
+        IsOpen = false;
+        CursorState.Refresh();
 
         foreach (var upgrade in upgrades)
         {
@@ -80,21 +84,26 @@ public class UpgradeShop : MonoBehaviour
     private void OpenShop()
     {
         _isOpen = true;
+        IsOpen = true;
         shopPanel.SetActive(true);
 
         if (pauseWhenOpen)
             Time.timeScale = 0f;
 
+        CursorState.Refresh();
         RefreshAllButtons();
     }
 
     private void CloseShop()
     {
         _isOpen = false;
+        IsOpen = false;
         shopPanel.SetActive(false);
 
         if (pauseWhenOpen)
             Time.timeScale = 1f;
+
+        CursorState.Refresh();
     }
 
     private void TryPurchase(UpgradeData upgrade)
