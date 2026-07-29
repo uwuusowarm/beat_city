@@ -10,9 +10,25 @@ public class SpecialShopItem : MonoBehaviour
     public TextMeshProUGUI statusText; 
     public Button actionButton;
 
+    private SpecialAttackSO _special;
+    private ShopUI _shop;
+
     private void OnEnable() 
     { 
         UpdateUI(); 
+    }
+
+    public void Setup(SpecialAttackSO special, ShopUI shop)
+    {
+        _special = special;
+        _shop = shop;
+        
+        if (nameText != null) nameText.text = _special.attackName;
+        
+        actionButton.onClick.RemoveAllListeners();
+        actionButton.onClick.AddListener(OnButtonClicked);
+        
+        UpdateUI();
     }
 
     public void UpdateUI() 

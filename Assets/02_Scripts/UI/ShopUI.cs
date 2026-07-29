@@ -10,8 +10,12 @@ public class ShopUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI healthCostText;
     [SerializeField] private TextMeshProUGUI damageCostText;
 
+    [SerializeField] private Transform specialAttacksContainer; 
+    [SerializeField] private GameObject specialItemPrefab;
+
     private void OnEnable()
     {
+        GenerateSpecialAttackList();
         UpdateShopUI();
     }
 
@@ -26,6 +30,36 @@ public class ShopUI : MonoBehaviour
         
         if (damageCostText != null) 
             damageCostText.text = $"{PlayerStats.Instance.GetUpgradeCost(PlayerStats.Instance.damageLevel)} Coins";
+        
+        if (specialAttacksContainer != null)
+        {
+            foreach (Transform child in specialAttacksContainer)
+            {
+                if (child.TryGetComponent<SpecialShopItem>(out var item))
+                {
+                    item.UpdateUI();
+                }
+            }
+        }
+    }
+
+    private void GenerateSpecialAttackList()
+    {
+        if (PlayerStats.Instance == null || specialAttacksContainer == null || specialItemPrefab == null) return;
+
+        foreach (Transform child in specialAttacksContainer)
+        {
+            Destroy(child.gameObject);
+        }
+
+        foreach (var special in PlayerStats.Instance.allSpecialAttacks)
+        {
+            GameObject newBtn = Instantiate(specialItemPrefab, specialAttacksContainer);
+            if (newBtn.TryGetComponent<SpecialShopItem>(out var shopItem))
+            {
+                shopItem.Setup(special, this);
+            }
+        }
     }
 
     public void BuyHealth()
