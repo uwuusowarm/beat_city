@@ -277,14 +277,19 @@ public class EnemyMovement : MonoBehaviour
             case EnemyState.Dead:
                 if (animator != null)
                 {
-                    if (!animator.GetBool("IsFalling"))
+                    bool alreadyDown = previousState == EnemyState.Knockdown ||
+                                       previousState == EnemyState.StandingUp;
+
+                    if (alreadyDown)
+                    {
+                        animator.SetBool("IsFalling", true);
+                        animator.Play("Fall", 0, 0.99f);
+                        animator.speed = 0f;
+                    }
+                    else if (!animator.GetBool("IsFalling"))
                     {
                         animator.SetBool("IsFalling", true);
                         animator.Play("Fall", 0, 0f);
-                    }
-                    else if (previousState == EnemyState.Knockdown)
-                    {
-                        animator.speed = 0f;
                     }
                 }
                 _stateTimer = DespawnDelay;
@@ -352,6 +357,11 @@ public class EnemyMovement : MonoBehaviour
             characterModel.localScale = Vector3.one;
     }
     
+    private void TrackGroundHeight()
+    {
+        if (IsGroundedRaycast()) _groundYPosition = transform.position.y;
+    }
+
     private bool IsGroundedRaycast()
     {
         Vector3 origin = transform.position + Vector3.up * 0.1f;
@@ -471,21 +481,17 @@ public class EnemyMovement : MonoBehaviour
         {
             HandleKnockdownHit(hitData, effectiveKnockUp);
         }
+        else if (wasAirborne)
+        {
+            HandleJuggleHit(hitData, effectiveKnockUp);
+        }
         else if (hitData.IsLauncher || hitData.JuggleType == JuggleType.Launcher)
         {
             HandleLauncherHit(hitData, effectiveKnockUp, isGrounded);
         }
-        else if (wasAirborne && (_hoverTimer > 0f || effectiveKnockUp > 0.5f || verticalVelocity > 0f))
-        {
-            HandleJuggleHit(hitData, effectiveKnockUp);
-        }
         else if (effectiveKnockUp > LaunchThreshold)
         {
             HandleLauncherHit(hitData, effectiveKnockUp, isGrounded);
-        }
-        else if (wasAirborne)
-        {
-            HandleJuggleHit(hitData, effectiveKnockUp);
         }
         else
         {
@@ -669,6 +675,7 @@ public class EnemyMovement : MonoBehaviour
     private void UpdateGroundedState()
     {
         CatchStrandedFallPose("Idle");
+        TrackGroundHeight();
 
         if (rangedSettings != null)
         {
@@ -697,6 +704,7 @@ public class EnemyMovement : MonoBehaviour
     private void UpdateHitStunState()
     {
         CatchStrandedFallPose("Hit");
+        TrackGroundHeight();
 
         ApplyGravityAndMove(Vector3.zero);
         if (animator != null) animator.SetFloat("Speed", 0f);

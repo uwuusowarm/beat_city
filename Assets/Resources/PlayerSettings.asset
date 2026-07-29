@@ -34,6 +34,7 @@ MonoBehaviour:
   throwDuration: 0.4
   grappleCooldown: 0.5
   holdOffset: 1.36
+  grappleHoldOffset: {x: 0, y: 0, z: 0}
   backwardThrowOffset: 2.4
   headbuttLaunchPoint: 0.397
   throwLaunchPoint: 0.06
@@ -52,3 +53,6 @@ MonoBehaviour:
   specialAnimSpeed: 1.5
   impactKnockback: 0
   impactKnockUp: 0
+  combatHitStop: 0.05
+  grappleProjectileHitStop: 0.05
+  grappleImpactHitStop: 0.08

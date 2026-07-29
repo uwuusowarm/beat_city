@@ -12,6 +12,9 @@ public class EnemyCombat : MonoBehaviour
     //[SerializeField] private float attackRange = 2f;
     [SerializeField] private float knockbackForce = 5f;
     [SerializeField] private float hitStunDuration = 0.5f;
+    [Tooltip("Freeze-frame duration when this enemy's attack connects with the player. 0 disables it.")]
+    [Range(0f, 0.2f)]
+    [SerializeField] private float hitStopDuration = 0.04f;
     [SerializeField] private float telegraphDuration = 0.35f;
 
     [Header("Hitbox")]
@@ -238,6 +241,7 @@ public class EnemyCombat : MonoBehaviour
         _attackHitbox.Damage = attackDamage;
         _attackHitbox.KnockbackForce = knockbackForce;
         _attackHitbox.HitStunDuration = hitStunDuration;
+        _attackHitbox.HitStopDuration = hitStopDuration;
 
         _attackHitbox.Activate();
         _attackHitbox.Deactivate();

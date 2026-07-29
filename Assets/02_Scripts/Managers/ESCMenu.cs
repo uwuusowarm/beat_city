@@ -48,6 +48,7 @@ public class ESCMenu : MonoBehaviour
 
     public void Pause()
     {
+        HitStop.Cancel();
         escMenuUI.SetActive(true);
         AudioManager.Instance.PauseMusic();
         Time.timeScale = 0f;

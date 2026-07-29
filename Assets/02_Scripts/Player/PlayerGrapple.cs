@@ -9,7 +9,9 @@ public class PlayerGrapple : MonoBehaviour
 {
     [Header("Settings")]
     [SerializeField] private PlayerSettings settings;
-    [SerializeField] private Hitbox grappleHitbox;
+    [Header("Grab Box")]
+    [Tooltip("Anchor transform of the grab box (the old Hitbox_Grapple GameObject). Size/offset live in the PlayerSettings.")]
+    [SerializeField] private Transform grabBoxAnchor;
     [FormerlySerializedAs("grappleAction")]
     [SerializeField] private InputActionReference[] throwActions;
 
@@ -17,8 +19,8 @@ public class PlayerGrapple : MonoBehaviour
     [SerializeField] private Transform characterModel;
     [SerializeField] private Animator animator;
     [SerializeField] private bool showProjectileGizmos = true;
+    [SerializeField] private bool showGrabGizmos = true;
 
-    private bool _isGrappling;
     private float _nextGrappleTime;
     private GameObject _heldTarget;
     private GameObject _currentProjectile;
@@ -26,6 +28,12 @@ public class PlayerGrapple : MonoBehaviour
     private PlayerCombat _combat;
     private InputBuffer _inputBuffer;
     private bool _stateSubscribed;
+    private float _moveIntentTimer;
+    private Vector3 _moveIntentDir;
+
+    private GameObject _debugTarget;
+    private bool _debugIntentOk;
+    private bool _debugGateOpen;
 
     private void Awake()
     {
@@ -39,14 +47,9 @@ public class PlayerGrapple : MonoBehaviour
         if (animator == null)
             animator = GetComponentInChildren<Animator>();
         
-        if (grappleHitbox != null)
+        if (grabBoxAnchor == null)
         {
-            grappleHitbox.OnHitLanded += HandleGrappleHit;
-            grappleHitbox.ApplyDamage = false;
-        }
-        else
-        {
-            Debug.LogError($"[PlayerGrapple] grappleHitbox is NOT assigned on {gameObject.name}!");
+            Debug.LogError($"[PlayerGrapple] grabBoxAnchor is NOT assigned on {gameObject.name}!");
         }
 
         if (settings == null)
@@ -78,7 +81,11 @@ public class PlayerGrapple : MonoBehaviour
                 actionRef.action.Disable();
             }
         }
-        if (_isGrappling && PlayerStateManager.Instance != null) PlayerStateManager.Instance.ResetToIdle();
+        if (PlayerStateManager.Instance != null &&
+            PlayerStateManager.Instance.CurrentState == PlayerState.Grappling)
+        {
+            PlayerStateManager.Instance.ResetToIdle();
+        }
         if (animator != null) animator.SetBool("IsGrabbing", false);
 
         if (_stateSubscribed && PlayerStateManager.Instance != null)
@@ -122,37 +129,89 @@ public class PlayerGrapple : MonoBehaviour
         if (PlayerStateManager.Instance == null) return;
         EnsureStateSubscription();
 
-        if (PlayerStateManager.Instance.CurrentState == PlayerState.Idle && Time.time >= _nextGrappleTime && !_isGrappling)
+        UpdateMoveIntent();
+
+        _debugGateOpen = PlayerStateManager.Instance.CurrentState == PlayerState.Idle
+                         && Time.time >= _nextGrappleTime;
+        _debugTarget = null;
+        _debugIntentOk = false;
+
+        if (_debugGateOpen && TryGetGrappleTarget(out var target))
         {
-            if (IsEnemyInGrappleRange())
+            _debugTarget = target;
+            _debugIntentOk = HasGrabIntent(target);
+
+            if (_debugIntentOk)
             {
-                StartCoroutine(DoGrapple());
+                DoGrapple(target);
             }
         }
     }
 
-    private bool IsEnemyInGrappleRange()
-    {
-        if (grappleHitbox == null) return false;
+    private Vector3 GrabBoxOffset => settings != null ? settings.grabBoxOffset : new Vector3(0f, 0f, 0.8f);
+    private Vector3 GrabBoxSize => settings != null ? settings.grabBoxSize : new Vector3(1f, 1f, 0.7f);
 
-        Vector3 worldCenter = transform.TransformPoint(grappleHitbox.Offset);
-        Collider[] hits = Physics.OverlapBox(worldCenter, grappleHitbox.Size * 0.5f, transform.rotation);
+    private bool TryGetGrappleTarget(out GameObject target)
+    {
+        target = null;
+        if (grabBoxAnchor == null) return false;
+
+        Vector3 worldCenter = grabBoxAnchor.TransformPoint(GrabBoxOffset);
+        Collider[] hits = Physics.OverlapBox(worldCenter, GrabBoxSize * 0.5f, grabBoxAnchor.rotation);
 
         foreach (var col in hits)
         {
             if (col == null) continue;
-            
+
             if (col.TryGetComponent<Hurtbox>(out var hurtbox))
             {
                 if (hurtbox.Owner == gameObject) continue;
+                if (hurtbox.Owner.CompareTag(gameObject.tag)) continue;
 
                 if (hurtbox.Owner.TryGetComponent<Health>(out var health) && health.Current > 0)
                 {
+                    target = hurtbox.Owner;
                     return true;
                 }
             }
         }
         return false;
+    }
+
+    private void UpdateMoveIntent()
+    {
+        Vector3 input = _movement != null ? _movement.GetInputDirection() : Vector3.zero;
+
+        if (input.sqrMagnitude < 0.0001f)
+        {
+            _moveIntentTimer = 0f;
+            _moveIntentDir = Vector3.zero;
+            return;
+        }
+
+        float threshold = settings != null ? settings.grabIntentDot : 0.5f;
+        if (_moveIntentDir == Vector3.zero || Vector3.Dot(input, _moveIntentDir) < threshold)
+        {
+            _moveIntentDir = input;
+            _moveIntentTimer = 0f;
+        }
+
+        _moveIntentTimer += Time.fixedDeltaTime;
+    }
+
+    private bool HasGrabIntent(GameObject target)
+    {
+        if (settings == null || !settings.requireGrabIntent || _movement == null) return true;
+        if (_moveIntentTimer < settings.grabIntentTime) return false;
+
+        Vector3 toTarget = target.transform.position - transform.position;
+        toTarget.y = 0f;
+        if (toTarget.sqrMagnitude < 0.0001f) return false;
+
+        Vector3 input = _movement.GetInputDirection();
+        if (input.sqrMagnitude < 0.0001f) return false;
+
+        return Vector3.Dot(input, toTarget.normalized) >= settings.grabIntentDot;
     }
 
     private void OnThrowInput(InputAction.CallbackContext context)
@@ -169,28 +228,11 @@ public class PlayerGrapple : MonoBehaviour
         }
     }
 
-    private IEnumerator DoGrapple()
+    private void DoGrapple(GameObject target)
     {
-        _isGrappling = true;
         PlayerStateManager.Instance.SetState(PlayerState.Grappling);
-        
-        
-        grappleHitbox.Activate();
 
-        if (PlayerStateManager.Instance.CurrentState == PlayerState.Grappling)
-        {
-            grappleHitbox.Deactivate();
-            _isGrappling = false;
-            PlayerStateManager.Instance.ResetToIdle();
-            _nextGrappleTime = Time.time + settings.grappleCooldown;
-            yield break;
-        }
-
-        yield return new WaitForSeconds(settings.grappleActiveTime);
-
-        grappleHitbox.Deactivate();
-
-        _isGrappling = false;
+        HandleGrappleHit(target);
 
         if (PlayerStateManager.Instance.CurrentState == PlayerState.Grappling)
         {
@@ -514,7 +556,7 @@ public class PlayerGrapple : MonoBehaviour
         }
     }
 
-    private void OnDrawGizmos()
+    private void DrawProjectileGizmos()
     {
         if (!showProjectileGizmos) return;
 
@@ -529,5 +571,54 @@ public class PlayerGrapple : MonoBehaviour
             Gizmos.color = new Color(1f, 0.5f, 0f, 0.5f);
             Gizmos.DrawWireSphere(_currentProjectile.transform.position, settings.projectileRadius);
         }
+
+    }
+
+    private void OnDrawGizmos()
+    {
+        DrawProjectileGizmos();
+
+        if (!showGrabGizmos || grabBoxAnchor == null) return;
+
+        Color boxColor;
+        if (!Application.isPlaying)     boxColor = new Color(1f, 1f, 1f, 0.5f);
+        else if (!_debugGateOpen)       boxColor = new Color(0.4f, 0.4f, 0.4f, 0.5f); 
+        else if (_debugTarget == null)  boxColor = new Color(1f, 1f, 1f, 0.5f);      
+        else if (!_debugIntentOk)       boxColor = new Color(1f, 0.35f, 0f, 1f);      
+        else                            boxColor = new Color(0f, 1f, 0f, 1f);         
+
+        Gizmos.color = boxColor;
+        Gizmos.matrix = grabBoxAnchor.localToWorldMatrix;
+        Gizmos.DrawWireCube(GrabBoxOffset, GrabBoxSize);
+        Gizmos.matrix = Matrix4x4.identity;
+
+        if (!Application.isPlaying) return;
+
+        Vector3 origin = transform.position + Vector3.up * 0.1f;
+        float intentTime = settings != null ? settings.grabIntentTime : 0f;
+        float dotThreshold = settings != null ? settings.grabIntentDot : 0.5f;
+
+        if (_moveIntentDir != Vector3.zero)
+        {
+            float progress = intentTime <= 0f ? 1f : Mathf.Clamp01(_moveIntentTimer / intentTime);
+            Gizmos.color = progress >= 1f ? Color.green : Color.yellow;
+            Gizmos.DrawLine(origin, origin + _moveIntentDir * (1.5f * progress));
+            Gizmos.DrawWireSphere(origin + _moveIntentDir * 1.5f, 0.06f);
+        }
+
+        if (_debugTarget == null) return;
+
+        Vector3 toTarget = _debugTarget.transform.position - transform.position;
+        toTarget.y = 0f;
+        if (toTarget.sqrMagnitude < 0.0001f) return;
+        toTarget.Normalize();
+
+        Gizmos.color = _debugIntentOk ? Color.green : new Color(1f, 0.35f, 0f, 1f);
+        Gizmos.DrawLine(origin, _debugTarget.transform.position);
+
+        float halfAngle = Mathf.Acos(Mathf.Clamp(dotThreshold, -1f, 1f)) * Mathf.Rad2Deg;
+        Gizmos.color = new Color(0f, 0.8f, 1f, 0.8f);
+        Gizmos.DrawLine(origin, origin + (Quaternion.Euler(0f, halfAngle, 0f) * toTarget) * 1.5f);
+        Gizmos.DrawLine(origin, origin + (Quaternion.Euler(0f, -halfAngle, 0f) * toTarget) * 1.5f);
     }
 }
