@@ -55,9 +55,6 @@ public class PlayerSettings : ScriptableObject
     public float jugglingForce = 3f;
 
     [Header("Grapple Settings")]
-    [Tooltip("How long the grapple hitbox is active")]
-    public float grappleActiveTime = 0.2f;
-    
     [Tooltip("Damage dealt when throwing an enemy")]
     public int grappleDamage = 15;
     
@@ -72,7 +69,24 @@ public class PlayerSettings : ScriptableObject
     
     [Tooltip("Cooldown before next grapple")]
     public float grappleCooldown = 0.5f;
-    
+
+    [Tooltip("Offset of the grab box, local to the anchor transform")]
+    public Vector3 grabBoxOffset = new Vector3(0f, 0f, 0.8f);
+
+    [Tooltip("Size of the grab box")]
+    public Vector3 grabBoxSize = new Vector3(1f, 1f, 0.7f);
+
+    [Tooltip("Only grab if the player is actively moving toward the enemy. Off = old instant-on-overlap behaviour.")]
+    public bool requireGrabIntent = true;
+
+    [Tooltip("How long the player must already have been moving toward the enemy")]
+    [Range(0f, 0.5f)]
+    public float grabIntentTime = 0.12f;
+
+    [Tooltip("Dot product threshold: how precisely the movement must point at the enemy. Max deviation to each side: 1 = 0°, 0.87 = 30°, 0.5 = 60°, 0 = 90°. Higher = stricter.")]
+    [Range(0f, 1f)]
+    public float grabIntentDot = 0.5f;
+
     [Tooltip("Distance enemy is held in front of player")]
     public float holdOffset = 1.2f;
 
@@ -140,11 +154,14 @@ public class PlayerSettings : ScriptableObject
 
     [Header("Hit Stop")]
     [Tooltip("Freeze-frame duration when player attacks damage enemies")]
+    [Range(0f, 0.3f)]
     public float combatHitStop = 0.05f;
 
     [Tooltip("Freeze-frame duration when thrown enemy collides with another enemy")]
+    [Range(0f, 0.3f)]
     public float grappleProjectileHitStop = 0.05f;
 
     [Tooltip("Freeze-frame duration when thrown enemy takes the final impact hit")]
+    [Range(0f, 0.3f)]
     public float grappleImpactHitStop = 0.08f;
 }

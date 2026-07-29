@@ -36,7 +36,7 @@ MonoBehaviour:
   jugglePopFadeRange: 0.4
   jugglePopMinFade: 0.35
   baseGravity: 16
-  useGravityScaling: 0
+  useGravityScaling: 1
   fallGravityMultiplier: 1.5
   groundCheckDistance: 0.1
   groundLayer:

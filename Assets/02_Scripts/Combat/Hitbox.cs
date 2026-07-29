@@ -64,6 +64,8 @@ public class Hitbox : MonoBehaviour
 
         Debug.Log($"[Hitbox] Fire! {hits.Length} Collisions found at {worldCenter}");
 
+        bool anyDamagingHit = false;
+
         foreach (var col in hits)
         {
             if (!col.TryGetComponent<Hurtbox>(out var hurtbox))
@@ -121,6 +123,8 @@ public class Hitbox : MonoBehaviour
                     HitPosition = col.ClosestPoint(worldCenter)
                 });
 
+                anyDamagingHit = true;
+
                 if (owner.CompareTag("Player"))
                     ScreenShake.Instance?.Shake(finalDamage);
 
@@ -136,8 +140,10 @@ public class Hitbox : MonoBehaviour
             }
 
             OnHitLanded?.Invoke(hurtbox.Owner);
-            HitStop.Instance?.Do(hitStopDuration);
         }
+
+        if (anyDamagingHit)
+            HitStop.Instance?.Do(hitStopDuration);
     }
 
     private void OnDrawGizmos()
