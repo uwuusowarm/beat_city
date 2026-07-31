@@ -440,8 +440,8 @@ ModelImporter:
       name: rig.003|Main_Char_Punch_01
       takeName: rig.003|Main_Char_Punch_01
       internalID: -9071033001448636416
-      firstFrame: 0
-      lastFrame: 22
+      firstFrame: 5.2
+      lastFrame: 16.1
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -469,8 +469,8 @@ ModelImporter:
       name: rig.003|Main_Char_Punch_02
       takeName: rig.003|Main_Char_Punch_02
       internalID: 4246630323463818834
-      firstFrame: 0
-      lastFrame: 22
+      firstFrame: 8
+      lastFrame: 15.299999
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -498,8 +498,8 @@ ModelImporter:
       name: rig.003|Main_Char_Punch_03
       takeName: rig.003|Main_Char_Punch_03
       internalID: 6932427222811374172
-      firstFrame: 0
-      lastFrame: 22
+      firstFrame: 7.2
+      lastFrame: 16.2
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
