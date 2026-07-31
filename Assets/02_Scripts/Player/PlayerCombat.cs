@@ -58,15 +58,6 @@ public class PlayerCombat : MonoBehaviour
             audioManager = FindFirstObjectByType<AudioManager>();
         }
 
-        if (_settings != null)
-        {
-            if (hitbox != null)
-                hitbox.HitStopDuration = _settings.combatHitStop;
-
-            if (specialHitbox != null)
-                specialHitbox.HitStopDuration = _settings.combatHitStop;
-        }
-
         hitbox.OnHitLanded += HandleHitLanded;
         specialHitbox.OnHitLanded += HandleHitLanded;
     }
@@ -243,6 +234,10 @@ public class PlayerCombat : MonoBehaviour
         }
 
         Hitbox activeHitbox = GetCurrentHitbox();
+
+        if (_settings != null)
+            activeHitbox.HitStopDuration = _settings.combatHitStop;
+
         activeHitbox.Activate();
         OnAttackStarted?.Invoke();
     }

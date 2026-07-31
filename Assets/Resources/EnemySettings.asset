@@ -25,10 +25,18 @@ MonoBehaviour:
   launchThreshold: 3.5
   juggleFalloffPerHit: 0.2
   juggleMinScale: 0.3
-  maxJuggleCount: 2147483647
+  maxJuggleCount: 4
   juggleHoverDuration: 0.5
+  juggleHoverDriftSpeed: -0.5
+  maxAirborneDuration: 3
+  jugglePopVelocity: 3.5
+  jugglePopForceScale: 0.4
+  jugglePopMaxVelocityScale: 0.5
+  jugglePopHeadroom: 0.4
+  jugglePopFadeRange: 0.4
+  jugglePopMinFade: 0.35
   baseGravity: 16
-  useGravityScaling: 0
+  useGravityScaling: 1
   fallGravityMultiplier: 1.5
   groundCheckDistance: 0.1
   groundLayer:

@@ -131,7 +131,17 @@ MonoBehaviour:
     power: 1.76
     threshold: 0.586
     smoothness: 0.25
-    intensity: 1.2
+    intensity: 0.45
+  enemyWindup:
+    enabled: 1
+    renderingLayer:
+      serializedVersion: 0
+      m_Bits: 1024
+    color: {r: 1, g: 0.35, b: 0.05, a: 1}
+    power: 1.4
+    threshold: 0.5
+    smoothness: 0.3
+    intensity: 3
 --- !u!114 &7833122117494664109
 MonoBehaviour:
   m_ObjectHideFlags: 0

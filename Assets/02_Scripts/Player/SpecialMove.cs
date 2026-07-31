@@ -129,6 +129,7 @@ public class SpecialMove : MonoBehaviour
         if (hitbox == null || _settings == null) return;
 
         hitbox.HitStopDuration = _settings.combatHitStop;
+        hitbox.JugglingForce = _settings.jugglingForce;
 
         if (chainType == CombatInputType.Punch)
         {
