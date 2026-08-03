@@ -305,6 +305,8 @@ public class PlayerGrapple : MonoBehaviour
 
         if (animator != null)
         {
+            animator.ResetTrigger("Headbutt");
+            animator.ResetTrigger("Throw");
             animator.SetBool("IsGrabbing", true);
             Debug.Log("Player is holding");
         }
@@ -436,6 +438,8 @@ public class PlayerGrapple : MonoBehaviour
                     {
                         Debug.LogWarning($"[PlayerGrapple] Animator never entered '{animName}' within " +
                                          $"{MaxWindupSeconds}s - launching from the current position.");
+
+                        animator.ResetTrigger(animName);
                     }
                     else if (carryArmed)
                     {

@@ -125,6 +125,7 @@ public class EnemyMovement : MonoBehaviour
     private float MaxAirborneDuration => meleeSettings != null ? meleeSettings.maxAirborneDuration : 3f;
     private float KnockdownDuration => meleeSettings != null ? meleeSettings.knockdownDuration : 1.0f;
     private float StandUpDuration => meleeSettings != null ? meleeSettings.standUpDuration : 1.0f;
+    private const float StandUpSafetyBuffer = 1.5f;
     private float GroundCheckDistance => meleeSettings != null ? meleeSettings.groundCheckDistance : 0.2f;
     private LayerMask GroundLayer => meleeSettings != null ? meleeSettings.groundLayer : LayerMask.GetMask("Default");
     private float FallWobbleSpeed => meleeSettings != null ? meleeSettings.fallWobbleSpeed : 4f;
@@ -259,7 +260,7 @@ public class EnemyMovement : MonoBehaviour
                 break;
 
             case EnemyState.StandingUp:
-                _stateTimer = StandUpDuration;
+                _stateTimer = StandUpDuration + StandUpSafetyBuffer;
                 if (animator != null)
                 {
                     UpdateAnimatorFalling(false);
@@ -911,8 +912,12 @@ public class EnemyMovement : MonoBehaviour
     {
         ApplyGravityAndMove(Vector3.zero);
         if (animator != null) animator.SetFloat("Speed", 0f);
-        
-        if (_stateTimer <= 0f)
+
+        bool standUpAnimationDone = animator != null &&
+            animator.GetCurrentAnimatorStateInfo(0).IsName("Idle") &&
+            !animator.IsInTransition(0);
+
+        if (standUpAnimationDone || _stateTimer <= 0f)
         {
             SetState(EnemyState.Grounded);
             Debug.Log($"[EnemyMovement] {gameObject.name} finished standing up.");
