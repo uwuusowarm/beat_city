@@ -9,6 +9,7 @@ public class SpecialMove : MonoBehaviour
     [SerializeField] private Animator animator;
     [SerializeField] private Meter meter;
     [SerializeField] private AfterimageEffect afterimageEffect;
+    [SerializeField] private UltimateCutsceneManager cutscene;
 
     private PlayerSettings _settings;
     private float _originalAnimSpeed;
@@ -32,7 +33,7 @@ public class SpecialMove : MonoBehaviour
         if (_isPerforming) return false;
         if (meter == null) return false;
 
-        int cost = _settings != null ? Mathf.RoundToInt(_settings.specialMeterCost) : 50;
+        int cost = _settings != null ? Mathf.RoundToInt(_settings.specialMeterCost) : 0;
         if (!meter.TrySpend(cost)) return false;
 
         _isPerforming = true;
@@ -75,6 +76,8 @@ public class SpecialMove : MonoBehaviour
             _originalAnimSpeed = animator.speed;
             animator.speed = animSpeed;
         }
+        
+        cutscene.PlayCutscene("Gatling");
 
         yield return DoChain(chainType);
 
