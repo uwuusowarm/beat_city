@@ -1,5 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
 using TMPro;
+using UnityEngine;
 
 public class HitCounter : MonoBehaviour
 {
@@ -9,6 +10,9 @@ public class HitCounter : MonoBehaviour
     private PlayerSettings _settings;
     private int _currentHits;
     private float _lastHitTime;
+
+    public event Action<int> OnHitLanded;   
+    public event Action<int> OnStreakReset;
 
     private void Awake()
     {
@@ -21,7 +25,7 @@ public class HitCounter : MonoBehaviour
         
         foreach (var hitbox in GetComponentsInChildren<Hitbox>(includeInactive: true))
         {
-            hitbox.OnHitLanded += OnHitLanded;
+            hitbox.OnHitLanded += HandleHitboxHit;
         }
 
         if (TryGetComponent<Health>(out var health))
@@ -41,12 +45,14 @@ public class HitCounter : MonoBehaviour
         }
     }
 
-    private void OnHitLanded(GameObject target)
+    private void HandleHitboxHit(GameObject target)
     {
         _currentHits++;
         _lastHitTime = Time.time;
         UpdateUI();
         Debug.Log($"[HitCounter] Total Hits: {_currentHits}");
+
+        OnHitLanded?.Invoke(_currentHits);
     }
 
     private void OnPlayerHit(HitData data)
@@ -60,8 +66,11 @@ public class HitCounter : MonoBehaviour
     private void ResetStreak()
     {
         Debug.Log($"[HitCounter] Streak broken at {_currentHits} hits!");
+        int hitsBeforeReset = _currentHits;
         _currentHits = 0;
         UpdateUI();
+
+        OnStreakReset?.Invoke(hitsBeforeReset);
     }
 
     private void UpdateUI()
