@@ -27,17 +27,28 @@ MonoBehaviour:
   maxComboSteps: 3
   comboResetTime: 1
   jugglingForce: 4
-  grappleActiveTime: 0.2
   grappleDamage: 15
   throwDistance: 2
   throwHeight: 2
   throwDuration: 0.4
   grappleCooldown: 0.5
+  grabBoxOffset: {x: 0, y: 0, z: 0.8}
+  grabBoxSize: {x: 1, y: 1, z: 0.7}
+  requireGrabIntent: 1
+  grabIntentTime: 0.12
+  grabIntentDot: 0.5
   holdOffset: 1.36
   grappleHoldOffset: {x: 0, y: 0, z: 0}
-  backwardThrowOffset: 2.4
+  backwardThrowOffset: 2
   headbuttLaunchPoint: 0.397
-  throwLaunchPoint: 0.06
+  throwLaunchPoint: 0.514
+  throwCarryEnabled: 1
+  throwCarryTurnEnd: 0.941
+  throwCarryEase: 1
+  throwCarryLift: 0
+  throwCarryRadiusScale: 1.59
+  throwCarryBulge: -0.35
+  throwCarrySweepRight: 0
   projectileDamage: 10
   projectileKnockback: 3
   projectileKnockUp: 5
@@ -53,6 +64,6 @@ MonoBehaviour:
   specialAnimSpeed: 1.5
   impactKnockback: 0
   impactKnockUp: 0
-  combatHitStop: 0.05
+  combatHitStop: 0.126
   grappleProjectileHitStop: 0.05
   grappleImpactHitStop: 0.08

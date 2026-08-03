@@ -20,10 +20,19 @@ public class PlayerGrapple : MonoBehaviour
     [SerializeField] private Animator animator;
     [SerializeField] private bool showProjectileGizmos = true;
     [SerializeField] private bool showGrabGizmos = true;
+    [SerializeField] private bool showCarryGizmos = true;
+
+    private const float MaxWindupSeconds = 2f;
 
     private float _nextGrappleTime;
     private GameObject _heldTarget;
     private GameObject _currentProjectile;
+    
+    private GameObject _carryTarget;
+    private CarryPath _carryPath;
+    private float _carryProgress;
+    private Vector3 _carryThrowDir;
+    private bool _carryActive;
     private MovementPlayer _movement;
     private PlayerCombat _combat;
     private InputBuffer _inputBuffer;
@@ -81,6 +90,10 @@ public class PlayerGrapple : MonoBehaviour
                 actionRef.action.Disable();
             }
         }
+
+        StopAllCoroutines();
+        ReleaseCarriedTarget();
+
         if (PlayerStateManager.Instance != null &&
             PlayerStateManager.Instance.CurrentState == PlayerState.Grappling)
         {
@@ -95,6 +108,27 @@ public class PlayerGrapple : MonoBehaviour
         _stateSubscribed = false;
     }
     
+    private void ReleaseCarriedTarget()
+    {
+        _carryActive = false;
+        _currentProjectile = null;
+
+        if (_carryTarget == null) return;
+
+        if (_carryTarget.TryGetComponent<CharacterController>(out var cc))
+            cc.enabled = true;
+
+        if (_carryTarget.TryGetComponent<EnemyMovement>(out var em))
+        {
+            em.EndThrowAnimation();
+
+            if (em.CurrentState == EnemyState.Grabbed)
+                em.SetState(EnemyState.Airborne);
+        }
+
+        _carryTarget = null;
+    }
+
     private void EnsureStateSubscription()
     {
         if (_stateSubscribed || PlayerStateManager.Instance == null) return;
@@ -297,12 +331,7 @@ public class PlayerGrapple : MonoBehaviour
                     yield break;
                 }
 
-                Vector3 targetPos = transform.position
-                                    + characterModel.forward * settings.holdOffset
-                                    + characterModel.right * settings.grappleHoldOffset.x
-                                    + Vector3.up * settings.grappleHoldOffset.y
-                                    + characterModel.forward * settings.grappleHoldOffset.z;
-                target.transform.position = targetPos;
+                target.transform.position = transform.position + HoldOffset();
 
                 target.transform.LookAt(transform.position);
 
@@ -311,12 +340,21 @@ public class PlayerGrapple : MonoBehaviour
         }
         finally
         {
-            bool midThrow = target != null
-                            && target.TryGetComponent<EnemyMovement>(out var thrownEm)
-                            && thrownEm.IsBeingThrown;
+            bool midThrow = (_carryTarget != null && _carryTarget == target)
+                            || (target != null
+                                && target.TryGetComponent<EnemyMovement>(out var thrownEm)
+                                && thrownEm.IsBeingThrown);
 
             if (cc != null && !midThrow) cc.enabled = true;
         }
+    }
+    
+    private Vector3 HoldOffset()
+    {
+        return characterModel.forward * settings.holdOffset
+               + characterModel.right * settings.grappleHoldOffset.x
+               + Vector3.up * settings.grappleHoldOffset.y
+               + characterModel.forward * settings.grappleHoldOffset.z;
     }
 
     private void ReleaseHold()
@@ -335,119 +373,284 @@ public class PlayerGrapple : MonoBehaviour
 
     private IEnumerator PerformThrow(GameObject target)
     {
+        bool carryArmed = settings != null && settings.throwCarryEnabled && target != null;
+        Vector3 carryStartOffset = Vector3.zero;
+        if (carryArmed)
+        {
+            carryStartOffset = target.transform.position - transform.position;
+            _carryTarget = target;
+        }
+
         _heldTarget = null;
         PlayerStateManager.Instance.SetState(PlayerState.Grappling);
 
-        Vector3 throwDir = characterModel.forward;
-        bool isBackwardThrow = false;
-        if (_movement != null)
+        try
         {
-            Vector3 inputDir = _movement.GetInputDirection();
-            if (inputDir.magnitude > 0.1f)
+            Vector3 throwDir = characterModel.forward;
+            bool isBackwardThrow = false;
+            if (_movement != null)
             {
-                if (Vector3.Dot(characterModel.forward, inputDir) < -0.5f)
+                Vector3 inputDir = _movement.GetInputDirection();
+                if (inputDir.magnitude > 0.1f)
                 {
-                    isBackwardThrow = true;
+                    isBackwardThrow = Vector3.Dot(characterModel.forward, inputDir) < -0.5f;
                     throwDir = inputDir;
-                    characterModel.rotation = Quaternion.LookRotation(new Vector3(throwDir.x, 0, 0));
-                }
-                else
-                {
-                    throwDir = inputDir;
-                    characterModel.rotation = Quaternion.LookRotation(new Vector3(throwDir.x, 0, 0));
+                    
+                    float faceX = Mathf.Abs(throwDir.x) > 0.0001f ? throwDir.x : characterModel.forward.x;
+                    if (Mathf.Abs(faceX) > 0.0001f)
+                        characterModel.rotation = Quaternion.LookRotation(new Vector3(faceX, 0f, 0f));
                 }
             }
-        }
+            _carryThrowDir = throwDir;
 
-        if (animator != null)
-        {
-            animator.SetBool("IsGrabbing", false);
-            Debug.Log("Player is no longer holding");
-            string animName = isBackwardThrow ? "Throw" : "Headbutt";
-            float launchPoint = isBackwardThrow ? settings.throwLaunchPoint : settings.headbuttLaunchPoint;
-            animator.SetTrigger(animName);
-
-            if (launchPoint > 0f)
+            if (carryArmed && !isBackwardThrow)
             {
-                yield return null;
-                AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
-                while (!state.IsName(animName))
-                {
-                    yield return null;
-                    state = animator.GetCurrentAnimatorStateInfo(0);
-                }
-                while (state.IsName(animName) && state.normalizedTime < launchPoint)
-                {
-                    yield return null;
-                    state = animator.GetCurrentAnimatorStateInfo(0);
-                }
+                carryArmed = false;
+                _carryTarget = null;
             }
-        }
-
-        yield return StartCoroutine(AnimateThrow(target, throwDir, isBackwardThrow));
-
-        if (ScreenShake.Instance != null)
-        {
-            ScreenShake.Instance.Shake(settings.grappleDamage);
-        }
-
-        if (target != null)
-        {
-            var damageable = target.GetComponent<IDamageable>();
-            if (damageable != null)
-            {
-                damageable.TakeDamage(new HitData
-                {
-                    Damage = settings.grappleDamage,
-                    KnockbackDirection = throwDir,
-                    KnockbackForce = settings.impactKnockback, 
-                    KnockUpForce = settings.impactKnockUp,
-                    HitStunDuration = 0.5f,
-                    ShouldKnockdown = true,
-                    SuppressHitAnimation = true,
-                    Source = gameObject
-                });
-
-                if (settings != null)
-                {
-                    HitStop.Instance?.Do(settings.grappleImpactHitStop);
-                }
-
-                if (damageable is Health enemyHealth)
-                {
-                    UIManager.Instance?.UpdateEnemyHealthFocus(enemyHealth);
-                }
-            }
-        }
-
-        if (target != null)
-        {
-            var cc = target.GetComponent<CharacterController>();
-            if (cc != null) cc.enabled = true;
             
-            var em = target.GetComponent<EnemyMovement>();
-            if (em != null)
+            Vector3 carryEndOffset = carryArmed ? HoldOffset() : Vector3.zero;
+
+            if (animator != null)
             {
-                em.EndThrowAnimation();
-                
-                if (em.CurrentState == EnemyState.Grabbed)
+                animator.SetBool("IsGrabbing", false);
+                Debug.Log("Player is no longer holding");
+                string animName = isBackwardThrow ? "Throw" : "Headbutt";
+                float launchPoint = isBackwardThrow ? settings.throwLaunchPoint : settings.headbuttLaunchPoint;
+                animator.SetTrigger(animName);
+
+                if (launchPoint > 0f)
                 {
-                    em.SetState(EnemyState.Airborne);
+                    yield return null;
+                    AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
+                    
+                    float watchdog = 0f;
+                    while (!state.IsName(animName) && watchdog < MaxWindupSeconds)
+                    {
+                        watchdog += Time.deltaTime;
+                        yield return null;
+                        state = animator.GetCurrentAnimatorStateInfo(0);
+                    }
+
+                    if (!state.IsName(animName))
+                    {
+                        Debug.LogWarning($"[PlayerGrapple] Animator never entered '{animName}' within " +
+                                         $"{MaxWindupSeconds}s - launching from the current position.");
+                    }
+                    else if (carryArmed)
+                    {
+                        yield return CarryHeldTargetThroughTurn(target, animName, launchPoint,
+                            state.normalizedTime, carryStartOffset, carryEndOffset);
+                    }
+                    else
+                    {
+                        while (state.IsName(animName) && state.normalizedTime < launchPoint)
+                        {
+                            yield return null;
+                            state = animator.GetCurrentAnimatorStateInfo(0);
+                        }
+                    }
                 }
             }
+
+            float extraDistance = isBackwardThrow ? settings.backwardThrowOffset : 0f;
+            yield return StartCoroutine(AnimateThrow(target, throwDir, extraDistance));
+
+            if (ScreenShake.Instance != null)
+            {
+                ScreenShake.Instance.Shake(settings.grappleDamage);
+            }
+
+            if (target != null)
+            {
+                var damageable = target.GetComponent<IDamageable>();
+                if (damageable != null)
+                {
+                    damageable.TakeDamage(new HitData
+                    {
+                        Damage = settings.grappleDamage,
+                        KnockbackDirection = throwDir,
+                        KnockbackForce = settings.impactKnockback,
+                        KnockUpForce = settings.impactKnockUp,
+                        HitStunDuration = 0.5f,
+                        ShouldKnockdown = true,
+                        SuppressHitAnimation = true,
+                        Source = gameObject
+                    });
+
+                    if (settings != null)
+                    {
+                        HitStop.Instance?.Do(settings.grappleImpactHitStop);
+                    }
+
+                    if (damageable is Health enemyHealth)
+                    {
+                        UIManager.Instance?.UpdateEnemyHealthFocus(enemyHealth);
+                    }
+                }
+            }
+
+            if (target != null)
+            {
+                var cc = target.GetComponent<CharacterController>();
+                if (cc != null) cc.enabled = true;
+
+                var em = target.GetComponent<EnemyMovement>();
+                if (em != null)
+                {
+                    em.EndThrowAnimation();
+
+                    if (em.CurrentState == EnemyState.Grabbed)
+                    {
+                        em.SetState(EnemyState.Airborne);
+                    }
+                }
+            }
+
+            if (_inputBuffer != null) _inputBuffer.Clear();
+            PlayerStateManager.Instance.ResetToIdle();
+            _nextGrappleTime = Time.time + settings.grappleCooldown;
         }
-        
-        if (_inputBuffer != null) _inputBuffer.Clear();
-        PlayerStateManager.Instance.ResetToIdle();
-        _nextGrappleTime = Time.time + settings.grappleCooldown;
+        finally
+        {
+            _carryTarget = null;
+        }
     }
 
-    private IEnumerator AnimateThrow(GameObject target, Vector3 throwDir, bool isBackwardThrow = false)
+    private IEnumerator CarryHeldTargetThroughTurn(GameObject target, string animName, float launchPoint,
+        float startNormalizedTime, Vector3 startOffset, Vector3 endOffset)
+    {
+        if (target == null || animator == null || settings == null) yield break;
+
+        target.TryGetComponent<EnemyMovement>(out var em);
+        target.TryGetComponent<Health>(out var health);
+
+        Vector3 startFlat = new Vector3(startOffset.x, 0f, startOffset.z);
+        Vector3 endFlat = new Vector3(endOffset.x, 0f, endOffset.z);
+        if (startFlat.sqrMagnitude < 0.0001f) yield break;
+        if (endFlat.sqrMagnitude < 0.0001f) endFlat = -startFlat;
+        
+        float sweepMagnitude = Vector3.Angle(startFlat, endFlat);
+        if (sweepMagnitude < 1f) sweepMagnitude = 180f;
+
+        _carryPath = new CarryPath
+        {
+            Center = transform.position,
+            StartDir = startFlat.normalized,
+            EndDir = endFlat.normalized,
+            SweepAngle = sweepMagnitude * (settings.throwCarrySweepRight ? 1f : -1f),
+            StartRadius = startFlat.magnitude,
+            EndRadius = endFlat.magnitude,
+            StartHeight = startOffset.y,
+            EndHeight = endOffset.y,
+            Lift = settings.throwCarryLift,
+            RadiusScale = settings.throwCarryRadiusScale,
+            Bulge = settings.throwCarryBulge
+        };
+
+        float turnEnd = Mathf.Min(settings.throwCarryTurnEnd, launchPoint);
+        if (settings.throwCarryTurnEnd > launchPoint + 0.001f)
+        {
+            Debug.LogWarning($"[PlayerGrapple] throwCarryTurnEnd ({settings.throwCarryTurnEnd:0.###}) is past " +
+                             $"throwLaunchPoint ({launchPoint:0.###}) - orbit compressed into the shorter window.");
+        }
+        float span = Mathf.Max(0.0001f, turnEnd - startNormalizedTime);
+
+        float watchdog = 0f;
+        _carryProgress = 0f;
+        _carryActive = true;
+
+        try
+        {
+            while (true)
+            {
+                if (target == null) yield break;
+                if (em == null || em.CurrentState != EnemyState.Grabbed) yield break;
+                if (health != null && health.Current <= 0) yield break;
+
+                AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
+                if (!state.IsName(animName)) yield break;
+                if (state.normalizedTime >= launchPoint) yield break;
+
+                if (watchdog >= MaxWindupSeconds)
+                {
+                    Debug.LogWarning("[PlayerGrapple] Backward throw carry timed out - launching from " +
+                                     "the current position.");
+                    yield break;
+                }
+                
+                _carryProgress = Mathf.Clamp01((state.normalizedTime - startNormalizedTime) / span);
+
+                _carryPath.Center = transform.position;
+                Vector3 pos = _carryPath.Evaluate(CarryEase(_carryProgress));
+
+                target.transform.position = pos;
+
+                target.transform.LookAt(new Vector3(_carryPath.Center.x, pos.y, _carryPath.Center.z));
+
+                watchdog += Time.deltaTime;
+                yield return null;
+            }
+        }
+        finally
+        {
+            _carryActive = false;
+        }
+    }
+
+    private float CarryEase(float u)
+    {
+        float ease = settings != null ? Mathf.Max(0.01f, settings.throwCarryEase) : 1f;
+
+        return Mathf.Pow(Mathf.SmoothStep(0f, 1f, u), ease);
+    }
+
+    private struct CarryPath
+    {
+        public Vector3 Center;
+        public Vector3 StartDir;
+        public Vector3 EndDir;
+        public float SweepAngle;
+        public float StartRadius;
+        public float EndRadius;
+        public float StartHeight;
+        public float EndHeight;
+        public float Lift;
+        public float RadiusScale;
+        public float Bulge;
+
+        private const float ScaleEdge = 0.15f;
+
+        public Vector3 Evaluate(float t)
+        {
+            Vector3 dir = t >= 1f ? EndDir : Quaternion.AngleAxis(SweepAngle * t, Vector3.up) * StartDir;
+
+            float radius = Mathf.Lerp(StartRadius, EndRadius, t) * Mathf.Lerp(1f, RadiusScale, Plateau(t))
+                           + Bulge * Mathf.Sin(Mathf.PI * t);
+
+            radius = Mathf.Max(0.1f, radius);
+
+            float height = Mathf.Lerp(StartHeight, EndHeight, t) + Lift * t;
+
+            return Center + dir * radius + Vector3.up * height;
+        }
+        
+        private static float Plateau(float t)
+        {
+            if (t <= 0f || t >= 1f) return 0f;
+            if (t < ScaleEdge) return Mathf.SmoothStep(0f, 1f, t / ScaleEdge);
+            if (t > 1f - ScaleEdge) return Mathf.SmoothStep(0f, 1f, (1f - t) / ScaleEdge);
+
+            return 1f;
+        }
+    }
+
+    private IEnumerator AnimateThrow(GameObject target, Vector3 throwDir, float extraDistance = 0f)
     {
         if (target == null) yield break;
 
         Vector3 startPos = target.transform.position;
-        float distance = settings.throwDistance + (isBackwardThrow ? settings.backwardThrowOffset : 0f);
+        float distance = settings.throwDistance + extraDistance;
         Vector3 targetPos = startPos + throwDir * distance;
         
         CharacterController cc = target.GetComponent<CharacterController>();
@@ -574,9 +777,44 @@ public class PlayerGrapple : MonoBehaviour
 
     }
 
+    private void DrawCarryGizmos()
+    {
+        if (!showCarryGizmos || !_carryActive || !Application.isPlaying || settings == null) return;
+
+        const int segments = 24;
+
+        Vector3 start = _carryPath.Evaluate(0f);
+        Gizmos.color = new Color(1f, 1f, 1f, 0.5f);
+        Gizmos.DrawWireSphere(start, 0.2f);
+
+        Gizmos.color = new Color(0f, 0.8f, 1f, 0.8f);
+        Vector3 previous = start;
+        for (int i = 1; i <= segments; i++)
+        {
+            Vector3 point = _carryPath.Evaluate(i / (float)segments);
+            Gizmos.DrawLine(previous, point);
+            previous = point;
+        }
+
+        Vector3 handoff = _carryPath.Evaluate(1f);
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(handoff, 0.2f);
+        Gizmos.DrawLine(handoff, handoff + _carryThrowDir * settings.throwDistance);
+
+        Vector3 live = _carryPath.Evaluate(CarryEase(_carryProgress));
+        Gizmos.color = new Color(1f, 0.5f, 0f, 0.5f);
+        Gizmos.DrawWireSphere(live, settings.projectileRadius);
+        Gizmos.DrawLine(_carryPath.Center, live);
+
+        Vector3 origin = transform.position + Vector3.up * 0.1f;
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(origin, origin + Vector3.up * (1.5f * _carryProgress));
+    }
+
     private void OnDrawGizmos()
     {
         DrawProjectileGizmos();
+        DrawCarryGizmos();
 
         if (!showGrabGizmos || grabBoxAnchor == null) return;
 
