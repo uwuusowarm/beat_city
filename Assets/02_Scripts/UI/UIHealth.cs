@@ -16,6 +16,12 @@ public class UIHealth : MonoBehaviour
  
     public void SetTarget(Health newHealth)
     {
+        if (newHealth != null && newHealth.Current <= 0)
+        {
+            ClearTarget();
+            return;
+        }
+
         if (health == newHealth)
         {
             if (health != null && hideIfNoTarget && visualRoot != null && !visualRoot.activeSelf)
@@ -39,11 +45,28 @@ public class UIHealth : MonoBehaviour
             if (hideIfNoTarget && visualRoot != null)
                 visualRoot.SetActive(true);
         }
+        else
+        {
+            ClearTarget();
+        }
+    }
+
+    private void ClearTarget()
+    {
+        if (!hideIfNoTarget) return;
+
+        Unsubscribe();
+        health = null;
+
+        if (visualRoot != null)
+            visualRoot.SetActive(false);
     }
 
     private void Subscribe()
     {
         if (health == null) return;
+        health.OnHit -= HandleHit;
+        health.OnDeath -= HandleDeath;
         health.OnHit += HandleHit;
         health.OnDeath += HandleDeath;
     }
@@ -79,6 +102,12 @@ public class UIHealth : MonoBehaviour
  
     private void Update()
     {
+        if (hideIfNoTarget && health == null && visualRoot != null && visualRoot.activeSelf)
+        {
+            ClearTarget();
+            return;
+        }
+
         if (trailSlider == null) return;
 
         if (trailTimer > 0f)
@@ -106,13 +135,8 @@ public class UIHealth : MonoBehaviour
     private void HandleDeath()
     {
         UpdateSlider();
-        
-        if (hideIfNoTarget && visualRoot != null)
-        {
-            visualRoot.SetActive(false);
-            Unsubscribe();
-            health = null;
-        }
+
+        ClearTarget();
     }
  
     private void UpdateSlider()

@@ -12,7 +12,7 @@ public class GameDataManager : MonoBehaviour
     
     public event Action OnDataChanged;
 
-    private const string MAIN_MENU_SCENE = "MainMenu"; //TODO: when we have a name for our mainmenu scene, put it here
+    private const string MAIN_MENU_SCENE = "MainMenuPitch"; //TODO: when we have a name for our mainmenu scene, put it here
 
     private void Awake()
     {
@@ -20,6 +20,7 @@ public class GameDataManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
         data = SaveSystem.Load();
+        ControlSettings.BindingsJson = data.bindingsJson;
     }
 
     private void OnEnable()  => SceneManager.sceneLoaded += OnSceneLoaded;
@@ -45,12 +46,17 @@ public class GameDataManager : MonoBehaviour
         return true;
     }
 
-    public void Save()     => SaveSystem.Save(data);
+    public void Save()
+    {
+        data.bindingsJson = ControlSettings.BindingsJson;
+        SaveSystem.Save(data);
+    }
 
     public void ResetAll()
     {
         SaveSystem.Delete();
         data = new SaveData();
+        data.bindingsJson = "";
         OnDataChanged?.Invoke();
     }
 

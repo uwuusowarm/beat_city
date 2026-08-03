@@ -46,7 +46,8 @@ public class EnemyMovement : MonoBehaviour
     private int _juggleCount;
     private float _juggleDecayMultiplier = 1f;
     private float _hoverTimer;
-    
+    private bool _hoverPending;
+
     private float _juggleCeiling;
 
     private float _airTimer;
@@ -350,6 +351,7 @@ public class EnemyMovement : MonoBehaviour
         _juggleCeiling = MaxJuggleHeight;
         _airTimer = 0f;
         _hoverTimer = 0f;
+        _hoverPending = false;
         _squashTimer = 0f;
         hitStunTimer = 0f;
         _wasThrownSkipReset = false;
@@ -528,6 +530,7 @@ public class EnemyMovement : MonoBehaviour
 
         float maxVelocityForHeight = Mathf.Sqrt(2f * Gravity * MaxJuggleHeight);
         verticalVelocity = Mathf.Min(effectiveForce, Mathf.Min(MaxJugglingVelocity, maxVelocityForHeight));
+        _hoverPending = true;
         SetState(EnemyState.Launched);
 
         Debug.Log($"[EnemyMovement] {gameObject.name} LAUNCHED! Force: {effectiveForce:F2}, Velocity: {verticalVelocity:F2}, MaxHeight: {MaxJuggleHeight:F2}");
@@ -551,7 +554,8 @@ public class EnemyMovement : MonoBehaviour
         bounceForce *= Mathf.Max(fade, JugglePopMinFade);
 
         verticalVelocity = bounceForce;
-        _hoverTimer = JuggleHoverDuration;
+        _hoverTimer = 0f;
+        _hoverPending = true;
         _squashTimer = SquashDuration;
 
         SetState(EnemyState.Launched);
@@ -561,6 +565,9 @@ public class EnemyMovement : MonoBehaviour
     
     private void HandleKnockdownHit(HitData hitData, float effectiveForce)
     {
+        _hoverTimer = 0f;
+        _hoverPending = false;
+
         if (hitData.JuggleType == JuggleType.Spike)
         {
             verticalVelocity = -effectiveForce;
@@ -727,8 +734,13 @@ public class EnemyMovement : MonoBehaviour
             if (currentHeight >= ceiling && verticalVelocity > 0f)
             {
                 verticalVelocity = 0f;
-                if (_hoverTimer <= 0f)
-                    _hoverTimer = JuggleHoverDuration;
+            }
+
+            if (_hoverPending && verticalVelocity <= 0f)
+            {
+                _hoverPending = false;
+                _hoverTimer = JuggleHoverDuration;
+                Debug.Log($"[EnemyMovement] {gameObject.name} HOVER start at apex - Height: {currentHeight:F2}/{ceiling:F2}, Duration: {JuggleHoverDuration:F2}s");
             }
 
             TickHoverAndMove();
