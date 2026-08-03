@@ -466,6 +466,11 @@ public class PlayerGrapple : MonoBehaviour
                 var damageable = target.GetComponent<IDamageable>();
                 if (damageable != null)
                 {
+                    if (damageable is Health enemyHealth)
+                    {
+                        UIManager.Instance?.UpdateEnemyHealthFocus(enemyHealth);
+                    }
+
                     damageable.TakeDamage(new HitData
                     {
                         Damage = settings.grappleDamage,
@@ -481,11 +486,6 @@ public class PlayerGrapple : MonoBehaviour
                     if (settings != null)
                     {
                         HitStop.Instance?.Do(settings.grappleImpactHitStop);
-                    }
-
-                    if (damageable is Health enemyHealth)
-                    {
-                        UIManager.Instance?.UpdateEnemyHealthFocus(enemyHealth);
                     }
                 }
             }

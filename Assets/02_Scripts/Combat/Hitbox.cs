@@ -109,6 +109,16 @@ public class Hitbox : MonoBehaviour
                 }
                 int finalDamage = Mathf.RoundToInt(damage * damageMultiplier);
 
+                if (owner.CompareTag("Player") && damageable is Health enemyHealth)
+                {
+                    Debug.Log($"[DEBUG_LOG] Hitbox: Player hit enemy {hurtbox.Owner.name}.");
+                    UIManager manager = UIManager.Instance;
+                    if (manager != null)
+                    {
+                        manager.UpdateEnemyHealthFocus(enemyHealth);
+                    }
+                }
+
                 damageable.TakeDamage(new HitData
                 {
                     Damage = finalDamage,
@@ -127,16 +137,6 @@ public class Hitbox : MonoBehaviour
 
                 if (owner.CompareTag("Player"))
                     ScreenShake.Instance?.Shake(finalDamage);
-
-                if (owner.CompareTag("Player") && damageable is Health enemyHealth)
-                {
-                    Debug.Log($"[DEBUG_LOG] Hitbox: Player hit enemy {hurtbox.Owner.name}.");
-                    UIManager manager = UIManager.Instance;
-                    if (manager != null)
-                    {
-                        manager.UpdateEnemyHealthFocus(enemyHealth);
-                    }
-                }
             }
 
             OnHitLanded?.Invoke(hurtbox.Owner);
