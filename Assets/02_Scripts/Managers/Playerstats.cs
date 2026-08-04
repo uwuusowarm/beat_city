@@ -17,7 +17,8 @@ public class PlayerStats : MonoBehaviour
 
     [Header("Special Attacks")]
     public SpecialAttackSO[] allSpecialAttacks; 
-    public string equippedSpecialId = "";
+    public string equippedSpecialId1 = "";
+    public string equippedSpecialId2 = "";
 
     private void Awake()
     {
@@ -48,6 +49,11 @@ public class PlayerStats : MonoBehaviour
             int baseHp = health.Max;
             int upgradedHp = baseHp + ((healthLevel - 1) * hpBonusPerLevel);
             health.SetMaxHealth(upgradedHp);
+        }
+        if (player.TryGetComponent<PlayerCombat>(out var combat))
+        {
+            combat.equippedSpecial1 = GetSpecialById(equippedSpecialId1);
+            combat.equippedSpecial2 = GetSpecialById(equippedSpecialId2);
         }
     }
 
@@ -80,12 +86,23 @@ public class PlayerStats : MonoBehaviour
         return false;
     }
 
-    public void EquipSpecial(SpecialAttackSO special)
+    public void EquipSpecial(SpecialAttackSO special, int slot)
     {
         if (IsSpecialUnlocked(special))
         {
-            equippedSpecialId = special.id;
-            PlayerPrefs.SetString("EquippedSpecial", equippedSpecialId);
+            if (slot == 1)
+            {
+                if (equippedSpecialId2 == special.id) equippedSpecialId2 = "";
+                equippedSpecialId1 = special.id;
+            }
+            else if (slot == 2)
+            {
+                if (equippedSpecialId1 == special.id) equippedSpecialId1 = "";
+                equippedSpecialId2 = special.id;
+            }
+            
+            PlayerPrefs.SetString("EquippedSpecial1", equippedSpecialId1);
+            PlayerPrefs.SetString("EquippedSpecial2", equippedSpecialId2);
             PlayerPrefs.Save();
         }
     }
@@ -161,6 +178,7 @@ public class PlayerStats : MonoBehaviour
         healthLevel = PlayerPrefs.GetInt("StatHealthLevel", 1);
         damageLevel = PlayerPrefs.GetInt("StatDamageLevel", 1);
 
-        equippedSpecialId = PlayerPrefs.GetString("EquippedSpecial", "");
+        equippedSpecialId1 = PlayerPrefs.GetString("EquippedSpecial1", "");
+        equippedSpecialId2 = PlayerPrefs.GetString("EquippedSpecial2", "");
     }
 }
