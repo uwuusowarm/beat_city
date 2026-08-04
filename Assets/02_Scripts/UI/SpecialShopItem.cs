@@ -10,6 +10,10 @@ public class SpecialShopItem : MonoBehaviour
     public TextMeshProUGUI statusText; 
     public Button actionButton;
 
+    public Button buyButton;
+    public Button equipSlot1Button;
+    public Button equipSlot2Button;
+
     private SpecialAttackSO _special;
     private ShopUI _shop;
 
@@ -24,9 +28,19 @@ public class SpecialShopItem : MonoBehaviour
         _shop = shop;
         
         if (nameText != null) nameText.text = _special.attackName;
+
+        SetButtonText(buyButton, "Kaufen");
+        SetButtonText(equipSlot1Button, "Input 1");
+        SetButtonText(equipSlot2Button, "Input 2");
         
-        actionButton.onClick.RemoveAllListeners();
-        actionButton.onClick.AddListener(OnButtonClicked);
+        buyButton.onClick.RemoveAllListeners();
+        buyButton.onClick.AddListener(OnBuyClicked);
+        
+        equipSlot1Button.onClick.RemoveAllListeners();
+        equipSlot1Button.onClick.AddListener(() => OnEquipClicked(1));
+
+        equipSlot2Button.onClick.RemoveAllListeners();
+        equipSlot2Button.onClick.AddListener(() => OnEquipClicked(2));
         
         UpdateUI();
     }
@@ -38,47 +52,50 @@ public class SpecialShopItem : MonoBehaviour
         if (nameText != null) nameText.text = specialToSell.attackName;
         
         bool isUnlocked = PlayerStats.Instance.IsSpecialUnlocked(specialToSell);
-        bool isEquipped = PlayerStats.Instance.equippedSpecialId == specialToSell.id;
+        bool isEquippedSlot1 = PlayerStats.Instance.equippedSpecialId1 == _special.id;
+        bool isEquippedSlot2 = PlayerStats.Instance.equippedSpecialId2 == _special.id;
 
-        if (isEquipped) 
+        if (!isUnlocked) 
         {
-            if (costText != null) costText.text = "";
-            if (statusText != null) statusText.text = "Ausgerüstet";
-            actionButton.interactable = false;
-        } 
-        else if (isUnlocked) 
+            buyButton.gameObject.SetActive(true);
+            equipSlot1Button.gameObject.SetActive(false);
+            equipSlot2Button.gameObject.SetActive(false);
+            
+            if (costText != null) costText.text = _special.shopCost + " Coins";
+            buyButton.interactable = PlayerStats.Instance.coins >= _special.shopCost; 
+        }
+        else
         {
-            if (costText != null) costText.text = "";
-            if (statusText != null) statusText.text = "Ausrüsten";
-            actionButton.interactable = true;
-        } 
-        else 
-        {
-            if (costText != null) costText.text = specialToSell.shopCost + " Münzen";
-            if (statusText != null) statusText.text = "Kaufen";
-            actionButton.interactable = PlayerStats.Instance.coins >= specialToSell.shopCost; 
+            buyButton.gameObject.SetActive(false);
+            equipSlot1Button.gameObject.SetActive(true);
+            equipSlot2Button.gameObject.SetActive(true);
+            
+            if (costText != null) costText.text = "Gekauft";
+
+            SetButtonText(equipSlot1Button, isEquippedSlot1 ? "Auf Slot 1" : "Input 1");
+            SetButtonText(equipSlot2Button, isEquippedSlot2 ? "Auf Slot 2" : "Input 2");
+
+            equipSlot1Button.interactable = !isEquippedSlot1;
+            equipSlot2Button.interactable = !isEquippedSlot2;
         }
     }
 
-    public void OnButtonClicked() 
+    private void SetButtonText(Button btn, string text)
     {
-        bool isUnlocked = PlayerStats.Instance.IsSpecialUnlocked(specialToSell);
-        
-        if (!isUnlocked) 
-        {
-            PlayerStats.Instance.BuySpecial(specialToSell);
-        } 
-        else 
-        {
-            PlayerStats.Instance.EquipSpecial(specialToSell);
-        }
-        
-        ShopUI mainShop = FindFirstObjectByType<ShopUI>();
-        if (mainShop != null) mainShop.UpdateShopUI();
-        
-        foreach(var item in FindObjectsByType<SpecialShopItem>(FindObjectsSortMode.None)) 
-        {
-            item.UpdateUI();
-        }
+        if (btn == null) return;
+        var tmp = btn.GetComponentInChildren<TextMeshProUGUI>();
+        if (tmp != null) tmp.text = text;
+    }
+
+    private void OnBuyClicked() 
+    {
+        PlayerStats.Instance.BuySpecial(_special);
+        _shop.UpdateShopUI(); 
+    }
+
+    private void OnEquipClicked(int slot)
+    {
+        PlayerStats.Instance.EquipSpecial(_special, slot);
+        _shop.UpdateShopUI();
     }
 }
