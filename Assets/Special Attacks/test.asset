@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e04096abb49fe674f8f0f49975f7bf30, type: 3}
   m_Name: test
   m_EditorClassIdentifier: Assembly-CSharp::SpecialAttackSO
-  attackName: New Attack
+  attackName: SuperDuper
   animatorTrigger: Special1
   totalDuration: 1
   hitCount: 1
@@ -29,7 +29,7 @@ MonoBehaviour:
   projectilePrefab: {fileID: 0}
   id: new_special
   shopCost: 500
-  unlockedByDefault: 0
+  unlockedByDefault: 1
   isComboSequence: 0
   animationSequence: []
   animationPlaybackSpeed: 1

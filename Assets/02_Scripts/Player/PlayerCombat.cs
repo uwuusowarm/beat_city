@@ -17,7 +17,8 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private Transform vfxSpawnPoint;
     [SerializeField] private Meter specialMeter;
 
-    public SpecialAttackSO equippedSpecial;
+    public SpecialAttackSO equippedSpecial1;
+    public SpecialAttackSO equippedSpecial2;
 
     [Header("Special Move")]
     [SerializeField] private SpecialMove specialMove;
@@ -86,15 +87,10 @@ public class PlayerCombat : MonoBehaviour
                     DoKick();
                     break;
                 case CombatInputType.Special:
-                    if (equippedSpecial != null) StartCoroutine(DoSpecialAttack(equippedSpecial));
+                    if (equippedSpecial1 != null) StartCoroutine(DoSpecialAttack(equippedSpecial1));
                     break;
                 case CombatInputType.SpecialChain:
-                    if (specialMove != null)
-                    {
-                        _isAttacking = true;
-                        if (!specialMove.TryActivate())
-                            _isAttacking = false;
-                    }
+                    if (equippedSpecial2 != null) StartCoroutine(DoSpecialAttack(equippedSpecial2));
                     break;
             }
         }
