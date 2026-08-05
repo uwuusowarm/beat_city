@@ -608,13 +608,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4a01245c4248ed40a727a9278d01c62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EndlessManager
-  chunkPrefabs:
-  - {fileID: 4115460182486416616, guid: 8f41d8d4be21a524cb7dbe57021a289a, type: 3}
-  - {fileID: 4115460182486416616, guid: 4494ef9e705f0fc469737142b6316a30, type: 3}
-  - {fileID: 4115460182486416616, guid: d7e3811d47e056d4f8b1a9ad19fd1a03, type: 3}
-  - {fileID: 4115460182486416616, guid: 7c52325ca43706e4caedb611942b3f5f, type: 3}
-  - {fileID: 4115460182486416616, guid: d812feaccfcd0a14faa1d7900ed54103, type: 3}
+  tileSets:
+  - name: street
+    chunkPrefabs:
+    - {fileID: 4115460182486416616, guid: 8f41d8d4be21a524cb7dbe57021a289a, type: 3}
+    - {fileID: 4115460182486416616, guid: 4494ef9e705f0fc469737142b6316a30, type: 3}
+    transitionPrefab: {fileID: 4115460182486416616, guid: 7a1f2de37267ecc4b82945307a6a97c4, type: 3}
+    minChunksBeforeTransition: 3
+    transitionChance: 1
+  - name: alley
+    chunkPrefabs:
+    - {fileID: 599246731523274979, guid: 093d7080846563447b4bef1d7ac69a35, type: 3}
+    transitionPrefab: {fileID: 4115460182486416616, guid: 4c3c7962f0562274a81526b77cf53f17, type: 3}
+    minChunksBeforeTransition: 1
+    transitionChance: 1
   chunkWidth: 50
+  spawnAheadDistance: 20
+  despawnDistance: 100
   maxActiveChunks: 3
   player: {fileID: 0}
   startSpawnX: 25
