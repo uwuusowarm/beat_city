@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerStats : MonoBehaviour
 {
@@ -16,9 +17,8 @@ public class PlayerStats : MonoBehaviour
     [SerializeField] private float damageBonusPerLevel = 0.15f; 
 
     [Header("Special Attacks")]
-    public SpecialAttackSO[] allSpecialAttacks; 
-    public string equippedSpecialId1 = "";
-    public string equippedSpecialId2 = "";
+    public SpecialAttackId? equippedSpecialId1;
+    public SpecialAttackId? equippedSpecialId2;
 
     private void Awake()
     {
@@ -32,6 +32,14 @@ public class PlayerStats : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    private void OnEnable()  => SceneManager.sceneLoaded += OnSceneLoaded;
+    private void OnDisable() => SceneManager.sceneLoaded -= OnSceneLoaded;
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        ApplyStatsToPlayer();
     }
 
     private void Start()
@@ -52,30 +60,21 @@ public class PlayerStats : MonoBehaviour
         }
         if (player.TryGetComponent<PlayerCombat>(out var combat))
         {
-            combat.equippedSpecial1 = GetSpecialById(equippedSpecialId1);
-            combat.equippedSpecial2 = GetSpecialById(equippedSpecialId2);
+            combat.equippedSpecial1 = equippedSpecialId1;
+            combat.equippedSpecial2 = equippedSpecialId2;
         }
     }
 
-    public SpecialAttackSO GetSpecialById(string searchId)
-    {
-        foreach(var special in allSpecialAttacks)
-        {
-            if (special.id == searchId) return special;
-        }
-        return null;
-    }
-
-    public bool IsSpecialUnlocked(SpecialAttackSO special)
+    public bool IsSpecialUnlocked(SpecialAttackDef special)
     {
         if (special.unlockedByDefault) return true;
-        return PlayerPrefs.GetInt("SpecialUnlocked_" + special.id, 0) == 1; 
+        return PlayerPrefs.GetInt("SpecialUnlocked_" + special.id, 0) == 1;
     }
 
-    public bool BuySpecial(SpecialAttackSO special)
+    public bool BuySpecial(SpecialAttackDef special)
     {
         if (IsSpecialUnlocked(special)) return false;
-        
+
         if (coins >= special.shopCost)
         {
             coins -= special.shopCost;
@@ -86,23 +85,23 @@ public class PlayerStats : MonoBehaviour
         return false;
     }
 
-    public void EquipSpecial(SpecialAttackSO special, int slot)
+    public void EquipSpecial(SpecialAttackDef special, int slot)
     {
         if (IsSpecialUnlocked(special))
         {
             if (slot == 1)
             {
-                if (equippedSpecialId2 == special.id) equippedSpecialId2 = "";
+                if (equippedSpecialId2 == special.id) equippedSpecialId2 = null;
                 equippedSpecialId1 = special.id;
             }
             else if (slot == 2)
             {
-                if (equippedSpecialId1 == special.id) equippedSpecialId1 = "";
+                if (equippedSpecialId1 == special.id) equippedSpecialId1 = null;
                 equippedSpecialId2 = special.id;
             }
-            
-            PlayerPrefs.SetString("EquippedSpecial1", equippedSpecialId1);
-            PlayerPrefs.SetString("EquippedSpecial2", equippedSpecialId2);
+
+            PlayerPrefs.SetString("EquippedSpecial1", equippedSpecialId1?.ToString() ?? "");
+            PlayerPrefs.SetString("EquippedSpecial2", equippedSpecialId2?.ToString() ?? "");
             PlayerPrefs.Save();
         }
     }
@@ -178,7 +177,12 @@ public class PlayerStats : MonoBehaviour
         healthLevel = PlayerPrefs.GetInt("StatHealthLevel", 1);
         damageLevel = PlayerPrefs.GetInt("StatDamageLevel", 1);
 
-        equippedSpecialId1 = PlayerPrefs.GetString("EquippedSpecial1", "");
-        equippedSpecialId2 = PlayerPrefs.GetString("EquippedSpecial2", "");
+        equippedSpecialId1 = ParseSpecialId(PlayerPrefs.GetString("EquippedSpecial1", ""));
+        equippedSpecialId2 = ParseSpecialId(PlayerPrefs.GetString("EquippedSpecial2", ""));
+    }
+
+    private static SpecialAttackId? ParseSpecialId(string value)
+    {
+        return System.Enum.TryParse<SpecialAttackId>(value, out var id) ? id : (SpecialAttackId?)null;
     }
 }

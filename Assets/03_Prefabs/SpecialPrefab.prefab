@@ -981,11 +981,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8199f7c0fe91be48b72a5db87f493a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpecialShopItem
-  specialToSell: {fileID: 0}
   nameText: {fileID: 5692852220723036171}
-  costText: {fileID: 5692852220723036171}
-  statusText: {fileID: 8857222110123760071}
-  actionButton: {fileID: 7833822279640249225}
+  costText: {fileID: 8857222110123760071}
   buyButton: {fileID: 7833822279640249225}
   equipSlot1Button: {fileID: 3933924846216277647}
   equipSlot2Button: {fileID: 1124757002089413042}

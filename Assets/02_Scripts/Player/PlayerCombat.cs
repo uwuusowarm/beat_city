@@ -17,8 +17,8 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private Transform vfxSpawnPoint;
     [SerializeField] private Meter specialMeter;
 
-    public SpecialAttackSO equippedSpecial1;
-    public SpecialAttackSO equippedSpecial2;
+    public SpecialAttackId? equippedSpecial1;
+    public SpecialAttackId? equippedSpecial2;
 
     [Header("Special Move")]
     [SerializeField] private SpecialMove specialMove;
@@ -87,10 +87,10 @@ public class PlayerCombat : MonoBehaviour
                     DoKick();
                     break;
                 case CombatInputType.Special:
-                    if (equippedSpecial1 != null) StartCoroutine(DoSpecialAttack(equippedSpecial1));
+                    if (equippedSpecial1.HasValue) PerformSpecial(equippedSpecial1.Value);
                     break;
                 case CombatInputType.SpecialChain:
-                    if (equippedSpecial2 != null) StartCoroutine(DoSpecialAttack(equippedSpecial2));
+                    if (equippedSpecial2.HasValue) PerformSpecial(equippedSpecial2.Value);
                     break;
             }
         }
@@ -162,7 +162,43 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
-    private void DoSpecial()
+    private void PerformSpecial(SpecialAttackId id)
+    {
+        SpecialAttackDef def = SpecialAttackCatalog.Get(id);
+        if (def == null) return;
+
+        if (!TrySpendMeter(def)) return;
+
+        switch (id)
+        {
+            case SpecialAttackId.ChainAttack:
+                if (specialMove != null)
+                {
+                    _isAttacking = true;
+                    if (!specialMove.TryActivate())
+                        _isAttacking = false;
+                }
+                break;
+            case SpecialAttackId.GroundSlam:
+                DoGroundSlam();
+                break;
+        }
+    }
+
+    private bool TrySpendMeter(SpecialAttackDef def)
+    {
+        if (def.meterCost <= 0) return true;
+
+        if (specialMeter == null)
+        {
+            Debug.LogWarning($"[PlayerCombat] No Meter assigned, cannot pay {def.meterCost} for {def.displayName}.");
+            return false;
+        }
+
+        return specialMeter.TrySpend(def.meterCost);
+    }
+
+    private void DoGroundSlam()
     {
         _isAttacking = true;
         PlayerStateManager.Instance.SetState(PlayerState.Attacking);
@@ -306,75 +342,4 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
-    private IEnumerator DoSpecialAttack(SpecialAttackSO special)
-    {
-        _isAttacking = true;
-        PlayerStateManager.Instance.SetState(PlayerState.Attacking);
-        OnAttackStarted?.Invoke();
-        float originalAnimSpeed = animator != null ? animator.speed : 1f;
-        
-        if (special.isComboSequence && animator != null)
-        {
-            animator.speed = special.animationPlaybackSpeed;
-        }
-        else if (animator != null) animator.SetTrigger(special.animatorTrigger);
-
-        if (special.moveForward && TryGetComponent<CharacterController>(out var cc))
-        {
-            StartCoroutine(PerformSpecialDash(cc, special.dashSpeed, special.totalDuration));
-        }
-
-        if (special.isProjectile && special.projectilePrefab != null)
-        {
-            Instantiate(special.projectilePrefab, transform.position + transform.forward, transform.rotation);
-            yield return new WaitForSeconds(special.totalDuration);
-        }
-        else
-        {
-            if (hitbox != null)
-            {
-                hitbox.SetDimensions(special.hitboxSize, special.hitboxOffset);
-
-                for (int i = 0; i < special.hitCount; i++)
-                {
-                    bool isFinisher = (i == special.hitCount - 1); 
-
-                    if (special.isComboSequence && special.animationSequence != null && special.animationSequence.Length > 0 && animator != null)
-                    {
-                        string animToPlay = special.animationSequence[i % special.animationSequence.Length];
-                        animator.Play(animToPlay, 0, 0f); 
-                    }
-
-                    hitbox.Damage = special.damagePerHit;
-                    hitbox.KnockbackForce = isFinisher ? special.finalKnockback : 1f;
-                    hitbox.KnockUpForce = isFinisher ? special.finalKnockup : 0f;
-                    hitbox.ShouldKnockdown = isFinisher && special.finalHitShouldKnockdown;
-
-                    hitbox.Activate();
-                    yield return new WaitForSeconds(0.05f); 
-                    hitbox.Deactivate();
-
-                    if (!isFinisher) yield return new WaitForSeconds(special.timeBetweenHits);
-                }
-            }
-        }
-
-        if (animator != null) animator.speed = originalAnimSpeed;
-
-        yield return new WaitForSeconds(attackCooldown);
-        _isAttacking = false;
-        PlayerStateManager.Instance.ResetToIdle();
-        OnAttackEnded?.Invoke();
-    }
-
-    private IEnumerator PerformSpecialDash(CharacterController cc, float speed, float duration)
-    {
-        float elapsed = 0f;
-        while (elapsed < duration)
-        {
-            cc.Move(transform.forward * speed * Time.deltaTime);
-            elapsed += Time.deltaTime;
-            yield return null;
-        }
-    }
 }

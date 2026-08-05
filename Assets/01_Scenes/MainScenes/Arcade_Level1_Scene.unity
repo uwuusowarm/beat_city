@@ -393,6 +393,10 @@ PrefabInstance:
       propertyPath: hitText
       value: 
       objectReference: {fileID: 1263395331}
+    - target: {fileID: -3002893363729806011, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
+      propertyPath: grabBoxAnchor
+      value: 
+      objectReference: {fileID: 2055325965}
     - target: {fileID: 1662536712636653983, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
       propertyPath: m_Name
       value: PlayerAnimGrey
@@ -457,7 +461,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 6922274046274114452, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -1302,6 +1307,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5d8658f6d7d663245aa4c9d4e62718b3, type: 3}
+--- !u!4 &2055325965 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8887407231781088451, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
+  m_PrefabInstance: {fileID: 805857748}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2116010855
 PrefabInstance:
   m_ObjectHideFlags: 0

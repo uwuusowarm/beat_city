@@ -4,30 +4,27 @@ using UnityEngine.UI;
 
 public class SpecialShopItem : MonoBehaviour
 {
-    public SpecialAttackSO specialToSell;
     public TextMeshProUGUI nameText;
     public TextMeshProUGUI costText;
-    public TextMeshProUGUI statusText; 
-    public Button actionButton;
 
     public Button buyButton;
     public Button equipSlot1Button;
     public Button equipSlot2Button;
 
-    private SpecialAttackSO _special;
+    private SpecialAttackDef _special;
     private ShopUI _shop;
 
-    private void OnEnable() 
-    { 
-        UpdateUI(); 
+    private void OnEnable()
+    {
+        UpdateUI();
     }
 
-    public void Setup(SpecialAttackSO special, ShopUI shop)
+    public void Setup(SpecialAttackDef special, ShopUI shop)
     {
         _special = special;
         _shop = shop;
-        
-        if (nameText != null) nameText.text = _special.attackName;
+
+        if (nameText != null) nameText.text = _special.displayName;
 
         SetButtonText(buyButton, "Kaufen");
         SetButtonText(equipSlot1Button, "Input 1");
@@ -47,11 +44,11 @@ public class SpecialShopItem : MonoBehaviour
 
     public void UpdateUI() 
     {
-        if (PlayerStats.Instance == null || specialToSell == null) return;
+        if (PlayerStats.Instance == null || _special == null) return;
 
-        if (nameText != null) nameText.text = specialToSell.attackName;
-        
-        bool isUnlocked = PlayerStats.Instance.IsSpecialUnlocked(specialToSell);
+        if (nameText != null) nameText.text = _special.displayName;
+
+        bool isUnlocked = PlayerStats.Instance.IsSpecialUnlocked(_special);
         bool isEquippedSlot1 = PlayerStats.Instance.equippedSpecialId1 == _special.id;
         bool isEquippedSlot2 = PlayerStats.Instance.equippedSpecialId2 == _special.id;
 

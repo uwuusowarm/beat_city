@@ -52,6 +52,8 @@ public class EnemyMovement : MonoBehaviour
 
     private float _airTimer;
 
+    private float _lastLaunchImpactTime = -999f;
+
     private float _squashTimer;
     private const float SquashDuration = 0.12f;
     private static readonly Vector3 SquashScale = new Vector3(1.3f, 0.7f, 1.3f);
@@ -122,6 +124,11 @@ public class EnemyMovement : MonoBehaviour
     private float JugglePopHeadroom => meleeSettings != null ? meleeSettings.jugglePopHeadroom : 0.4f;
     private float JugglePopFadeRange => meleeSettings != null ? meleeSettings.jugglePopFadeRange : 0.4f;
     private float JugglePopMinFade => meleeSettings != null ? meleeSettings.jugglePopMinFade : 0.35f;
+    private float LaunchHitStopDuration => meleeSettings != null ? meleeSettings.launchHitStopDuration : 0.18f;
+    private float LaunchSlowMoDuration => meleeSettings != null ? meleeSettings.launchSlowMoDuration : 0.18f;
+    private float LaunchSlowMoTimeScale => meleeSettings != null ? meleeSettings.launchSlowMoTimeScale : 0.35f;
+    private float LaunchImpactKnockbackThreshold => meleeSettings != null ? meleeSettings.launchImpactKnockbackThreshold : 5f;
+    private float LaunchImpactCooldown => meleeSettings != null ? meleeSettings.launchImpactCooldown : 0.75f;
     private float MaxAirborneDuration => meleeSettings != null ? meleeSettings.maxAirborneDuration : 3f;
     private float KnockdownDuration => meleeSettings != null ? meleeSettings.knockdownDuration : 1.0f;
     private float StandUpDuration => meleeSettings != null ? meleeSettings.standUpDuration : 1.0f;
@@ -479,28 +486,35 @@ public class EnemyMovement : MonoBehaviour
         bool isGrounded = IsGroundedRaycast();
         
         float effectiveKnockUp = CalculateJuggleForce(hitData);
-        
+
+        bool sentFlying = false;
+
         if (hitData.ShouldKnockdown || _juggleCount >= MaxJuggleCount)
         {
             HandleKnockdownHit(hitData, effectiveKnockUp);
+            sentFlying = !wasAirborne;
         }
         else if (wasAirborne)
         {
             HandleJuggleHit(hitData, effectiveKnockUp);
         }
-        else if (hitData.IsLauncher || hitData.JuggleType == JuggleType.Launcher)
+        else if (hitData.IsLauncher || hitData.JuggleType == JuggleType.Launcher || effectiveKnockUp > LaunchThreshold)
         {
             HandleLauncherHit(hitData, effectiveKnockUp, isGrounded);
-        }
-        else if (effectiveKnockUp > LaunchThreshold)
-        {
-            HandleLauncherHit(hitData, effectiveKnockUp, isGrounded);
+            sentFlying = true;
         }
         else
         {
             HandleGroundHit(hitData);
+            sentFlying = LaunchImpactKnockbackThreshold > 0f &&
+                         hitData.KnockbackForce >= LaunchImpactKnockbackThreshold;
         }
-        
+
+        if (sentFlying)
+        {
+            PlayLaunchImpact();
+        }
+
         if (hitData.KnockbackForce > 0f && hitData.KnockbackDirection != Vector3.zero)
         {
             externalForce = hitData.KnockbackDirection * hitData.KnockbackForce;
@@ -512,6 +526,23 @@ public class EnemyMovement : MonoBehaviour
         }
     }
     
+    private void PlayLaunchImpact()
+    {
+        if (HitStop.Instance == null) return;
+
+        float freeze = LaunchHitStopDuration;
+        float slowMo = LaunchSlowMoDuration;
+        if (freeze <= 0f && slowMo <= 0f) return;
+
+        if (Time.unscaledTime - _lastLaunchImpactTime < LaunchImpactCooldown) return;
+        _lastLaunchImpactTime = Time.unscaledTime;
+
+        if (freeze > 0f) HitStop.Instance.Do(freeze);
+        if (slowMo > 0f) HitStop.Instance.DoSlowMotion(slowMo, LaunchSlowMoTimeScale);
+
+        Debug.Log($"[EnemyMovement] {gameObject.name} LAUNCH IMPACT - freeze {freeze:F3}s, slow mo {slowMo:F3}s @ {LaunchSlowMoTimeScale:F2}x");
+    }
+
     private float CalculateJuggleForce(HitData hitData)
     {
         if (hitData.IgnoreJuggleDecay) 

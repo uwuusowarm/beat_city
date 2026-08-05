@@ -59,6 +59,25 @@ public class EnemySettings : ScriptableObject
     [Tooltip("Safety net: max seconds an enemy may stay Launched/Airborne before a forced landing")]
     public float maxAirborneDuration = 3f;
 
+    [Header("Launch Impact (first launch only)")]
+    [Tooltip("Extra freeze-frame when a grounded enemy gets launched or knocked away. The total freeze is the longer of this and the attack's own hit stop, so set it above Combat Hit Stop to make launches read heavier. 0 disables it")]
+    [Range(0f, 0.25f)]
+    public float launchHitStopDuration = 0.18f;
+
+    [Tooltip("Slow motion that plays right after the launch freeze. 0 disables it")]
+    [Range(0f, 0.6f)]
+    public float launchSlowMoDuration = 0.18f;
+
+    [Tooltip("Time scale during the launch slow motion (1 = normal speed)")]
+    [Range(0.05f, 1f)]
+    public float launchSlowMoTimeScale = 0.35f;
+
+    [Tooltip("Minimum knockback force for a hit that does NOT launch to still count as 'knocked away'. 0 or less = only real launches and knockdowns trigger the effect")]
+    public float launchImpactKnockbackThreshold = 5f;
+
+    [Tooltip("Minimum seconds between two launch impacts on the same enemy, so re-launching right after a landing does not retrigger it")]
+    public float launchImpactCooldown = 0.75f;
+
     [Header("Juggle Pop (mid-air re-hit)")]
     [Tooltip("Guaranteed minimum upward velocity of a mid-air hit, so every hit reads as a pop")]
     public float jugglePopVelocity = 3.5f;
