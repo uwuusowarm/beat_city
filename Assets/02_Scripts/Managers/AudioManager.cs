@@ -162,4 +162,9 @@ public class AudioManager : MonoBehaviour
         sfxVolume = value;
         UpdateVolume();
     }
+
+    public void PlayButtonClick()
+    {
+        PlaySfx(SfxType.UI, 0);
+    }
 }
