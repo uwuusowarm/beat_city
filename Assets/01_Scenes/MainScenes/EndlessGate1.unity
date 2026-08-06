@@ -119,11 +119,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &246303047 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1662536712636653983, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
-  m_PrefabInstance: {fileID: 341897364}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &297446382
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -218,6 +213,10 @@ PrefabInstance:
       propertyPath: inputBuffer
       value: 
       objectReference: {fileID: 517442368}
+    - target: {fileID: 4631613409987971520, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
+      propertyPath: scoreText
+      value: 
+      objectReference: {fileID: 1060257985}
     - target: {fileID: 4799275800366551407, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.24969329
@@ -265,10 +264,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1662536712636653983, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1304769535}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
 --- !u!114 &437364901 stripped
 MonoBehaviour:
@@ -754,7 +750,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8315422397030599102, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
   m_PrefabInstance: {fileID: 341897364}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 246303047}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2a8d1e53402ec17418391ed73f486df1, type: 3}
@@ -765,7 +761,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: -3982840628395845413, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
   m_PrefabInstance: {fileID: 341897364}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 246303047}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d79aaa1f7e1b4321808728f6aca93c2a, type: 3}
@@ -776,33 +772,12 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1908867706107061876, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
   m_PrefabInstance: {fileID: 341897364}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 246303047}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6c90a008bb54b674cb6371fbbf1ede7b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCombat
---- !u!114 &1304769535
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 246303047}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b7aa1eec68c1a947b5ebf5606a1c524, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ComboScore
-  scoreText: {fileID: 1060257985}
-  basePointsPerHit: 10
-  comboTiers:
-  - minHits: 0
-    multiplier: 1
-  - minHits: 10
-    multiplier: 10
-  - minHits: 20
-    multiplier: 50
 --- !u!114 &1327577481 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 605783626459870476, guid: 657481147422a37418123f320e560f25, type: 3}
