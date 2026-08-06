@@ -4,10 +4,13 @@ public enum SfxType
 {
     Punch,
     Kick,
-    Jump,
     EnemyDeath,
     PlayerDeath,
-    Special
+    Special,
+    PunchMiss,
+    KickMiss,
+    Movement,
+    UI,
 }
 
 public enum MusicType
@@ -15,6 +18,8 @@ public enum MusicType
     MainMenu,
     Stage1,
     Stage2,
+    StorySound1,
+    StorySound2
 }
 
 [System.Serializable]
@@ -158,5 +163,10 @@ public class AudioManager : MonoBehaviour
     {
         sfxVolume = value;
         UpdateVolume();
+    }
+
+    public void PlayButtonClick()
+    {
+        PlaySfx(SfxType.UI, 0);
     }
 }

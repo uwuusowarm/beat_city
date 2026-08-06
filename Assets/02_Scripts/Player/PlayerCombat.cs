@@ -43,6 +43,8 @@ public class PlayerCombat : MonoBehaviour
 
     private float _lastAttackTime;
 
+    private bool _hitLanded;
+
     private int _punchIndex;
     private bool _inSpecialChain;
 
@@ -72,6 +74,7 @@ public class PlayerCombat : MonoBehaviour
 
     private void HandleHitLanded(GameObject target)
     {
+        _hitLanded = true;
         OnHitLanded?.Invoke(target);
         PlayAttackSfx(CurrentAttackType);
     }
@@ -266,10 +269,30 @@ public class PlayerCombat : MonoBehaviour
         return hitbox; 
     }
 
+    private void PlaySwingSfx(CombatInputType input)
+    {
+        EnsureAudioManager();
+        if (audioManager == null) return;
+
+        int index = Mathf.Clamp(_comboStep - 1, 0, 2);
+
+        switch (input)
+        {
+            case CombatInputType.Punch:
+                audioManager.PlaySfx(SfxType.PunchMiss, index);
+                break;
+            case CombatInputType.Kick:
+                audioManager.PlaySfx(SfxType.KickMiss, index);
+                break;
+        }
+    }
+
     public void EnableHitbox()
     {
 
         Debug.Log("[PlayerCombat] EnableHitbox called");
+
+        _hitLanded = false;
 
         if (CurrentAttackType == CombatInputType.Special)
         {
@@ -280,7 +303,8 @@ public class PlayerCombat : MonoBehaviour
             }
         }
 
-        Hitbox activeHitbox = GetCurrentHitbox();
+
+            Hitbox activeHitbox = GetCurrentHitbox();
 
         if (_settings != null)
             activeHitbox.HitStopDuration = _settings.combatHitStop;
@@ -296,6 +320,12 @@ public class PlayerCombat : MonoBehaviour
 
         Hitbox activeHitbox = GetCurrentHitbox();
         activeHitbox.Deactivate();
+
+        if (!_hitLanded && CurrentAttackType != CombatInputType.Special)
+        {
+            PlaySwingSfx(CurrentAttackType);
+        }
+
         OnAttackEnded?.Invoke();
     }
 
@@ -382,7 +412,7 @@ public class PlayerCombat : MonoBehaviour
                 audioManager.PlaySfx(SfxType.Kick, index);
                 break;
             case CombatInputType.Special:
-                audioManager.PlaySfx(SfxType.Punch, index);
+                audioManager.PlaySfx(SfxType.Special, index);
                 break;
         }
     }

@@ -1,13 +1,12 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-
 public class WinAndLose : MonoBehaviour
 {
     public GameObject winScreen;
     [SerializeField] private StoryScreenController storyController;
     [SerializeField] private string nextSceneName = string.Empty;
-    
+
     void Start()
     {
         if (winScreen != null)
@@ -27,6 +26,7 @@ public class WinAndLose : MonoBehaviour
     public void ShowWinScreen()
     {
         if (winScreen != null) winScreen.SetActive(true);
+        AudioManager.Instance.StopMusic();
         Time.timeScale = 0f;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
@@ -35,10 +35,9 @@ public class WinAndLose : MonoBehaviour
     public void ContinueGame()
     {
         if (winScreen != null) winScreen.SetActive(false);
-
         if (storyController != null)
         {
-            storyController.TriggerStorySequence(nextSceneName);
+            storyController.TriggerStorySequence(storyController.EndImageSprite, nextSceneName);
         }
         else
         {
@@ -49,12 +48,13 @@ public class WinAndLose : MonoBehaviour
 
     public void RestartGame()
     {
-        Time.timeScale = 1f; 
+        Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
+
     public void LoadMainMenu()
     {
-        Time.timeScale = 1f; 
+        Time.timeScale = 1f;
         SceneManager.LoadScene("MainMenuPitch");
     }
 }
