@@ -117,6 +117,7 @@ GameObject:
   - component: {fileID: 9141774141328228895}
   - component: {fileID: 4308366570326131633}
   - component: {fileID: 4631613409987971520}
+  - component: {fileID: 4776618944779855045}
   m_Layer: 0
   m_Name: PlayerAnimGrey
   m_TagString: Player
@@ -139,6 +140,7 @@ Transform:
   m_Children:
   - {fileID: 5387828486214582420}
   - {fileID: 2751693642510612401}
+  - {fileID: 3717361490738001974}
   - {fileID: 8887407231781088451}
   - {fileID: 8420107355081625463}
   - {fileID: 1319119274840243510}
@@ -324,6 +326,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCombat
   hitbox: {fileID: 2382808346673060664}
   specialHitbox: {fileID: 2967659709457547770}
+  dashStrikeHitbox: {fileID: 0}
   activeTime: 0.2
   attackCooldown: 0.1
   vfxSpawnDistance: 1.5
@@ -333,8 +336,8 @@ MonoBehaviour:
   specialVFXPrefab: {fileID: 4593184484909914552, guid: 2e1e9506f5904a64b81744324fb7cd50, type: 3}
   vfxSpawnPoint: {fileID: 8420107355081625463}
   specialMeter: {fileID: 0}
-  equippedSpecial: {fileID: 0}
   specialMove: {fileID: 4308366570326131633}
+  dashStrike: {fileID: 4776618944779855045}
 --- !u!114 &-3982840628395845413
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -447,9 +450,8 @@ MonoBehaviour:
   hitbox: {fileID: 2382808346673060664}
   inputBuffer: {fileID: 0}
   animator: {fileID: 4255781138198214351}
-  meter: {fileID: 0}
   afterimageEffect: {fileID: 9141774141328228895}
-  cutscene: {fileID: 0}
+  playerHealth: {fileID: 0}
 --- !u!114 &4631613409987971520
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -471,6 +473,30 @@ MonoBehaviour:
     multiplier: 10
   - minHits: 20
     multiplier: 50
+--- !u!114 &4776618944779855045
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1662536712636653983}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35711bd82feafe44f8271d58c0728d5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DashStrike
+  playerCombat: {fileID: 1908867706107061876}
+  dashHitbox: {fileID: 4429456243093484045}
+  animator: {fileID: 4255781138198214351}
+  controller: {fileID: 8307816738274517906}
+  characterModel: {fileID: 4799275800366551407}
+  inputBuffer: {fileID: 0}
+  afterimageEffect: {fileID: 9141774141328228895}
+  playerHealth: {fileID: 8315422397030599102}
+  dashStateName: DashStrike
+  idleStateName: Idle
+  crossFadeDuration: 0.05
+  showGizmos: 1
 --- !u!1 &7937538812829366670
 GameObject:
   m_ObjectHideFlags: 0
@@ -591,6 +617,66 @@ MonoBehaviour:
   targetLayer:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!1 &9217429888094544412
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3717361490738001974}
+  - component: {fileID: 4429456243093484045}
+  m_Layer: 0
+  m_Name: Hitbox_DashStrike
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3717361490738001974
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9217429888094544412}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.351, z: -0.166}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4799275800366551407}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4429456243093484045
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9217429888094544412}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be482ebd44724597b3eafc3cd25745a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Hitbox
+  owner: {fileID: 1662536712636653983}
+  size: {x: 4, y: 3, z: 4}
+  offset: {x: 0, y: 0, z: 0.29}
+  damage: 10
+  knockbackForce: 0
+  knockUpForce: 5
+  jugglingForce: 0
+  hitStunDuration: 0.08
+  hitStopDuration: 0.08
+  shouldKnockdown: 0
+  isLauncher: 0
+  juggleType: 1
+  applyDamage: 1
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1001 &1568601224281086685
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -677,6 +763,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimationEventRelay
   playerCombat: {fileID: 1908867706107061876}
+  dashStrike: {fileID: 4776618944779855045}
 --- !u!95 &4255781138198214351
 Animator:
   serializedVersion: 7
