@@ -116,6 +116,7 @@ GameObject:
   - component: {fileID: 8612664414132317126}
   - component: {fileID: 9141774141328228895}
   - component: {fileID: 4308366570326131633}
+  - component: {fileID: 4631613409987971520}
   m_Layer: 0
   m_Name: PlayerAnimGrey
   m_TagString: Player
@@ -213,6 +214,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MovementPlayer
   settings: {fileID: 0}
+  audioManager: {fileID: 0}
+  footstepInterval: 0.4
   animator: {fileID: 4255781138198214351}
   moveAction: {fileID: -1680190386980627800, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   characterModel: {fileID: 4799275800366551407}
@@ -330,6 +333,7 @@ MonoBehaviour:
   specialVFXPrefab: {fileID: 4593184484909914552, guid: 2e1e9506f5904a64b81744324fb7cd50, type: 3}
   vfxSpawnPoint: {fileID: 8420107355081625463}
   specialMeter: {fileID: 0}
+  equippedSpecial: {fileID: 0}
   specialMove: {fileID: 4308366570326131633}
 --- !u!114 &-3982840628395845413
 MonoBehaviour:
@@ -372,13 +376,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerGrapple
   settings: {fileID: 0}
-  grappleHitbox: {fileID: 6922274046274114452}
+  grabBoxAnchor: {fileID: 0}
   throwActions:
   - {fileID: 7040659881675835329, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   - {fileID: 1120369429361536294, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   characterModel: {fileID: 4799275800366551407}
   animator: {fileID: 0}
   showProjectileGizmos: 1
+  showGrabGizmos: 1
+  showCarryGizmos: 1
 --- !u!114 &1035578852233614060
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -425,7 +431,6 @@ MonoBehaviour:
   ghostColor: {r: 0.2, g: 0.5, b: 1, a: 0.6}
   spawnInterval: 0.05
   ghostLifetime: 0.4
-  startAlpha: 0.24
 --- !u!114 &4308366570326131633
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -444,6 +449,28 @@ MonoBehaviour:
   animator: {fileID: 4255781138198214351}
   meter: {fileID: 0}
   afterimageEffect: {fileID: 9141774141328228895}
+  cutscene: {fileID: 0}
+--- !u!114 &4631613409987971520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1662536712636653983}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b7aa1eec68c1a947b5ebf5606a1c524, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ComboScore
+  scoreText: {fileID: 0}
+  basePointsPerHit: 10
+  comboTiers:
+  - minHits: 0
+    multiplier: 1
+  - minHits: 10
+    multiplier: 10
+  - minHits: 20
+    multiplier: 50
 --- !u!1 &7937538812829366670
 GameObject:
   m_ObjectHideFlags: 0
