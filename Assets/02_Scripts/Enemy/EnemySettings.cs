@@ -121,6 +121,9 @@ public class EnemySettings : ScriptableObject
     [Tooltip("Duration of stand-up animation")]
     public float standUpDuration = 1.0f;
 
+    [Tooltip("If true, the enemy cannot be hit or grabbed while lying on the ground and while standing back up")]
+    public bool invulnerableWhileDowned = true;
+
     [Header("Visuals / Animation")]
     [Tooltip("How fast the fall animation wobbles when paused")]
     public float fallWobbleSpeed = 4f;

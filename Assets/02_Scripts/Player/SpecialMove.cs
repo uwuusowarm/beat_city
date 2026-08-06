@@ -8,11 +8,14 @@ public class SpecialMove : MonoBehaviour
     [SerializeField] private InputBuffer inputBuffer;
     [SerializeField] private Animator animator;
     [SerializeField] private AfterimageEffect afterimageEffect;
+    [SerializeField] private Health playerHealth;
 
     private PlayerSettings _settings;
     private float _originalAnimSpeed;
+    private bool _animSpeedOverridden;
     private bool _isPerforming;
     private bool _hitFinished;
+    private bool _cancelled;
 
     public bool IsPerforming => _isPerforming;
 
@@ -20,12 +23,28 @@ public class SpecialMove : MonoBehaviour
     {
         _settings = SettingsResolver.ResolvePlayerSettings();
 
+        if (playerHealth == null)
+            playerHealth = GetComponent<Health>();
+
         if (_settings == null)
         {
             Debug.LogWarning("[SpecialMove] No PlayerSettings found (provider/resources).");
         }
     }
-    
+
+    private void OnDisable()
+    {
+        if (!_isPerforming) return;
+
+        RestoreVisuals();
+
+        _isPerforming = false;
+        _cancelled = false;
+
+        if (playerCombat != null)
+            playerCombat.AbortSpecialChain(false);
+    }
+
     public bool TryActivate()
     {
         if (_isPerforming) return false;
@@ -37,29 +56,36 @@ public class SpecialMove : MonoBehaviour
 
     private IEnumerator SpecialSequence()
     {
-        PlayerStateManager.Instance.SetState(PlayerState.SpecialAttacking);
         playerCombat.SetSpecialChainActive(true);
 
         inputBuffer.Clear();
 
-        float window = _settings != null ? _settings.specialInputWindow : 1f;
-        float timer = 0f;
+        _cancelled = false;
         CombatInputType chainType = CombatInputType.None;
 
-        while (chainType == CombatInputType.None && timer < window)
+        while (chainType == CombatInputType.None)
         {
-            if (inputBuffer.TryConsume(out var input))
+            if (ShouldCancel())
+            {
+                inputBuffer.DiscardSpecialInputs();
+
+                _isPerforming = false;
+                playerCombat.AbortSpecialChain(true);
+                yield break;
+            }
+
+            inputBuffer.DiscardSpecialInputs();
+
+            if (PlayerStateManager.Instance.CanPerformAction() && inputBuffer.TryConsume(out var input))
             {
                 if (input == CombatInputType.Punch || input == CombatInputType.Kick)
                     chainType = input;
             }
 
-            timer += Time.deltaTime;
             yield return null;
         }
 
-        if (chainType == CombatInputType.None)
-            chainType = CombatInputType.Punch;
+        PlayerStateManager.Instance.SetState(PlayerState.SpecialAttacking);
 
         if (afterimageEffect != null)
             afterimageEffect.Activate();
@@ -68,18 +94,24 @@ public class SpecialMove : MonoBehaviour
         if (animator != null)
         {
             _originalAnimSpeed = animator.speed;
+            _animSpeedOverridden = true;
             animator.speed = animSpeed;
         }
 
         yield return DoChain(chainType);
 
-        if (animator != null)
-            animator.speed = _originalAnimSpeed;
-
-        if (afterimageEffect != null)
-            afterimageEffect.Deactivate();
+        RestoreVisuals();
+        inputBuffer.DiscardSpecialInputs();
 
         _isPerforming = false;
+
+        if (_cancelled)
+        {
+            _cancelled = false;
+            playerCombat.AbortSpecialChain(false);
+            yield break;
+        }
+
         playerCombat.SetSpecialChainActive(false);
         playerCombat.FinishAttack();
     }
@@ -112,11 +144,45 @@ public class SpecialMove : MonoBehaviour
 
             _hitFinished = false;
             while (!_hitFinished)
+            {
+                if (ShouldCancel())
+                {
+                    _cancelled = true;
+                    yield break;
+                }
+
+                inputBuffer.DiscardSpecialInputs();
                 yield return null;
+            }
+        }
+    }
+
+    private bool ShouldCancel()
+    {
+        if (playerHealth != null && playerHealth.Current <= 0)
+            return true;
+
+        if (PlayerStateManager.Instance != null &&
+            PlayerStateManager.Instance.CurrentState == PlayerState.Stunned)
+            return true;
+
+        return false;
+    }
+
+    private void RestoreVisuals()
+    {
+        if (animator != null)
+        {
+            if (_animSpeedOverridden)
+                animator.speed = _originalAnimSpeed;
+
+            animator.SetBool("IsSpecial", false);
         }
 
-        if (animator != null)
-            animator.SetBool("IsSpecial", false);
+        _animSpeedOverridden = false;
+
+        if (afterimageEffect != null)
+            afterimageEffect.Deactivate();
     }
 
     private void ConfigureHitbox(CombatInputType chainType, bool isLast)
@@ -143,7 +209,7 @@ public class SpecialMove : MonoBehaviour
             hitbox.ShouldKnockdown = isLast;
         }
     }
-    
+
     public void OnChainHitFinished()
     {
         _hitFinished = true;

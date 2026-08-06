@@ -22,7 +22,12 @@ public class EnemyMovement : MonoBehaviour
     
 
     public bool CanAct => CurrentState == EnemyState.Grounded || CurrentState == EnemyState.HitStun;
-    
+
+    public bool IsDowned => CurrentState == EnemyState.Knockdown ||
+                            CurrentState == EnemyState.StandingUp;
+
+    public bool IsInvulnerableWhileDowned => InvulnerableWhileDowned && IsDowned;
+
     public bool IsInThrowState 
     { 
         get => CurrentState == EnemyState.Launched || CurrentState == EnemyState.Airborne || CurrentState == EnemyState.Grabbed;
@@ -132,6 +137,7 @@ public class EnemyMovement : MonoBehaviour
     private float MaxAirborneDuration => meleeSettings != null ? meleeSettings.maxAirborneDuration : 3f;
     private float KnockdownDuration => meleeSettings != null ? meleeSettings.knockdownDuration : 1.0f;
     private float StandUpDuration => meleeSettings != null ? meleeSettings.standUpDuration : 1.0f;
+    private bool InvulnerableWhileDowned => meleeSettings == null || meleeSettings.invulnerableWhileDowned;
     private const float StandUpSafetyBuffer = 1.5f;
     private float GroundCheckDistance => meleeSettings != null ? meleeSettings.groundCheckDistance : 0.2f;
     private LayerMask GroundLayer => meleeSettings != null ? meleeSettings.groundLayer : LayerMask.GetMask("Default");

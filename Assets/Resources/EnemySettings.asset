@@ -29,6 +29,11 @@ MonoBehaviour:
   juggleHoverDuration: 0.5
   juggleHoverDriftSpeed: -0.5
   maxAirborneDuration: 3
+  launchHitStopDuration: 0
+  launchSlowMoDuration: 0.6
+  launchSlowMoTimeScale: 0.144
+  launchImpactKnockbackThreshold: 5
+  launchImpactCooldown: 0.75
   jugglePopVelocity: 3.5
   jugglePopForceScale: 0.4
   jugglePopMaxVelocityScale: 0.5

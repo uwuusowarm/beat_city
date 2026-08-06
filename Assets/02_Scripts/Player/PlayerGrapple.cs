@@ -222,6 +222,12 @@ public class PlayerGrapple : MonoBehaviour
                 if (hurtbox.Owner == gameObject) continue;
                 if (hurtbox.Owner.CompareTag(gameObject.tag)) continue;
 
+                if (hurtbox.Owner.TryGetComponent<EnemyMovement>(out var downedCheck) && downedCheck.IsInvulnerableWhileDowned)
+                {
+                    Debug.Log($"[PlayerGrapple] -> Downed target ignored ({hurtbox.Owner.name} is {downedCheck.CurrentState})");
+                    continue;
+                }
+
                 if (hurtbox.Owner.TryGetComponent<Health>(out var health) && health.Current > 0)
                 {
                     target = hurtbox.Owner;
@@ -772,6 +778,12 @@ public class PlayerGrapple : MonoBehaviour
                         GameObject otherEnemy = hurtbox.Owner;
 
                         if (otherEnemy == null || otherEnemy == target || otherEnemy == gameObject) continue;
+
+                        if (otherEnemy.TryGetComponent<EnemyMovement>(out var otherMovement) && otherMovement.IsInvulnerableWhileDowned)
+                        {
+                            Debug.Log($"[PlayerGrapple] Thrown target passed over downed {otherEnemy.name}, no hit");
+                            continue;
+                        }
 
                         if (otherEnemy.TryGetComponent<IDamageable>(out var damageable))
                         {

@@ -84,6 +84,13 @@ public class Hitbox : MonoBehaviour
                 continue;
             }
 
+            var targetMovement = hurtbox.Owner.GetComponent<EnemyMovement>();
+            if (targetMovement != null && targetMovement.IsInvulnerableWhileDowned)
+            {
+                Debug.Log($"[Hitbox] -> Downed target ignored ({hurtbox.Owner.name} is {targetMovement.CurrentState})");
+                continue;
+            }
+
             var damageable = hurtbox.Owner.GetComponent<IDamageable>();
             if (damageable == null || !_hitTargets.Add(damageable)) continue;
 
@@ -94,8 +101,7 @@ public class Hitbox : MonoBehaviour
                 float effectiveKnockUp = knockUpForce;
                 JuggleType effectiveJuggleType = juggleType;
                 
-                var enemyMovement = hurtbox.Owner.GetComponent<EnemyMovement>();
-                if (enemyMovement != null && enemyMovement.IsInThrowState)
+                if (targetMovement != null && targetMovement.IsInThrowState)
                 {
                     effectiveKnockUp = jugglingForce;
                     if (effectiveJuggleType == JuggleType.None)

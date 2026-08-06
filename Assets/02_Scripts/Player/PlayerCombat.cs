@@ -300,6 +300,20 @@ public class PlayerCombat : MonoBehaviour
         _inSpecialChain = active;
     }
 
+    public void AbortSpecialChain(bool refundMeter)
+    {
+        Debug.Log($"[PlayerCombat] AbortSpecialChain called (refund: {refundMeter})");
+
+        _inSpecialChain = false;
+        _isAttacking = false;
+
+        if (!refundMeter || specialMeter == null) return;
+
+        SpecialAttackDef def = SpecialAttackCatalog.Get(SpecialAttackId.ChainAttack);
+        if (def != null && def.meterCost > 0)
+            specialMeter.AddMeter(def.meterCost);
+    }
+
     public void SetSpecialChainAttack(CombatInputType type, int comboStep)
     {
         CurrentAttackType = type;
