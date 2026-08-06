@@ -10,7 +10,7 @@ public enum SfxType
     PunchMiss,
     KickMiss,
     Movement,
-    UI
+    UI,
 }
 
 public enum MusicType
@@ -18,6 +18,8 @@ public enum MusicType
     MainMenu,
     Stage1,
     Stage2,
+    StorySound1,
+    StorySound2
 }
 
 [System.Serializable]

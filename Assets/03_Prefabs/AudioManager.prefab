@@ -59,6 +59,12 @@ MonoBehaviour:
   - musicType: 2
     musicClips:
     - {fileID: 8300000, guid: a3e09f02a08a0c64fab73113b314b31f, type: 3}
+  - musicType: 3
+    musicClips:
+    - {fileID: 8300000, guid: c1114e50af220094c81ad6aeea62e4ce, type: 3}
+  - musicType: 4
+    musicClips:
+    - {fileID: 8300000, guid: 67a05c9dab4c47e4992250cbee8e668e, type: 3}
   sfxEntries:
   - sfxType: 0
     sfxClips:
