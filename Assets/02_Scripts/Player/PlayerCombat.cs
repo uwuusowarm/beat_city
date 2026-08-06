@@ -7,6 +7,7 @@ public class PlayerCombat : MonoBehaviour
 {
     [SerializeField] private Hitbox hitbox;
     [SerializeField] private Hitbox specialHitbox;
+    [SerializeField] private Hitbox dashStrikeHitbox;
     [SerializeField] private float activeTime = 0.2f;
     [SerializeField] private float attackCooldown = 0.1f;
     [SerializeField] private float vfxSpawnDistance = 1.5f;
@@ -22,6 +23,7 @@ public class PlayerCombat : MonoBehaviour
 
     [Header("Special Move")]
     [SerializeField] private SpecialMove specialMove;
+    [SerializeField] private DashStrike dashStrike;
 
     [Header("Combo")]
     private PlayerSettings _settings;
@@ -63,6 +65,9 @@ public class PlayerCombat : MonoBehaviour
 
         hitbox.OnHitLanded += HandleHitLanded;
         specialHitbox.OnHitLanded += HandleHitLanded;
+
+        if (dashStrikeHitbox != null)
+            dashStrikeHitbox.OnHitLanded += HandleHitLanded;
     }
 
     private void HandleHitLanded(GameObject target)
@@ -181,6 +186,21 @@ public class PlayerCombat : MonoBehaviour
                 break;
             case SpecialAttackId.GroundSlam:
                 DoGroundSlam();
+                break;
+            case SpecialAttackId.DashStrike:
+                if (dashStrike == null)
+                {
+                    Debug.LogWarning("[PlayerCombat] No DashStrike component assigned, cannot perform Dash Strike.");
+                    RefundMeter(id);
+                    break;
+                }
+
+                _isAttacking = true;
+                if (!dashStrike.TryActivate())
+                {
+                    _isAttacking = false;
+                    RefundMeter(id);
+                }
                 break;
         }
     }
@@ -302,14 +322,25 @@ public class PlayerCombat : MonoBehaviour
 
     public void AbortSpecialChain(bool refundMeter)
     {
-        Debug.Log($"[PlayerCombat] AbortSpecialChain called (refund: {refundMeter})");
+        AbortSpecialAttack(SpecialAttackId.ChainAttack, refundMeter);
+    }
+
+    public void AbortSpecialAttack(SpecialAttackId id, bool refundMeter)
+    {
+        Debug.Log($"[PlayerCombat] AbortSpecialAttack called for {id} (refund: {refundMeter})");
 
         _inSpecialChain = false;
         _isAttacking = false;
 
-        if (!refundMeter || specialMeter == null) return;
+        if (refundMeter)
+            RefundMeter(id);
+    }
 
-        SpecialAttackDef def = SpecialAttackCatalog.Get(SpecialAttackId.ChainAttack);
+    private void RefundMeter(SpecialAttackId id)
+    {
+        if (specialMeter == null) return;
+
+        SpecialAttackDef def = SpecialAttackCatalog.Get(id);
         if (def != null && def.meterCost > 0)
             specialMeter.AddMeter(def.meterCost);
     }

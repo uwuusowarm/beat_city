@@ -3,7 +3,8 @@ using System.Collections.Generic;
 public enum SpecialAttackId
 {
     ChainAttack,
-    GroundSlam
+    GroundSlam,
+    DashStrike
 }
 
 public class SpecialAttackDef
@@ -30,6 +31,7 @@ public static class SpecialAttackCatalog
     {
         new SpecialAttackDef(SpecialAttackId.ChainAttack, "Chain Attack", 500, false, 25),
         new SpecialAttackDef(SpecialAttackId.GroundSlam, "Ground Slam", 500, false, 25),
+        new SpecialAttackDef(SpecialAttackId.DashStrike, "Dash Strike", 500, false, 25),
     };
 
     public static SpecialAttackDef Get(SpecialAttackId id)

@@ -162,4 +162,12 @@ public class InputBuffer : MonoBehaviour
         bufferTimer = 0f;
     }
 
+    public void DiscardSpecialInputs()
+    {
+        if (bufferedInput == CombatInputType.Special || bufferedInput == CombatInputType.SpecialChain)
+        {
+            Clear();
+        }
+    }
+
 }

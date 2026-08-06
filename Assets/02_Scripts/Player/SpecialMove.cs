@@ -87,7 +87,8 @@ public class SpecialMove : MonoBehaviour
 
         PlayerStateManager.Instance.SetState(PlayerState.SpecialAttacking);
 
-        if (afterimageEffect != null)
+        bool useAfterimage = _settings == null || _settings.specialChainAfterimage;
+        if (afterimageEffect != null && useAfterimage)
             afterimageEffect.Activate();
 
         float animSpeed = _settings != null ? _settings.specialAnimSpeed : 1.5f;

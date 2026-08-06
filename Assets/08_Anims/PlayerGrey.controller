@@ -332,6 +332,9 @@ AnimatorStateMachine:
   - serializedVersion: 1
     m_State: {fileID: -3148400742912892036}
     m_Position: {x: -850, y: -250, z: 0}
+  - serializedVersion: 1
+    m_State: {fileID: -2466626535356192430}
+    m_Position: {x: -850, y: -360, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions:
   - {fileID: 899880408709458061}
@@ -416,7 +419,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: rig|Main_Char_Special_ATK_02
+  m_Name: GroundSlam
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -431,6 +434,32 @@ AnimatorState:
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
   m_Motion: {fileID: -8651385304619077145, guid: 50654a3ef72b4894da2db9de00eeaf3f, type: 3}
+  m_Tag: 
+  m_SpeedParameter: 
+  m_MirrorParameter: 
+  m_CycleOffsetParameter: 
+  m_TimeParameter: 
+--- !u!1102 &-2466626535356192430
+AnimatorState:
+  serializedVersion: 6
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: DashStrike
+  m_Speed: 1
+  m_CycleOffset: 0
+  m_Transitions: []
+  m_StateMachineBehaviours: []
+  m_Position: {x: 50, y: 50, z: 0}
+  m_IKOnFeet: 0
+  m_WriteDefaultValues: 1
+  m_Mirror: 0
+  m_SpeedParameterActive: 0
+  m_MirrorParameterActive: 0
+  m_CycleOffsetParameterActive: 0
+  m_TimeParameterActive: 0
+  m_Motion: {fileID: -1077249824110865238, guid: b4d4aec01f9fb414899d47ca08a6080c, type: 3}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 

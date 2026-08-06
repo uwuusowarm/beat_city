@@ -3,6 +3,11 @@ using UnityEngine.SceneManagement;
 
 public class PlayerStats : MonoBehaviour
 {
+    public const string CoinsKey = "PlayerCoins";
+    public const string SpecialUnlockedKeyPrefix = "SpecialUnlocked_";
+    public const string EquippedSpecial1Key = "EquippedSpecial1";
+    public const string EquippedSpecial2Key = "EquippedSpecial2";
+
     public static PlayerStats Instance { get; private set; }
 
     [Header("Currency")]
@@ -68,7 +73,7 @@ public class PlayerStats : MonoBehaviour
     public bool IsSpecialUnlocked(SpecialAttackDef special)
     {
         if (special.unlockedByDefault) return true;
-        return PlayerPrefs.GetInt("SpecialUnlocked_" + special.id, 0) == 1;
+        return PlayerPrefs.GetInt(SpecialUnlockedKeyPrefix + special.id, 0) == 1;
     }
 
     public bool BuySpecial(SpecialAttackDef special)
@@ -78,7 +83,7 @@ public class PlayerStats : MonoBehaviour
         if (coins >= special.shopCost)
         {
             coins -= special.shopCost;
-            PlayerPrefs.SetInt("SpecialUnlocked_" + special.id, 1);
+            PlayerPrefs.SetInt(SpecialUnlockedKeyPrefix + special.id, 1);
             SaveStats();
             return true;
         }
@@ -100,8 +105,8 @@ public class PlayerStats : MonoBehaviour
                 equippedSpecialId2 = special.id;
             }
 
-            PlayerPrefs.SetString("EquippedSpecial1", equippedSpecialId1?.ToString() ?? "");
-            PlayerPrefs.SetString("EquippedSpecial2", equippedSpecialId2?.ToString() ?? "");
+            PlayerPrefs.SetString(EquippedSpecial1Key, equippedSpecialId1?.ToString() ?? "");
+            PlayerPrefs.SetString(EquippedSpecial2Key, equippedSpecialId2?.ToString() ?? "");
             PlayerPrefs.Save();
         }
     }
@@ -165,7 +170,7 @@ public class PlayerStats : MonoBehaviour
 
     public void SaveStats()
     {
-        PlayerPrefs.SetInt("PlayerCoins", coins);
+        PlayerPrefs.SetInt(CoinsKey, coins);
         PlayerPrefs.SetInt("StatHealthLevel", healthLevel);
         PlayerPrefs.SetInt("StatDamageLevel", damageLevel);
         PlayerPrefs.Save();
@@ -173,12 +178,12 @@ public class PlayerStats : MonoBehaviour
 
     public void LoadStats()
     {
-        coins = PlayerPrefs.GetInt("PlayerCoins", 0);
+        coins = PlayerPrefs.GetInt(CoinsKey, 0);
         healthLevel = PlayerPrefs.GetInt("StatHealthLevel", 1);
         damageLevel = PlayerPrefs.GetInt("StatDamageLevel", 1);
 
-        equippedSpecialId1 = ParseSpecialId(PlayerPrefs.GetString("EquippedSpecial1", ""));
-        equippedSpecialId2 = ParseSpecialId(PlayerPrefs.GetString("EquippedSpecial2", ""));
+        equippedSpecialId1 = ParseSpecialId(PlayerPrefs.GetString(EquippedSpecial1Key, ""));
+        equippedSpecialId2 = ParseSpecialId(PlayerPrefs.GetString(EquippedSpecial2Key, ""));
     }
 
     private static SpecialAttackId? ParseSpecialId(string value)

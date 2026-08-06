@@ -116,6 +116,8 @@ GameObject:
   - component: {fileID: 8612664414132317126}
   - component: {fileID: 9141774141328228895}
   - component: {fileID: 4308366570326131633}
+  - component: {fileID: 7891219172801242896}
+  - component: {fileID: 9148983065697478973}
   m_Layer: 0
   m_Name: PlayerAnimGrey
   m_TagString: Player
@@ -138,6 +140,7 @@ Transform:
   m_Children:
   - {fileID: 5387828486214582420}
   - {fileID: 2751693642510612401}
+  - {fileID: 3524686764406729626}
   - {fileID: 8887407231781088451}
   - {fileID: 8420107355081625463}
   - {fileID: 1319119274840243510}
@@ -321,6 +324,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCombat
   hitbox: {fileID: 2382808346673060664}
   specialHitbox: {fileID: 2967659709457547770}
+  dashStrikeHitbox: {fileID: 2949852483962265211}
   activeTime: 0.2
   attackCooldown: 0.1
   vfxSpawnDistance: 1.5
@@ -331,6 +335,7 @@ MonoBehaviour:
   vfxSpawnPoint: {fileID: 8420107355081625463}
   specialMeter: {fileID: 0}
   specialMove: {fileID: 4308366570326131633}
+  dashStrike: {fileID: 7891219172801242896}
 --- !u!114 &-3982840628395845413
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -372,13 +377,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerGrapple
   settings: {fileID: 0}
-  grappleHitbox: {fileID: 6922274046274114452}
+  grabBoxAnchor: {fileID: 8887407231781088451}
   throwActions:
   - {fileID: 7040659881675835329, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   - {fileID: 1120369429361536294, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   characterModel: {fileID: 4799275800366551407}
   animator: {fileID: 0}
   showProjectileGizmos: 1
+  showGrabGizmos: 1
+  showCarryGizmos: 1
 --- !u!114 &1035578852233614060
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -425,7 +432,6 @@ MonoBehaviour:
   ghostColor: {r: 0.2, g: 0.5, b: 1, a: 0.6}
   spawnInterval: 0.05
   ghostLifetime: 0.4
-  startAlpha: 0.24
 --- !u!114 &4308366570326131633
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -442,8 +448,113 @@ MonoBehaviour:
   hitbox: {fileID: 2382808346673060664}
   inputBuffer: {fileID: 0}
   animator: {fileID: 4255781138198214351}
-  meter: {fileID: 0}
   afterimageEffect: {fileID: 9141774141328228895}
+  playerHealth: {fileID: 0}
+--- !u!114 &7891219172801242896
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1662536712636653983}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35711bd82feafe44f8271d58c0728d5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DashStrike
+  playerCombat: {fileID: 1908867706107061876}
+  dashHitbox: {fileID: 2949852483962265211}
+  animator: {fileID: 4255781138198214351}
+  controller: {fileID: 8307816738274517906}
+  characterModel: {fileID: 4799275800366551407}
+  inputBuffer: {fileID: 0}
+  afterimageEffect: {fileID: 9141774141328228895}
+  playerHealth: {fileID: 8315422397030599102}
+  dashStateName: DashStrike
+  idleStateName: Idle
+  crossFadeDuration: 0.05
+  showGizmos: 1
+--- !u!114 &9148983065697478973
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1662536712636653983}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b7aa1eec68c1a947b5ebf5606a1c524, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ComboScore
+  scoreText: {fileID: 0}
+  basePointsPerHit: 10
+  comboTiers:
+  - minHits: 0
+    multiplier: 1
+  - minHits: 10
+    multiplier: 10
+  - minHits: 20
+    multiplier: 50
+--- !u!1 &7212661677239393900
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3524686764406729626}
+  - component: {fileID: 2949852483962265211}
+  m_Layer: 0
+  m_Name: Hitbox_DashStrike
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3524686764406729626
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7212661677239393900}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.351, z: -0.166}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4799275800366551407}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2949852483962265211
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7212661677239393900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be482ebd44724597b3eafc3cd25745a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Hitbox
+  owner: {fileID: 1662536712636653983}
+  size: {x: 4, y: 3, z: 4}
+  offset: {x: 0, y: 0, z: 0.29}
+  damage: 10
+  knockbackForce: 0
+  knockUpForce: 5
+  jugglingForce: 0
+  hitStunDuration: 0.08
+  hitStopDuration: 0.08
+  shouldKnockdown: 0
+  isLauncher: 0
+  juggleType: 1
+  applyDamage: 1
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1 &7937538812829366670
 GameObject:
   m_ObjectHideFlags: 0
@@ -453,7 +564,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8887407231781088451}
-  - component: {fileID: 6922274046274114452}
   m_Layer: 0
   m_Name: Hitbox_Grapple
   m_TagString: Untagged
@@ -476,34 +586,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4799275800366551407}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6922274046274114452
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7937538812829366670}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: be482ebd44724597b3eafc3cd25745a8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Hitbox
-  owner: {fileID: 1662536712636653983}
-  size: {x: 1, y: 1, z: 0.7}
-  offset: {x: 0, y: 0, z: 0.8}
-  damage: 10
-  knockbackForce: 5
-  knockUpForce: 0
-  jugglingForce: 0
-  hitStunDuration: 0.08
-  hitStopDuration: 0.08
-  shouldKnockdown: 0
-  isLauncher: 0
-  juggleType: 0
-  applyDamage: 1
-  targetLayer:
-    serializedVersion: 2
-    m_Bits: 4294967295
 --- !u!1 &8958037320973412108
 GameObject:
   m_ObjectHideFlags: 0
@@ -650,6 +732,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimationEventRelay
   playerCombat: {fileID: 1908867706107061876}
+  dashStrike: {fileID: 0}
 --- !u!95 &4255781138198214351
 Animator:
   serializedVersion: 7
