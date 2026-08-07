@@ -70,6 +70,12 @@ MonoBehaviour:
   afterimageEnabled: 1
   specialChainAfterimage: 1
   dashStrikeAfterimage: 0
+  speedLinesEnabled: 1
+  dashStrikeSpeedLines: 1
+  speedLinesMinSpeed: 8
+  speedLinesDensity: 1
+  speedLinesLengthScale: 1
+  speedLinesColor: {r: 1, g: 1, b: 1, a: 1}
   dashStrikeHitCount: 3
   dashStrikeDamage: 20
   dashStrikeFinalDamage: 30
