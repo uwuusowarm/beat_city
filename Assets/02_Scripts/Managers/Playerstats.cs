@@ -1,7 +1,13 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerStats : MonoBehaviour
 {
+    public const string CoinsKey = "PlayerCoins";
+    public const string SpecialUnlockedKeyPrefix = "SpecialUnlocked_";
+    public const string EquippedSpecial1Key = "EquippedSpecial1";
+    public const string EquippedSpecial2Key = "EquippedSpecial2";
+
     public static PlayerStats Instance { get; private set; }
 
     [Header("Currency")]
@@ -16,8 +22,8 @@ public class PlayerStats : MonoBehaviour
     [SerializeField] private float damageBonusPerLevel = 0.15f; 
 
     [Header("Special Attacks")]
-    public SpecialAttackSO[] allSpecialAttacks; 
-    public string equippedSpecialId = "";
+    public SpecialAttackId? equippedSpecialId1;
+    public SpecialAttackId? equippedSpecialId2;
 
     private void Awake()
     {
@@ -31,6 +37,14 @@ public class PlayerStats : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    private void OnEnable()  => SceneManager.sceneLoaded += OnSceneLoaded;
+    private void OnDisable() => SceneManager.sceneLoaded -= OnSceneLoaded;
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        ApplyStatsToPlayer();
     }
 
     private void Start()
@@ -49,43 +63,50 @@ public class PlayerStats : MonoBehaviour
             int upgradedHp = baseHp + ((healthLevel - 1) * hpBonusPerLevel);
             health.SetMaxHealth(upgradedHp);
         }
-    }
-
-    public SpecialAttackSO GetSpecialById(string searchId)
-    {
-        foreach(var special in allSpecialAttacks)
+        if (player.TryGetComponent<PlayerCombat>(out var combat))
         {
-            if (special.id == searchId) return special;
+            combat.equippedSpecial1 = equippedSpecialId1;
+            combat.equippedSpecial2 = equippedSpecialId2;
         }
-        return null;
     }
 
-    public bool IsSpecialUnlocked(SpecialAttackSO special)
+    public bool IsSpecialUnlocked(SpecialAttackDef special)
     {
         if (special.unlockedByDefault) return true;
-        return PlayerPrefs.GetInt("SpecialUnlocked_" + special.id, 0) == 1; 
+        return PlayerPrefs.GetInt(SpecialUnlockedKeyPrefix + special.id, 0) == 1;
     }
 
-    public bool BuySpecial(SpecialAttackSO special)
+    public bool BuySpecial(SpecialAttackDef special)
     {
         if (IsSpecialUnlocked(special)) return false;
-        
+
         if (coins >= special.shopCost)
         {
             coins -= special.shopCost;
-            PlayerPrefs.SetInt("SpecialUnlocked_" + special.id, 1);
+            PlayerPrefs.SetInt(SpecialUnlockedKeyPrefix + special.id, 1);
             SaveStats();
             return true;
         }
         return false;
     }
 
-    public void EquipSpecial(SpecialAttackSO special)
+    public void EquipSpecial(SpecialAttackDef special, int slot)
     {
         if (IsSpecialUnlocked(special))
         {
-            equippedSpecialId = special.id;
-            PlayerPrefs.SetString("EquippedSpecial", equippedSpecialId);
+            if (slot == 1)
+            {
+                if (equippedSpecialId2 == special.id) equippedSpecialId2 = null;
+                equippedSpecialId1 = special.id;
+            }
+            else if (slot == 2)
+            {
+                if (equippedSpecialId1 == special.id) equippedSpecialId1 = null;
+                equippedSpecialId2 = special.id;
+            }
+
+            PlayerPrefs.SetString(EquippedSpecial1Key, equippedSpecialId1?.ToString() ?? "");
+            PlayerPrefs.SetString(EquippedSpecial2Key, equippedSpecialId2?.ToString() ?? "");
             PlayerPrefs.Save();
         }
     }
@@ -149,7 +170,7 @@ public class PlayerStats : MonoBehaviour
 
     public void SaveStats()
     {
-        PlayerPrefs.SetInt("PlayerCoins", coins);
+        PlayerPrefs.SetInt(CoinsKey, coins);
         PlayerPrefs.SetInt("StatHealthLevel", healthLevel);
         PlayerPrefs.SetInt("StatDamageLevel", damageLevel);
         PlayerPrefs.Save();
@@ -157,10 +178,16 @@ public class PlayerStats : MonoBehaviour
 
     public void LoadStats()
     {
-        coins = PlayerPrefs.GetInt("PlayerCoins", 0);
+        coins = PlayerPrefs.GetInt(CoinsKey, 0);
         healthLevel = PlayerPrefs.GetInt("StatHealthLevel", 1);
         damageLevel = PlayerPrefs.GetInt("StatDamageLevel", 1);
 
-        equippedSpecialId = PlayerPrefs.GetString("EquippedSpecial", "");
+        equippedSpecialId1 = ParseSpecialId(PlayerPrefs.GetString(EquippedSpecial1Key, ""));
+        equippedSpecialId2 = ParseSpecialId(PlayerPrefs.GetString(EquippedSpecial2Key, ""));
+    }
+
+    private static SpecialAttackId? ParseSpecialId(string value)
+    {
+        return System.Enum.TryParse<SpecialAttackId>(value, out var id) ? id : (SpecialAttackId?)null;
     }
 }

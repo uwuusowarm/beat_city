@@ -1,18 +1,30 @@
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro; 
+using TMPro;
 
 public class EndlessManager : MonoBehaviour
 {
     public static EndlessManager Instance { get; private set; }
 
+    [System.Serializable]
+    public class TileSet
+    {
+        public string name;
+        public GameObject[] chunkPrefabs;
+        public GameObject transitionPrefab;
+        public int minChunksBeforeTransition = 5;
+        [Range(0f, 1f)] public float transitionChance = 0.3f;
+    }
+
     [Header("Level Generation")]
-    [SerializeField] private GameObject[] chunkPrefabs; 
-    
-    [SerializeField] private float chunkWidth = 30f;    
-    
-    [SerializeField] private int maxActiveChunks = 3;   
-    
+    [SerializeField] private TileSet[] tileSets;
+
+    [SerializeField] private float chunkWidth = 30f;
+    [SerializeField] private float spawnAheadDistance = 75f;
+    [SerializeField] private float despawnDistance = 100f;
+
+    [SerializeField] private int maxActiveChunks = 3;
+
     [SerializeField] private Transform player;
 
     [SerializeField] private float startSpawnX = 25f;
@@ -24,9 +36,11 @@ public class EndlessManager : MonoBehaviour
     public bool IsNewHighscore { get; private set; }
 
     private Queue<GameObject> _activeChunks = new Queue<GameObject>();
-    private float _spawnX = 0f; 
-    private float _startX;      
+    private float _spawnX = 0f;
+    private float _startX;
     private int _highscore;
+    private int _currentSetIndex;
+    private int _chunksInCurrentSet;
 
     private void Awake()
     {
@@ -38,7 +52,7 @@ public class EndlessManager : MonoBehaviour
     {
         _spawnX = startSpawnX;
 
-        if (player == null) 
+        if (player == null)
         {
             var p = GameObject.FindGameObjectWithTag("Player");
             if (p != null) player = p.transform;
@@ -80,17 +94,17 @@ public class EndlessManager : MonoBehaviour
         {
             _highscore = currentMeters;
             IsNewHighscore = true;
-            
+
             PlayerPrefs.SetInt("EndlessHighscore", _highscore);
-            PlayerPrefs.Save(); 
-            
+            PlayerPrefs.Save();
+
             UpdateHighscoreUI();
         }
     }
 
     private void CheckAndGenerateLevel()
     {
-        float triggerPosition = _spawnX - (maxActiveChunks * chunkWidth) + (chunkWidth * 1.5f);
+        float triggerPosition = _spawnX - spawnAheadDistance;
 
         if (player.position.x > triggerPosition)
         {
@@ -101,18 +115,41 @@ public class EndlessManager : MonoBehaviour
 
     private void SpawnNextChunk()
     {
-        if (chunkPrefabs == null || chunkPrefabs.Length == 0) return;
-        int randomIndex = Random.Range(0, chunkPrefabs.Length);
-        GameObject chunkToSpawn = chunkPrefabs[randomIndex];
+        if (tileSets == null || tileSets.Length == 0) return;
+
+        TileSet currentSet = tileSets[_currentSetIndex];
+        GameObject chunkToSpawn;
+
+        bool doTransition = tileSets.Length > 1
+            && currentSet.transitionPrefab != null
+            && _chunksInCurrentSet >= currentSet.minChunksBeforeTransition
+            && Random.value < currentSet.transitionChance;
+
+        if (doTransition)
+        {
+            chunkToSpawn = currentSet.transitionPrefab;
+            _currentSetIndex = (_currentSetIndex + 1) % tileSets.Length;
+            _chunksInCurrentSet = 0;
+        }
+        else
+        {
+            if (currentSet.chunkPrefabs == null || currentSet.chunkPrefabs.Length == 0) return;
+            int randomIndex = Random.Range(0, currentSet.chunkPrefabs.Length);
+            chunkToSpawn = currentSet.chunkPrefabs[randomIndex];
+            _chunksInCurrentSet++;
+        }
+
         Quaternion spawnRotation = Quaternion.Euler(0f, 180f, 0f);
         GameObject newChunk = Instantiate(chunkToSpawn, new Vector3(_spawnX, 0f, spawnZ), spawnRotation);
         _activeChunks.Enqueue(newChunk);
-        _spawnX += chunkWidth;
+        float width = chunkWidth;
+        if (newChunk.TryGetComponent<ChunkWidth>(out var cw)) width = cw.width;
+        _spawnX += width;
     }
 
     private void DeleteOldestChunk()
     {
-        while (_activeChunks.Count > maxActiveChunks)
+        while (_activeChunks.Count > maxActiveChunks && _activeChunks.Peek().transform.position.x < player.position.x - despawnDistance)
         {
             GameObject oldChunk = _activeChunks.Dequeue();
             Destroy(oldChunk);

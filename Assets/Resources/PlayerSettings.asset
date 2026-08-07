@@ -67,3 +67,34 @@ MonoBehaviour:
   combatHitStop: 0.126
   grappleProjectileHitStop: 0.05
   grappleImpactHitStop: 0.08
+  afterimageEnabled: 1
+  specialChainAfterimage: 1
+  dashStrikeAfterimage: 0
+  dashStrikeHitCount: 3
+  dashStrikeDamage: 20
+  dashStrikeFinalDamage: 30
+  dashStrikeSearchRadius: 15
+  dashStrikeApproachDistance: 1.2
+  dashStrikePreferNewTargets: 1
+  dashStrikeRequireTarget: 1
+  dashStrikeSpeed: 60
+  dashStrikeMaxTravelTime: 0.5
+  dashStrikeUnscaledTravel: 1
+  dashStrikeHoldAnimUntilArrival: 1
+  dashStrikeSnapOnHit: 1
+  dashStrikeKnockup: 6
+  dashStrikeFinalKnockup: 10
+  dashStrikeKnockback: 1
+  dashStrikeFinalKnockback: 4
+  dashStrikeFinalKnockdown: 1
+  dashStrikeHitboxSize: {x: 3, y: 3, z: 3}
+  dashStrikeHitboxOffset: {x: 0, y: 0, z: 0}
+  dashStrikeHitFreeze: 0.05
+  dashStrikeSlowMoDuration: 0.12
+  dashStrikeSlowMoTimeScale: 0.35
+  dashStrikeFinalHitFreeze: 0.12
+  dashStrikeFinalSlowMoDuration: 0.3
+  dashStrikeFinalSlowMoTimeScale: 0.2
+  dashStrikeAnimSpeed: 2
+  dashStrikeRecovery: 0.15
+  dashStrikeMaxDuration: 2

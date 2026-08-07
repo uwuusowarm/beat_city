@@ -190,4 +190,130 @@ public class PlayerSettings : ScriptableObject
     [Tooltip("Freeze-frame duration when thrown enemy takes the final impact hit")]
     [Range(0f, 0.3f)]
     public float grappleImpactHitStop = 0.08f;
+
+    [Header("Afterimage")]
+    [Tooltip("Master switch for the afterimage ghost trail. Off suppresses it everywhere, regardless of the per-attack toggles below")]
+    public bool afterimageEnabled = true;
+
+    [Tooltip("Afterimage trail during the special chain (punch/kick chain)")]
+    public bool specialChainAfterimage = true;
+
+    [Tooltip("Afterimage trail during the dash strike")]
+    public bool dashStrikeAfterimage = true;
+
+    [Header("Speed Lines")]
+    [Tooltip("Master switch for the speed line streaks. Off suppresses them everywhere, regardless of the per-attack toggles below")]
+    public bool speedLinesEnabled = true;
+
+    [Tooltip("Speed lines during the dash strike")]
+    public bool dashStrikeSpeedLines = true;
+
+    [Tooltip("Minimum movement speed in units per second before lines are emitted. Keeps them off during the frozen strike poses where the player stands still at the enemy")]
+    public float speedLinesMinSpeed = 8f;
+
+    [Tooltip("Multiplier on the rate over distance authored in the particle prefab. 1 = the prefab value, higher = more lines per unit travelled")]
+    public float speedLinesDensity = 1f;
+
+    [Tooltip("Multiplier on the stretched billboard length scale authored in the particle prefab. 1 = the prefab value, higher = longer streaks")]
+    public float speedLinesLengthScale = 1f;
+
+    [Tooltip("Start color written to the particle system on activation. The prefab's Color over Lifetime fade is applied on top and stays intact")]
+    public Color speedLinesColor = Color.white;
+
+    [Header("Dash Strike Special - Hits")]
+    [Tooltip("Number of strikes. Must match the number of DashStrikeHit events in the dash clip")]
+    public int dashStrikeHitCount = 3;
+
+    [Tooltip("Damage of every strike except the last one")]
+    public int dashStrikeDamage = 20;
+
+    [Tooltip("Damage of the final strike")]
+    public int dashStrikeFinalDamage = 30;
+
+    [Header("Dash Strike Special - Targeting")]
+    [Tooltip("Radius around the player in which the next enemy is searched")]
+    public float dashStrikeSearchRadius = 15f;
+
+    [Tooltip("Distance in front of the target where the player comes to a stop")]
+    public float dashStrikeApproachDistance = 1.2f;
+
+    [Tooltip("Pick enemies that were not hit yet in this attack first. Falls back to already hit ones so all strikes land even with a single enemy around")]
+    public bool dashStrikePreferNewTargets = true;
+
+    [Tooltip("Abort the special and refund the meter when no enemy is within the search radius")]
+    public bool dashStrikeRequireTarget = true;
+
+    [Header("Dash Strike Special - Dash")]
+    [Tooltip("Travel speed toward the target in units per second")]
+    public float dashStrikeSpeed = 40f;
+
+    [Tooltip("Safety timeout per leg. The animation resumes even if the target was never reached")]
+    public float dashStrikeMaxTravelTime = 0.5f;
+
+    [Tooltip("Travel on unscaled time so the dash stays snappy during the slow motion of the previous hit")]
+    public bool dashStrikeUnscaledTravel = true;
+
+    [Tooltip("Freeze the animation while travelling to the next target and resume it on arrival. Guarantees every strike pose happens at an enemy")]
+    public bool dashStrikeHoldAnimUntilArrival = true;
+
+    [Tooltip("Snap onto the target if the strike event fires before the dash arrived")]
+    public bool dashStrikeSnapOnHit = true;
+
+    [Header("Dash Strike Special - Launch")]
+    [Tooltip("Upward force per strike. Capped by EnemySettings maxJuggleHeight / maxJugglingVelocity")]
+    public float dashStrikeKnockup = 6f;
+
+    [Tooltip("Upward force of the final strike")]
+    public float dashStrikeFinalKnockup = 10f;
+
+    [Tooltip("Horizontal knockback per strike")]
+    public float dashStrikeKnockback = 1f;
+
+    [Tooltip("Horizontal knockback of the final strike")]
+    public float dashStrikeFinalKnockback = 4f;
+
+    [Tooltip("Knock the target down with the final strike instead of leaving it juggled")]
+    public bool dashStrikeFinalKnockdown = true;
+
+    [Header("Dash Strike Special - Hitbox")]
+    [Tooltip("Size of the dash strike hitbox, written before every strike. The hitbox transform does not rotate with the character model, so keep it wide enough to cover Approach Distance in every direction")]
+    public Vector3 dashStrikeHitboxSize = new Vector3(3f, 3f, 3f);
+
+    [Tooltip("Local offset of the dash strike hitbox, written before every strike. Keep it centered - a forward offset would point at world +Z instead of at the target")]
+    public Vector3 dashStrikeHitboxOffset = Vector3.zero;
+
+    [Header("Dash Strike Special - Time Scale Dip")]
+    [Tooltip("Freeze-frame duration per strike")]
+    [Range(0f, 0.25f)]
+    public float dashStrikeHitFreeze = 0.05f;
+
+    [Tooltip("Slow motion duration after the freeze frame")]
+    [Range(0f, 0.6f)]
+    public float dashStrikeSlowMoDuration = 0.12f;
+
+    [Tooltip("Time scale during the slow motion. 1 = no slow motion")]
+    [Range(0.01f, 1f)]
+    public float dashStrikeSlowMoTimeScale = 0.35f;
+
+    [Tooltip("Freeze-frame duration of the final strike")]
+    [Range(0f, 0.25f)]
+    public float dashStrikeFinalHitFreeze = 0.12f;
+
+    [Tooltip("Slow motion duration of the final strike")]
+    [Range(0f, 0.6f)]
+    public float dashStrikeFinalSlowMoDuration = 0.3f;
+
+    [Tooltip("Time scale during the slow motion of the final strike")]
+    [Range(0.01f, 1f)]
+    public float dashStrikeFinalSlowMoTimeScale = 0.2f;
+
+    [Header("Dash Strike Special - Flow")]
+    [Tooltip("Animation speed multiplier while the dash strike plays")]
+    public float dashStrikeAnimSpeed = 1f;
+
+    [Tooltip("Wait time after the last strike before control is handed back")]
+    public float dashStrikeRecovery = 0.15f;
+
+    [Tooltip("Watchdog. The special is force-ended after this many seconds")]
+    public float dashStrikeMaxDuration = 3f;
 }

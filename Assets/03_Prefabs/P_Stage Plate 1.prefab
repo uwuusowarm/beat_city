@@ -2701,6 +2701,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1414275681496096012}
+  - component: {fileID: 7531113084017346924}
   m_Layer: 0
   m_Name: P_Stage Plate 1
   m_TagString: Untagged
@@ -2734,6 +2735,19 @@ Transform:
   - {fileID: 3924555656024431982}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7531113084017346924
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4115460182486416616}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc770465f4e10f14c91ccdce57e50101, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChunkWidth
+  width: 50
 --- !u!1 &4121413595195583138
 GameObject:
   m_ObjectHideFlags: 0
