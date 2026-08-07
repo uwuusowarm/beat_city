@@ -141,9 +141,11 @@ Transform:
   m_Children:
   - {fileID: 5387828486214582420}
   - {fileID: 2751693642510612401}
+  - {fileID: 8633494331541966250}
   - {fileID: 3717361490738001974}
   - {fileID: 8887407231781088451}
   - {fileID: 8420107355081625463}
+  - {fileID: 6748616475804556436}
   - {fileID: 1319119274840243510}
   - {fileID: 7891343621730239513}
   m_Father: {fileID: 0}
@@ -329,6 +331,7 @@ MonoBehaviour:
   hitbox: {fileID: 2382808346673060664}
   specialHitbox: {fileID: 2967659709457547770}
   dashStrikeHitbox: {fileID: 4429456243093484045}
+  specialKickHitbox: {fileID: 3880330085039506735}
   activeTime: 0.2
   attackCooldown: 0.1
   vfxSpawnDistance: 1.5
@@ -336,7 +339,9 @@ MonoBehaviour:
   animator: {fileID: 4255781138198214351}
   audioManager: {fileID: 0}
   specialVFXPrefab: {fileID: 4593184484909914552, guid: 2e1e9506f5904a64b81744324fb7cd50, type: 3}
+  moonKickVFXPrefab: {fileID: 5938444458978163552, guid: 373669ea807c8f64583215584ffa9a70, type: 3}
   vfxSpawnPoint: {fileID: 8420107355081625463}
+  moonKickVfxSpawnPoint: {fileID: 6748616475804556436}
   specialMeter: {fileID: 0}
   specialMove: {fileID: 4308366570326131633}
   dashStrike: {fileID: 4776618944779855045}
@@ -381,7 +386,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerGrapple
   settings: {fileID: 0}
-  grabBoxAnchor: {fileID: 0}
+  grabBoxAnchor: {fileID: 8887407231781088451}
   throwActions:
   - {fileID: 7040659881675835329, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   - {fileID: 1120369429361536294, guid: 052faaac586de48259a63d0c4782560b, type: 3}
@@ -407,6 +412,7 @@ MonoBehaviour:
   - {fileID: 1908867706107061876}
   - {fileID: 4850563744316324283}
   animator: {fileID: 4255781138198214351}
+  WinLoseScript: {fileID: 0}
 --- !u!114 &8612664414132317126
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -466,7 +472,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b7aa1eec68c1a947b5ebf5606a1c524, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ComboScore
-  scoreText: {fileID: 0}
+  inGameScoreText: {fileID: 0}
+  winScoreText: {fileID: 0}
+  loseScoreText: {fileID: 0}
   basePointsPerHit: 10
   comboTiers:
   - minHits: 0
@@ -513,7 +521,99 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpeedLinesEffect
   speedLines: {fileID: 1202822032157074344}
+  emitterOffset: {x: 0, y: 0.25, z: 0}
   teleportSpeed: 150
+--- !u!1 &6132255611989648559
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8633494331541966250}
+  - component: {fileID: 3880330085039506735}
+  m_Layer: 0
+  m_Name: Hitbox_MoonKick
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8633494331541966250
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6132255611989648559}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.351, z: 0.723}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4799275800366551407}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3880330085039506735
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6132255611989648559}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be482ebd44724597b3eafc3cd25745a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Hitbox
+  owner: {fileID: 1662536712636653983}
+  size: {x: 4, y: 3, z: 2}
+  offset: {x: 0, y: 0, z: 0.29}
+  damage: 10
+  knockbackForce: 0
+  knockUpForce: 5
+  jugglingForce: 0
+  hitStunDuration: 0.08
+  hitStopDuration: 0.08
+  shouldKnockdown: 0
+  isLauncher: 0
+  juggleType: 1
+  applyDamage: 1
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 4294967295
+--- !u!1 &6882473435390975462
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6748616475804556436}
+  m_Layer: 0
+  m_Name: MoonKickSpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6748616475804556436
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6882473435390975462}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.7053843, y: 0.04932535, z: -0.04932535, w: 0.7053843}
+  m_LocalPosition: {x: -0.2679978, y: 0.29399872, z: 0.14100644}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4799275800366551407}
+  m_LocalEulerAnglesHint: {x: -82, y: 90, z: -90}
 --- !u!1 &7937538812829366670
 GameObject:
   m_ObjectHideFlags: 0
@@ -523,7 +623,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8887407231781088451}
-  - component: {fileID: 6922274046274114452}
   m_Layer: 0
   m_Name: Hitbox_Grapple
   m_TagString: Untagged
@@ -546,34 +645,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4799275800366551407}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6922274046274114452
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7937538812829366670}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: be482ebd44724597b3eafc3cd25745a8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Hitbox
-  owner: {fileID: 1662536712636653983}
-  size: {x: 1, y: 1, z: 0.7}
-  offset: {x: 0, y: 0, z: 0.8}
-  damage: 10
-  knockbackForce: 5
-  knockUpForce: 0
-  jugglingForce: 0
-  hitStunDuration: 0.08
-  hitStopDuration: 0.08
-  shouldKnockdown: 0
-  isLauncher: 0
-  juggleType: 0
-  applyDamage: 1
-  targetLayer:
-    serializedVersion: 2
-    m_Bits: 4294967295
 --- !u!1 &8958037320973412108
 GameObject:
   m_ObjectHideFlags: 0

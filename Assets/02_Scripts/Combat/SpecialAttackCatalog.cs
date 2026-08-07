@@ -4,7 +4,8 @@ public enum SpecialAttackId
 {
     ChainAttack,
     GroundSlam,
-    DashStrike
+    DashStrike,
+    MoonKick
 }
 
 public class SpecialAttackDef
@@ -32,6 +33,7 @@ public static class SpecialAttackCatalog
         new SpecialAttackDef(SpecialAttackId.ChainAttack, "Chain Attack", 500, false, 25),
         new SpecialAttackDef(SpecialAttackId.GroundSlam, "Ground Slam", 500, false, 25),
         new SpecialAttackDef(SpecialAttackId.DashStrike, "Dash Strike", 500, false, 25),
+        new SpecialAttackDef(SpecialAttackId.MoonKick, "Moon Kick", 500, false, 0)
     };
 
     public static SpecialAttackDef Get(SpecialAttackId id)

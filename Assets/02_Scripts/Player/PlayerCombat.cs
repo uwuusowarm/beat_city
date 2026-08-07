@@ -8,6 +8,7 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private Hitbox hitbox;
     [SerializeField] private Hitbox specialHitbox;
     [SerializeField] private Hitbox dashStrikeHitbox;
+    [SerializeField] private Hitbox specialKickHitbox;
     [SerializeField] private float activeTime = 0.2f;
     [SerializeField] private float attackCooldown = 0.1f;
     [SerializeField] private float vfxSpawnDistance = 1.5f;
@@ -15,7 +16,9 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private Animator animator;
     [SerializeField] private AudioManager audioManager;
     [SerializeField] private GameObject specialVFXPrefab;
+    [SerializeField] private GameObject moonKickVFXPrefab;
     [SerializeField] private Transform vfxSpawnPoint;
+    [SerializeField] private Transform moonKickVfxSpawnPoint;
     [SerializeField] private Meter specialMeter;
 
     public SpecialAttackId? equippedSpecial1;
@@ -45,11 +48,10 @@ public class PlayerCombat : MonoBehaviour
 
     private bool _hitLanded;
 
-    private int _punchIndex;
     private bool _inSpecialChain;
+    private SpecialAttackId? _currentSpecialId;
 
-    private float _fist1InitialZ;
-    private float _fist2InitialZ;
+
 
     private void Awake()
     {
@@ -70,6 +72,10 @@ public class PlayerCombat : MonoBehaviour
 
         if (dashStrikeHitbox != null)
             dashStrikeHitbox.OnHitLanded += HandleHitLanded;
+        if (specialKickHitbox != null)
+        {
+            specialKickHitbox.OnHitLanded += HandleHitLanded;
+        }
     }
 
     private void HandleHitLanded(GameObject target)
@@ -190,6 +196,9 @@ public class PlayerCombat : MonoBehaviour
             case SpecialAttackId.GroundSlam:
                 DoGroundSlam();
                 break;
+            case SpecialAttackId.MoonKick:
+                DoMoonKick();
+                break;
             case SpecialAttackId.DashStrike:
                 if (dashStrike == null)
                 {
@@ -224,9 +233,13 @@ public class PlayerCombat : MonoBehaviour
     private void DoGroundSlam()
     {
         _isAttacking = true;
+        _currentSpecialId = SpecialAttackId.GroundSlam;
         PlayerStateManager.Instance.SetState(PlayerState.Attacking);
 
         AdvanceCombo(CombatInputType.Special);
+        
+        if (animator != null)
+            animator.SetInteger("SpecialId", 1);
 
         if (_settings != null)
         {
@@ -236,6 +249,28 @@ public class PlayerCombat : MonoBehaviour
             specialHitbox.JugglingForce = _settings.jugglingForce;
             specialHitbox.ShouldKnockdown = true;
             specialHitbox.IsLauncher = true;
+        }
+    }
+
+    private void DoMoonKick()
+    {
+        _isAttacking = true;
+        _currentSpecialId = SpecialAttackId.MoonKick;
+        PlayerStateManager.Instance.SetState(PlayerState.Attacking);
+
+        AdvanceCombo(CombatInputType.Special);
+
+        if (animator != null)
+            animator.SetInteger("SpecialId", 2);
+
+        if (_settings != null)
+        {
+            specialKickHitbox.Damage = _settings.specialDamage; 
+            specialKickHitbox.KnockbackForce = 0;
+            specialKickHitbox.KnockUpForce = _settings.specialKnockup;
+            specialKickHitbox.JugglingForce = _settings.jugglingForce;
+            specialKickHitbox.ShouldKnockdown = false;
+            specialKickHitbox.IsLauncher = true;
         }
     }
 
@@ -254,19 +289,41 @@ public class PlayerCombat : MonoBehaviour
 
     public void SpawnSpecialVfx()
     {
-        if (specialVFXPrefab == null) return;
+        Debug.Log("SpawnSpecialVfx wurde aufgerufen");
+        GameObject prefab = null;
+        Transform spawnPoint = null;
 
-        GameObject vfx = Instantiate(specialVFXPrefab, vfxSpawnPoint.position, Quaternion.identity);
-        Destroy(vfx, 20.0f);
+        switch (_currentSpecialId)
+        {
+            case SpecialAttackId.GroundSlam:
+                prefab = specialVFXPrefab;
+                spawnPoint = vfxSpawnPoint;
+                break;
+
+            case SpecialAttackId.MoonKick:
+                prefab = moonKickVFXPrefab;
+                spawnPoint = moonKickVfxSpawnPoint;
+                break;
+        }
+
+        if (prefab == null || spawnPoint == null)
+            return;
+
+        GameObject vfx = Instantiate(prefab, spawnPoint.position, spawnPoint.rotation);
+        Destroy(vfx, 20f);
     }
 
     private Hitbox GetCurrentHitbox()
     {
-        if (CurrentAttackType == CombatInputType.Special && specialHitbox != null)
+        if (CurrentAttackType == CombatInputType.Special)
         {
-            return specialHitbox;
+            if (_currentSpecialId == SpecialAttackId.MoonKick && specialKickHitbox != null)
+                return specialKickHitbox;
+
+            if (specialHitbox != null)
+                return specialHitbox;
         }
-        return hitbox; 
+        return hitbox;
     }
 
     private void PlaySwingSfx(CombatInputType input)
