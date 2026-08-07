@@ -477,6 +477,10 @@ PrefabInstance:
       propertyPath: grabBoxAnchor
       value: 
       objectReference: {fileID: 2055325965}
+    - target: {fileID: 1035578852233614060, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
+      propertyPath: WinLoseScript
+      value: 
+      objectReference: {fileID: 1592047835}
     - target: {fileID: 1662536712636653983, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
       propertyPath: m_Name
       value: PlayerAnimGrey
@@ -503,6 +507,18 @@ PrefabInstance:
       objectReference: {fileID: 812365572}
     - target: {fileID: 4631613409987971520, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
       propertyPath: scoreText
+      value: 
+      objectReference: {fileID: 877091110}
+    - target: {fileID: 4631613409987971520, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
+      propertyPath: winScoreText
+      value: 
+      objectReference: {fileID: 1019549321}
+    - target: {fileID: 4631613409987971520, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
+      propertyPath: loseScoreText
+      value: 
+      objectReference: {fileID: 1019549320}
+    - target: {fileID: 4631613409987971520, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
+      propertyPath: inGameScoreText
       value: 
       objectReference: {fileID: 877091110}
     - target: {fileID: 4799275800366551407, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
@@ -841,6 +857,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+--- !u!114 &1019549320 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2049174577112258775, guid: b6f100649d10b0d43b9d1c979baadfbd, type: 3}
+  m_PrefabInstance: {fileID: 1019549316}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+--- !u!114 &1019549321 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2882599588960995887, guid: b6f100649d10b0d43b9d1c979baadfbd, type: 3}
+  m_PrefabInstance: {fileID: 1019549316}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!114 &1078076607 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 9104261876279779562, guid: 657481147422a37418123f320e560f25, type: 3}
@@ -881,7 +919,7 @@ PrefabInstance:
       objectReference: {fileID: 1019549317}
     - target: {fileID: 4161660015177974663, guid: b687facc1ae0d394296b26b9fea921b0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -159.9
+      value: 56.5
       objectReference: {fileID: 0}
     - target: {fileID: 4161660015177974663, guid: b687facc1ae0d394296b26b9fea921b0, type: 3}
       propertyPath: m_LocalPosition.y
