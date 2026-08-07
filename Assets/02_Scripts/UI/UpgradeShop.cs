@@ -21,10 +21,10 @@ public class UpgradeShop : MonoBehaviour
         public int CurrentCost => Mathf.RoundToInt(Cost * Mathf.Pow(CostMod, Level));
     }
     [SerializeField] private InputActionReference shopAction;
-    [SerializeField] private Money playerMoney;
     [SerializeField] private GameObject shopPanel;
     [SerializeField] private bool pauseWhenOpen = true;
     [SerializeField] private UpgradeData[] upgrades;
+    [SerializeField] private TextMeshProUGUI moneyText;
 
     [SerializeField] private Meter special;
     [SerializeField] private int specialBoost = 1;
@@ -32,13 +32,17 @@ public class UpgradeShop : MonoBehaviour
     [SerializeField] private PlayerSettings _settings;
     [SerializeField] private int damageBoost = 1;
 
+    public static bool IsOpen { get; private set; }
+
     private bool _isOpen;
 
     private void Awake()
     {
+        _settings = SettingsResolver.ResolvePlayerSettings(_settings);
+
         if (_settings == null)
         {
-            _settings = Resources.Load<PlayerSettings>("PlayerSettings");
+            Debug.LogWarning("[UpgradeShop] No PlayerSettings found (provider/inspector/resources).");
         }
 
         if (special == null)
@@ -50,6 +54,8 @@ public class UpgradeShop : MonoBehaviour
     private void Start()
     {
         shopPanel.SetActive(false);
+        IsOpen = false;
+        CursorState.Refresh();
 
         foreach (var upgrade in upgrades)
         {
@@ -80,21 +86,26 @@ public class UpgradeShop : MonoBehaviour
     private void OpenShop()
     {
         _isOpen = true;
+        IsOpen = true;
         shopPanel.SetActive(true);
 
         if (pauseWhenOpen)
             Time.timeScale = 0f;
 
+        CursorState.Refresh();
         RefreshAllButtons();
     }
 
     private void CloseShop()
     {
         _isOpen = false;
+        IsOpen = false;
         shopPanel.SetActive(false);
 
         if (pauseWhenOpen)
             Time.timeScale = 1f;
+
+        CursorState.Refresh();
     }
 
     private void TryPurchase(UpgradeData upgrade)
@@ -104,7 +115,7 @@ public class UpgradeShop : MonoBehaviour
             Debug.Log($"[UpgradeShop] '{upgrade.Name}' maxed out {upgrade.Level}");
             return;
         }
-        if (playerMoney.TrySpend(upgrade.Cost))
+        if (PlayerStats.Instance.TrySpend(upgrade.Cost))
         {
             int paid = upgrade.Cost;
             upgrade.Level++;
@@ -113,7 +124,7 @@ public class UpgradeShop : MonoBehaviour
         }
         else
         {
-            Debug.Log($"[UpgradeShop] Can't afford '{upgrade.Name}' (need ${upgrade.Cost}, have ${playerMoney.Current})");
+            Debug.Log($"[UpgradeShop] Can't afford '{upgrade.Name}' (need ${upgrade.Cost}, have ${PlayerStats.Instance.coins})");
         }
 
         RefreshAllButtons();
@@ -123,8 +134,13 @@ public class UpgradeShop : MonoBehaviour
     {
         foreach (var upgrade in upgrades)
         {
-            upgrade.Button.interactable = playerMoney.Current >= upgrade.Cost;
+            upgrade.Button.interactable = PlayerStats.Instance.coins >= upgrade.Cost;
             UpdateLabel(upgrade);
+        }
+
+        if (moneyText != null)
+        {
+            moneyText.text = $"${PlayerStats.Instance.coins}";
         }
     }
     
@@ -139,13 +155,13 @@ public class UpgradeShop : MonoBehaviour
                 break;
 
             case "Damage Up":
-                Debug.Log("DAMAGE UPGRADE WURDE AUSGEFÜHRT");
+                Debug.Log("DAMAGE UPGRADE WURDE AUSGEFï¿½HRT");
                 _settings.punchDamage += damageBoost;
                 Debug.Log($"Damage now {_settings.punchDamage}");
                 break;
 
             case "Special Up":
-                Debug.Log("SPECIAL UPGRADE WURDE AUSGEFÜHRT");
+                Debug.Log("SPECIAL UPGRADE WURDE AUSGEFï¿½HRT");
                 special.BaseMeterPerHit += specialBoost;
                 break;
 

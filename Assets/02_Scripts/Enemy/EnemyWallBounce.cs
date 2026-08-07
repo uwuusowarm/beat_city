@@ -33,6 +33,14 @@ public class EnemyWallBounce : MonoBehaviour
     {
         var camFollow = CameraFollow.Instance;
         if (!camFollow || !_cam) return;
+        
+        if (_enemyMovement != null
+            && _enemyMovement.CurrentState == EnemyState.Grabbed
+            && !_enemyMovement.IsBeingThrown)
+        {
+            _lastPosition = transform.position;
+            return;
+        }
 
         float distance = Vector3.Dot(transform.position - _cam.transform.position, _cam.transform.forward);
         var (minX, maxX) = camFollow.GetVisibleWorldBoundsX(distance);
@@ -110,7 +118,6 @@ public class EnemyWallBounce : MonoBehaviour
             
             if (bounced)
             {
-                _enemyMovement.IsInThrowState = false;
                 _enemyMovement.ApplyImpulse(bounceKnockUpForce, force, bounceHitStun);
 
                 if (_health != null && bounceDamage > 0)

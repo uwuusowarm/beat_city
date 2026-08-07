@@ -6,6 +6,12 @@ public class MovementPlayer : MonoBehaviour
 {
     [SerializeField] private PlayerSettings settings;
 
+    [Header("Audio")]
+    [SerializeField] private AudioManager audioManager;
+    [SerializeField] private float footstepInterval = 0.4f;
+
+    private float footstepTimer = 0f;
+
     [Header("Visuals")]
     [SerializeField] private Animator animator;
     [SerializeField] private InputActionReference moveAction;
@@ -22,8 +28,14 @@ public class MovementPlayer : MonoBehaviour
     
     void Awake()
     {
+        CharacterHighlightLayer.Ensure(gameObject);
+
+        settings = SettingsResolver.ResolvePlayerSettings(settings);
+
         if (settings == null)
-            settings = Resources.Load<PlayerSettings>("PlayerSettings");
+        {
+            Debug.LogWarning("[MovementPlayer] No PlayerSettings found (provider/inspector/resources).");
+        }
     }
 
     void Start()
@@ -142,6 +154,20 @@ public class MovementPlayer : MonoBehaviour
         moveDirection = inputDirection * currentSpeed;
         animator.SetFloat("Speed", inputDirection.magnitude);
 
+        if (inputDirection.magnitude > 0.05f && controller.isGrounded)
+        {
+            footstepTimer -= Time.deltaTime;
+            if (footstepTimer <= 0f)
+            {
+                EnsureAudioManager();
+                if (audioManager != null)
+                {
+                    audioManager.PlaySfx(SfxType.Movement, 0);
+                }
+                footstepTimer = footstepInterval;
+            }
+        }
+
         if (moveX != 0)
         {
             Quaternion targetRotation = Quaternion.LookRotation(new Vector3(moveX, 0, 0));
@@ -168,6 +194,12 @@ public class MovementPlayer : MonoBehaviour
 
         moveDirection.y = verticalVelocity;
         controller.Move(moveDirection * Time.deltaTime);
+    }
+
+    private void EnsureAudioManager()
+    {
+        if (audioManager == null) audioManager = AudioManager.Instance;
+        if (audioManager == null) audioManager = FindFirstObjectByType<AudioManager>();
     }
 
     // Dash mechanic (optional, can be activated)

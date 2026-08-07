@@ -142,8 +142,8 @@ ModelImporter:
       name: rig|Main_Char_Kick_02
       takeName: rig|Main_Char_Kick_02
       internalID: -9205319343527401250
-      firstFrame: 0
-      lastFrame: 22
+      firstFrame: 7.3
+      lastFrame: 14.6
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -162,7 +162,28 @@ ModelImporter:
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
-      events: []
+      events:
+      - time: 0.60930234
+        functionName: EnableHitbox
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.7326916
+        functionName: DisableHitbox
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.7627793
+        functionName: FinishAttack
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}
@@ -171,8 +192,8 @@ ModelImporter:
       name: rig|Main_Char_Kick_03
       takeName: rig|Main_Char_Kick_03
       internalID: 5325211448754774415
-      firstFrame: 0
-      lastFrame: 22
+      firstFrame: 7.4
+      lastFrame: 16.3
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

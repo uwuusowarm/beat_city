@@ -11,15 +11,12 @@ public class AfterimageEffect : MonoBehaviour
     [SerializeField] private Color ghostColor = new Color(0.2f, 0.5f, 1.0f, 0.6f);
     [SerializeField] private float spawnInterval = 0.05f;
     [SerializeField] private float ghostLifetime = 0.4f;
-    [SerializeField] private float startAlpha = 0.6f;
 
     private Material ghostMaterial;
     private float spawnTimer;
     private bool isActive;
 
     private SkinnedMeshRenderer[] skinnedRenderers;
-    private MeshFilter[] meshFilters;
-    private bool useSkinned;
 
     private static readonly int ColorID = Shader.PropertyToID("_Color");
     private static readonly int AlphaID = Shader.PropertyToID("_Alpha");
@@ -31,7 +28,7 @@ public class AfterimageEffect : MonoBehaviour
 
         ghostMaterial = new Material(ghostShader);
         ghostMaterial.SetColor(ColorID, ghostColor);
-        ghostMaterial.SetFloat(AlphaID, startAlpha);
+        ghostMaterial.SetFloat(AlphaID, ghostColor.a);
 
         if (characterModel == null)
         {
@@ -41,11 +38,7 @@ public class AfterimageEffect : MonoBehaviour
         }
 
         if (characterModel != null)
-        {
             skinnedRenderers = characterModel.GetComponentsInChildren<SkinnedMeshRenderer>();
-            meshFilters = characterModel.GetComponentsInChildren<MeshFilter>();
-            useSkinned = skinnedRenderers != null && skinnedRenderers.Length > 0;
-        }
     }
 
     private void Update()
@@ -79,35 +72,24 @@ public class AfterimageEffect : MonoBehaviour
 
     private void SpawnGhost()
     {
-        if (useSkinned)
+        if (skinnedRenderers == null) return;
+
+        foreach (var smr in skinnedRenderers)
         {
-            foreach (var smr in skinnedRenderers)
-            {
-                if (!smr.gameObject.activeInHierarchy) continue;
+            if (!smr.gameObject.activeInHierarchy) continue;
 
-                Mesh bakedMesh = new Mesh();
-                smr.BakeMesh(bakedMesh);
+            Mesh bakedMesh = new Mesh();
+            smr.BakeMesh(bakedMesh);
 
-                CreateGhostObject(bakedMesh, smr.transform, true);
-            }
-        }
-        else if (meshFilters != null)
-        {
-            foreach (var mf in meshFilters)
-            {
-                if (!mf.gameObject.activeInHierarchy) continue;
-                if (mf.sharedMesh == null) continue;
-
-                CreateGhostObject(mf.sharedMesh, mf.transform, false);
-            }
+            CreateGhostObject(bakedMesh, smr.transform);
         }
     }
 
-    private void CreateGhostObject(Mesh mesh, Transform source, bool isBaked)
+    private void CreateGhostObject(Mesh mesh, Transform source)
     {
         GameObject ghost = new GameObject("Afterimage");
         ghost.transform.SetPositionAndRotation(source.position, source.rotation);
-        ghost.transform.localScale = isBaked ? Vector3.one : source.lossyScale;
+        ghost.transform.localScale = Vector3.one;
 
         MeshFilter mf = ghost.AddComponent<MeshFilter>();
         mf.mesh = mesh;
@@ -118,7 +100,7 @@ public class AfterimageEffect : MonoBehaviour
         mr.receiveShadows = false;
 
         AfterimageGhost fadeScript = ghost.AddComponent<AfterimageGhost>();
-        fadeScript.Init(ghostLifetime, startAlpha);
+        fadeScript.Init(ghostLifetime, ghostColor.a, mesh);
     }
 
     private void OnDestroy()
@@ -134,13 +116,15 @@ public class AfterimageGhost : MonoBehaviour
     private float timer;
     private float startAlpha;
     private Material material;
+    private Mesh bakedMesh;
 
     private static readonly int AlphaID = Shader.PropertyToID("_Alpha");
 
-    public void Init(float lifetime, float startAlpha)
+    public void Init(float lifetime, float startAlpha, Mesh bakedMesh)
     {
         this.lifetime = lifetime;
         this.startAlpha = startAlpha;
+        this.bakedMesh = bakedMesh;
         timer = lifetime;
         material = GetComponent<MeshRenderer>().material;
     }
@@ -152,6 +136,7 @@ public class AfterimageGhost : MonoBehaviour
         if (timer <= 0f)
         {
             Destroy(material);
+            Destroy(bakedMesh);
             Destroy(gameObject);
             return;
         }

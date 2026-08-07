@@ -11,6 +11,8 @@ public class EnemyMovement : MonoBehaviour
     [Header("Visuals")]
     public Transform characterModel;
     [SerializeField] private Animator animator;
+    [Header("Grabbed Animation")]
+    [SerializeField, Min(0.01f)] private float grabbedFallPlaybackSpeed = 1f;
     
     public EnemyState CurrentState { get; private set; } = EnemyState.Grounded;
     
@@ -44,16 +46,21 @@ public class EnemyMovement : MonoBehaviour
     private int _juggleCount;
     private float _juggleDecayMultiplier = 1f;
     private float _hoverTimer;
+    private bool _hoverPending;
+
+    private float _juggleCeiling;
+
+    private float _airTimer;
 
     private float _squashTimer;
     private const float SquashDuration = 0.12f;
     private static readonly Vector3 SquashScale = new Vector3(1.3f, 0.7f, 1.3f);
-    private const float HoverDriftSpeed = -0.5f;
-    
+
     private bool _isBeingThrown;
     public bool IsBeingThrown => _isBeingThrown;
     
     private bool _wasThrownSkipReset;
+    private Coroutine _grabbedFallCoroutine;
     
     private float _groundYPosition;
     
@@ -108,6 +115,14 @@ public class EnemyMovement : MonoBehaviour
     private float JuggleMinScale => meleeSettings != null ? meleeSettings.juggleMinScale : 0.30f;
     private int MaxJuggleCount => meleeSettings != null ? meleeSettings.maxJuggleCount : 10;
     private float JuggleHoverDuration => meleeSettings != null ? meleeSettings.juggleHoverDuration : 0.5f;
+    private float JuggleHoverDriftSpeed => meleeSettings != null ? meleeSettings.juggleHoverDriftSpeed : -0.5f;
+    private float JugglePopVelocity => meleeSettings != null ? meleeSettings.jugglePopVelocity : 3.5f;
+    private float JugglePopForceScale => meleeSettings != null ? meleeSettings.jugglePopForceScale : 0.4f;
+    private float JugglePopMaxVelocityScale => meleeSettings != null ? meleeSettings.jugglePopMaxVelocityScale : 0.5f;
+    private float JugglePopHeadroom => meleeSettings != null ? meleeSettings.jugglePopHeadroom : 0.4f;
+    private float JugglePopFadeRange => meleeSettings != null ? meleeSettings.jugglePopFadeRange : 0.4f;
+    private float JugglePopMinFade => meleeSettings != null ? meleeSettings.jugglePopMinFade : 0.35f;
+    private float MaxAirborneDuration => meleeSettings != null ? meleeSettings.maxAirborneDuration : 3f;
     private float KnockdownDuration => meleeSettings != null ? meleeSettings.knockdownDuration : 1.0f;
     private float StandUpDuration => meleeSettings != null ? meleeSettings.standUpDuration : 1.0f;
     private float GroundCheckDistance => meleeSettings != null ? meleeSettings.groundCheckDistance : 0.2f;
@@ -119,6 +134,8 @@ public class EnemyMovement : MonoBehaviour
 
     private void Start()
     {
+        CharacterHighlightLayer.Ensure(gameObject);
+
         _combat = GetComponent<EnemyCombat>();
         TryGetComponent(out _obstacleAvoidance);
 
@@ -137,12 +154,13 @@ public class EnemyMovement : MonoBehaviour
         
         _groundYPosition = transform.position.y;
 
+        meleeSettings = SettingsResolver.ResolveEnemySettings(meleeSettings);
+        rangedSettings = null;
+
+        _juggleCeiling = MaxJuggleHeight;
+
         if (meleeSettings == null && rangedSettings == null)
-        {
-            meleeSettings = Resources.Load<EnemySettings>("EnemySettings");
-            if (meleeSettings == null)
-                Debug.LogWarning("[EnemyMovement] No EnemySettings assigned or found in Resources folder.");
-        }
+            Debug.LogWarning("[EnemyMovement] No enemy settings found (provider/inspector/resources).");
 
         if (rangedSettings == null)
         {
@@ -185,6 +203,11 @@ public class EnemyMovement : MonoBehaviour
         CurrentState = newState;
         _stateTimer = 0f;
 
+        if (previousState == EnemyState.Grabbed && newState != EnemyState.Grabbed)
+        {
+            StopGrabbedFallAnimation(true);
+        }
+
         Debug.Log($"[EnemyMovement] {gameObject.name} State: {previousState} -> {newState}");
 
         bool couldActBefore = previousState == EnemyState.Grounded || previousState == EnemyState.HitStun;
@@ -193,41 +216,52 @@ public class EnemyMovement : MonoBehaviour
         {
             _combat?.CancelAttackWindup();
         }
+        
+        if (animator != null) animator.speed = 1f;
+
+        bool cameFromAirOrDown = previousState == EnemyState.Launched ||
+                                 previousState == EnemyState.Airborne ||
+                                 previousState == EnemyState.Grabbed ||
+                                 previousState == EnemyState.Knockdown ||
+                                 previousState == EnemyState.StandingUp;
 
         switch (newState)
         {
             case EnemyState.Grounded:
-                _isBeingThrown = false; 
+                _isBeingThrown = false;
                 ResetJuggleState();
                 UpdateAnimatorFalling(false);
+                if (cameFromAirOrDown) ForceExitFallPose("Idle");
                 break;
-                
+
             case EnemyState.HitStun:
                 UpdateAnimatorFalling(false);
+                if (cameFromAirOrDown) ForceExitFallPose("Hit");
                 break;
 
             case EnemyState.Launched:
             case EnemyState.Airborne:
-                if (animator != null) animator.ResetTrigger("Hit");
-                UpdateAnimatorFalling(true);
-                break;
-                
-            case EnemyState.Knockdown:
-                _isBeingThrown = false;
-                _wasThrownSkipReset = false;
-                _stateTimer = KnockdownDuration;
+                if (previousState != EnemyState.Launched && previousState != EnemyState.Airborne)
+                    _airTimer = 0f;
                 if (animator != null)
                 {
-
-                    animator.speed = 1f;
+                    animator.ResetTrigger("Hit");
+                    animator.ResetTrigger("StandUp");
                 }
+                UpdateAnimatorFalling(true);
                 break;
-                
+
+            case EnemyState.Knockdown:
+                _isBeingThrown = false;
+                ResetJuggleState();
+                _stateTimer = KnockdownDuration;
+                if (animator != null) animator.ResetTrigger("StandUp");
+                break;
+
             case EnemyState.StandingUp:
                 _stateTimer = StandUpDuration;
                 if (animator != null)
                 {
-                    animator.speed = 1f;
                     UpdateAnimatorFalling(false);
                     animator.SetTrigger("StandUp");
                 }
@@ -237,21 +271,26 @@ public class EnemyMovement : MonoBehaviour
                 if (animator != null)
                 {
                     animator.SetFloat("Speed", 0f);
+                    StartGrabbedFallAnimation();
                 }
                 break;
 
             case EnemyState.Dead:
                 if (animator != null)
                 {
-                    if (!animator.GetBool("IsFalling"))
+                    bool alreadyDown = previousState == EnemyState.Knockdown ||
+                                       previousState == EnemyState.StandingUp;
+
+                    if (alreadyDown)
+                    {
+                        animator.SetBool("IsFalling", true);
+                        animator.Play("Fall", 0, 0.99f);
+                        animator.speed = 0f;
+                    }
+                    else if (!animator.GetBool("IsFalling"))
                     {
                         animator.SetBool("IsFalling", true);
                         animator.Play("Fall", 0, 0f);
-                        animator.speed = 1f;
-                    }
-                    else if (previousState != EnemyState.Knockdown)
-                    {
-                        animator.speed = 1f;
                     }
                 }
                 _stateTimer = DespawnDelay;
@@ -279,11 +318,40 @@ public class EnemyMovement : MonoBehaviour
         }
     }
     
+    private void ForceExitFallPose(string targetState)
+    {
+        if (animator == null) return;
+
+        animator.speed = 1f;
+        animator.ResetTrigger("StandUp");
+        animator.SetBool("IsFalling", false);
+        animator.Play(targetState, 0, 0f);
+    }
+    
+    private bool IsInOrEnteringFall()
+    {
+        if (animator == null) return false;
+        if (animator.GetCurrentAnimatorStateInfo(0).IsName("Fall")) return true;
+        return animator.IsInTransition(0) && animator.GetNextAnimatorStateInfo(0).IsName("Fall");
+    }
+    
+    private void CatchStrandedFallPose(string targetState)
+    {
+        if (!IsInOrEnteringFall()) return;
+
+        Debug.LogWarning($"[EnemyMovement] {gameObject.name} stranded in Fall pose while {CurrentState} " +
+                         $"- forcing -> {targetState}");
+        ForceExitFallPose(targetState);
+    }
+
     private void ResetJuggleState()
     {
         _juggleCount = 0;
         _juggleDecayMultiplier = 1f;
+        _juggleCeiling = MaxJuggleHeight;
+        _airTimer = 0f;
         _hoverTimer = 0f;
+        _hoverPending = false;
         _squashTimer = 0f;
         hitStunTimer = 0f;
         _wasThrownSkipReset = false;
@@ -291,6 +359,11 @@ public class EnemyMovement : MonoBehaviour
             characterModel.localScale = Vector3.one;
     }
     
+    private void TrackGroundHeight()
+    {
+        if (IsGroundedRaycast()) _groundYPosition = transform.position.y;
+    }
+
     private bool IsGroundedRaycast()
     {
         Vector3 origin = transform.position + Vector3.up * 0.1f;
@@ -302,6 +375,7 @@ public class EnemyMovement : MonoBehaviour
     {
         _isBeingThrown = true;
         _wasThrownSkipReset = true;
+        StopGrabbedFallAnimation(true);
         
         UpdateAnimatorFalling(true);
         _wobblePhase = 0f;
@@ -313,6 +387,62 @@ public class EnemyMovement : MonoBehaviour
     {
         _isBeingThrown = false;
         Debug.Log($"[EnemyMovement] {gameObject.name} EndThrowAnimation called - Physics resumed");
+    }
+
+    private void StartGrabbedFallAnimation()
+    {
+        if (animator == null) return;
+
+        StopGrabbedFallAnimation(false);
+        _grabbedFallCoroutine = StartCoroutine(PlayAndPauseGrabbedFall());
+    }
+
+    private void StopGrabbedFallAnimation(bool resumeAnimator)
+    {
+        if (_grabbedFallCoroutine != null)
+        {
+            StopCoroutine(_grabbedFallCoroutine);
+            _grabbedFallCoroutine = null;
+        }
+
+        if (animator != null && resumeAnimator)
+        {
+            animator.speed = 1f;
+        }
+    }
+
+    private IEnumerator PlayAndPauseGrabbedFall()
+    {
+        if (animator == null) yield break;
+
+        float pausePoint = Mathf.Clamp01(FallHoldPoint);
+        float playbackSpeed = Mathf.Max(0.01f, grabbedFallPlaybackSpeed);
+
+        animator.SetBool("IsFalling", true);
+        animator.Play("Fall", 0, 0f);
+        animator.speed = playbackSpeed;
+
+        yield return null;
+
+        AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
+        while (CurrentState == EnemyState.Grabbed && !state.IsName("Fall"))
+        {
+            yield return null;
+            state = animator.GetCurrentAnimatorStateInfo(0);
+        }
+
+        while (CurrentState == EnemyState.Grabbed && state.IsName("Fall") && state.normalizedTime < pausePoint)
+        {
+            yield return null;
+            state = animator.GetCurrentAnimatorStateInfo(0);
+        }
+
+        if (CurrentState == EnemyState.Grabbed && animator != null)
+        {
+            animator.speed = 0f;
+        }
+
+        _grabbedFallCoroutine = null;
     }
     
 
@@ -353,13 +483,13 @@ public class EnemyMovement : MonoBehaviour
         {
             HandleKnockdownHit(hitData, effectiveKnockUp);
         }
+        else if (wasAirborne)
+        {
+            HandleJuggleHit(hitData, effectiveKnockUp);
+        }
         else if (hitData.IsLauncher || hitData.JuggleType == JuggleType.Launcher)
         {
             HandleLauncherHit(hitData, effectiveKnockUp, isGrounded);
-        }
-        else if (wasAirborne && (_hoverTimer > 0f || effectiveKnockUp > 0.5f || verticalVelocity > 0f))
-        {
-            HandleJuggleHit(hitData, effectiveKnockUp);
         }
         else if (effectiveKnockUp > LaunchThreshold)
         {
@@ -396,9 +526,11 @@ public class EnemyMovement : MonoBehaviour
     {
         _juggleCount = 1;
         _juggleDecayMultiplier = 1f;
+        _juggleCeiling = MaxJuggleHeight;
 
         float maxVelocityForHeight = Mathf.Sqrt(2f * Gravity * MaxJuggleHeight);
         verticalVelocity = Mathf.Min(effectiveForce, Mathf.Min(MaxJugglingVelocity, maxVelocityForHeight));
+        _hoverPending = true;
         SetState(EnemyState.Launched);
 
         Debug.Log($"[EnemyMovement] {gameObject.name} LAUNCHED! Force: {effectiveForce:F2}, Velocity: {verticalVelocity:F2}, MaxHeight: {MaxJuggleHeight:F2}");
@@ -408,17 +540,22 @@ public class EnemyMovement : MonoBehaviour
     {
         _juggleCount++;
 
+        _juggleCeiling = MaxJuggleHeight + JugglePopHeadroom;
+
         float currentHeight = transform.position.y - _groundYPosition;
-        float remainingHeight = MaxJuggleHeight - currentHeight;
+        float remainingHeight = _juggleCeiling - currentHeight;
 
-        float bounceForce = Mathf.Max(effectiveForce * 0.4f, 1.5f);
-        bounceForce = Mathf.Min(bounceForce, MaxJugglingVelocity * 0.3f);
+        float bounceForce = Mathf.Max(effectiveForce * JugglePopForceScale, JugglePopVelocity);
+        bounceForce = Mathf.Min(bounceForce, MaxJugglingVelocity * JugglePopMaxVelocityScale);
 
-        if (remainingHeight < 1f)
-            bounceForce *= Mathf.Clamp01(remainingHeight);
+        float fade = JugglePopFadeRange > 0f
+            ? Mathf.Clamp01(remainingHeight / JugglePopFadeRange)
+            : 1f;
+        bounceForce *= Mathf.Max(fade, JugglePopMinFade);
 
         verticalVelocity = bounceForce;
-        _hoverTimer = JuggleHoverDuration;
+        _hoverTimer = 0f;
+        _hoverPending = true;
         _squashTimer = SquashDuration;
 
         SetState(EnemyState.Launched);
@@ -428,6 +565,9 @@ public class EnemyMovement : MonoBehaviour
     
     private void HandleKnockdownHit(HitData hitData, float effectiveForce)
     {
+        _hoverTimer = 0f;
+        _hoverPending = false;
+
         if (hitData.JuggleType == JuggleType.Spike)
         {
             verticalVelocity = -effectiveForce;
@@ -467,16 +607,22 @@ public class EnemyMovement : MonoBehaviour
 
     private void Update()
     {
-        if (player == null) return;
+        if (hitStunTimer > 0f) hitStunTimer -= Time.deltaTime;
+        if (_stateTimer > 0f) _stateTimer -= Time.deltaTime;
+
+        if (player == null)
+        {
+            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+            if (playerObj == null) return;
+            player = playerObj.transform;
+        }
+
         if (_health != null && _health.Current <= 0 && CurrentState != EnemyState.Dead)
         {
             if (animator != null) animator.SetFloat("Speed", 0f);
-            return;
+            SetState(EnemyState.Dead);
         }
 
-        if (hitStunTimer > 0f) hitStunTimer -= Time.deltaTime;
-        if (_stateTimer > 0f) _stateTimer -= Time.deltaTime;
-        
         switch (CurrentState)
         {
             case EnemyState.Grounded:
@@ -535,6 +681,9 @@ public class EnemyMovement : MonoBehaviour
     
     private void UpdateGroundedState()
     {
+        CatchStrandedFallPose("Idle");
+        TrackGroundHeight();
+
         if (rangedSettings != null)
         {
             MoveRanged();
@@ -561,6 +710,9 @@ public class EnemyMovement : MonoBehaviour
     
     private void UpdateHitStunState()
     {
+        CatchStrandedFallPose("Hit");
+        TrackGroundHeight();
+
         ApplyGravityAndMove(Vector3.zero);
         if (animator != null) animator.SetFloat("Speed", 0f);
         
@@ -572,25 +724,26 @@ public class EnemyMovement : MonoBehaviour
     
     private void UpdateLaunchedState()
     {
+        if (TickAirWatchdog()) return;
+
         if (!_isBeingThrown)
         {
+            float ceiling = _juggleCeiling > 0f ? _juggleCeiling : MaxJuggleHeight;
+
             float currentHeight = transform.position.y - _groundYPosition;
-            if (currentHeight >= MaxJuggleHeight && verticalVelocity > 0f)
+            if (currentHeight >= ceiling && verticalVelocity > 0f)
             {
                 verticalVelocity = 0f;
-                if (_hoverTimer <= 0f)
-                    _hoverTimer = JuggleHoverDuration;
             }
 
-            if (_hoverTimer > 0f && verticalVelocity <= 0f)
+            if (_hoverPending && verticalVelocity <= 0f)
             {
-                _hoverTimer -= Time.deltaTime;
-                ApplyHoverMove();
+                _hoverPending = false;
+                _hoverTimer = JuggleHoverDuration;
+                Debug.Log($"[EnemyMovement] {gameObject.name} HOVER start at apex - Height: {currentHeight:F2}/{ceiling:F2}, Duration: {JuggleHoverDuration:F2}s");
             }
-            else
-            {
-                ApplyGravityAndMove(Vector3.zero);
-            }
+
+            TickHoverAndMove();
         }
         UpdateJugglingAnimation();
 
@@ -599,20 +752,14 @@ public class EnemyMovement : MonoBehaviour
             SetState(EnemyState.Airborne);
         }
     }
-    
+
     private void UpdateAirborneState()
     {
+        if (TickAirWatchdog()) return;
+
         if (!_isBeingThrown)
         {
-            if (_hoverTimer > 0f && verticalVelocity <= 0f)
-            {
-                _hoverTimer -= Time.deltaTime;
-                ApplyHoverMove();
-            }
-            else
-            {
-                ApplyGravityAndMove(Vector3.zero);
-            }
+            TickHoverAndMove();
         }
         UpdateJugglingAnimation();
 
@@ -620,6 +767,52 @@ public class EnemyMovement : MonoBehaviour
         {
             OnLanded();
         }
+    }
+
+    private void TickHoverAndMove()
+    {
+        if (_hoverTimer > 0f) _hoverTimer -= Time.deltaTime;
+
+        if (_hoverTimer > 0f && verticalVelocity <= 0f)
+        {
+            ApplyHoverMove();
+        }
+        else
+        {
+            ApplyGravityAndMove(Vector3.zero);
+        }
+    }
+    
+    private bool TickAirWatchdog()
+    {
+        if (_isBeingThrown)
+        {
+            _airTimer = 0f;
+            return false;
+        }
+
+        _airTimer += Time.deltaTime;
+
+        if (_airTimer < MaxAirborneDuration) return false;
+
+        Debug.LogWarning($"[EnemyMovement] {gameObject.name} air-state watchdog fired after {_airTimer:F2}s " +
+                         $"(state={CurrentState}, vVel={verticalVelocity:F2}, hover={_hoverTimer:F2}, " +
+                         $"ccEnabled={(controller != null && controller.enabled)}) - forcing landing");
+
+        ForceLand();
+        return true;
+    }
+
+    private void ForceLand()
+    {
+        if (controller != null && !controller.enabled)
+        {
+            controller.enabled = true;
+        }
+
+        _hoverTimer = 0f;
+        verticalVelocity = 0f;
+        OnLanded();
     }
 
     private void UpdateJugglingAnimation()
@@ -667,7 +860,7 @@ public class EnemyMovement : MonoBehaviour
                     else
                     {
                         wobbleSpeed -= drift * 5.0f;
-                        animator.speed = wobbleSpeed;
+                        animator.speed = Mathf.Max(wobbleSpeed, 0f);
                     }
                 }
                 else
@@ -961,9 +1154,9 @@ public class EnemyMovement : MonoBehaviour
 
     private void ApplyHoverMove()
     {
-        if (controller == null || !controller.enabled) return;
+        verticalVelocity = JuggleHoverDriftSpeed;
 
-        verticalVelocity = HoverDriftSpeed;
+        if (controller == null || !controller.enabled) return;
 
         Vector3 totalMovement = externalForce;
         totalMovement.y = verticalVelocity;
@@ -978,12 +1171,9 @@ public class EnemyMovement : MonoBehaviour
 
     private void ApplyGravityAndMove(Vector3 moveVelocity)
     {
-        if (controller == null || !controller.enabled)
-        {
-            return;
-        }
+        bool grounded = controller != null && controller.enabled && controller.isGrounded;
 
-        if (controller.isGrounded && verticalVelocity <= 0f)
+        if (grounded && verticalVelocity <= 0f)
         {
             verticalVelocity = -0.5f;
         }
@@ -995,6 +1185,11 @@ public class EnemyMovement : MonoBehaviour
                 gravityMultiplier = meleeSettings.fallGravityMultiplier;
             }
             verticalVelocity -= Gravity * gravityMultiplier * Time.deltaTime;
+        }
+
+        if (controller == null || !controller.enabled)
+        {
+            return;
         }
 
         Vector3 totalMovement = moveVelocity + externalForce;

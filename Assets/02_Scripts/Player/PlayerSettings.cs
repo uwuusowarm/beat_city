@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿﻿using UnityEngine;
 
 [CreateAssetMenu(fileName = "PlayerSettings", menuName = "ScriptableObjects/PlayerSettings", order = 1)]
 public class PlayerSettings : ScriptableObject
@@ -55,9 +55,6 @@ public class PlayerSettings : ScriptableObject
     public float jugglingForce = 3f;
 
     [Header("Grapple Settings")]
-    [Tooltip("How long the grapple hitbox is active")]
-    public float grappleActiveTime = 0.2f;
-    
     [Tooltip("Damage dealt when throwing an enemy")]
     public int grappleDamage = 15;
     
@@ -72,20 +69,66 @@ public class PlayerSettings : ScriptableObject
     
     [Tooltip("Cooldown before next grapple")]
     public float grappleCooldown = 0.5f;
-    
+
+    [Tooltip("Offset of the grab box, local to the anchor transform")]
+    public Vector3 grabBoxOffset = new Vector3(0f, 0f, 0.8f);
+
+    [Tooltip("Size of the grab box")]
+    public Vector3 grabBoxSize = new Vector3(1f, 1f, 0.7f);
+
+    [Tooltip("Only grab if the player is actively moving toward the enemy. Off = old instant-on-overlap behaviour.")]
+    public bool requireGrabIntent = true;
+
+    [Tooltip("How long the player must already have been moving toward the enemy")]
+    [Range(0f, 0.5f)]
+    public float grabIntentTime = 0.12f;
+
+    [Tooltip("Dot product threshold: how precisely the movement must point at the enemy. Max deviation to each side: 1 = 0°, 0.87 = 30°, 0.5 = 60°, 0 = 90°. Higher = stricter.")]
+    [Range(0f, 1f)]
+    public float grabIntentDot = 0.5f;
+
     [Tooltip("Distance enemy is held in front of player")]
     public float holdOffset = 1.2f;
 
-    [Tooltip("Extra distance added to backward throw to compensate for hold offset")]
+    [Tooltip("Local position offset applied while holding a grabbed enemy")]
+    public Vector3 grappleHoldOffset = Vector3.zero;
+
+    [Tooltip("Extra flight distance added to Throw Distance for backward throws only. Pure reach - the carry already brings the enemy to the front, nothing here compensates for that.")]
     public float backwardThrowOffset = 2.4f;
 
     [Tooltip("At what % of the Headbutt animation the enemy starts flying (0-1)")]
     [Range(0f, 1f)]
     public float headbuttLaunchPoint = 0.8f;
 
-    [Tooltip("At what % of the Throw animation the enemy starts flying (0-1)")]
+    [Tooltip("At what % of the Throw animation the enemy starts flying (0-1). Keep below 0.75 - above that the Throw state has already blended into Idle.")]
     [Range(0f, 1f)]
     public float throwLaunchPoint = 0f;
+
+    [Tooltip("Backward throw only: carry the grabbed enemy around the player while the Throw clip turns him 180 degrees. Off = old behaviour (enemy frozen in place, compensated by Backward Throw Offset).")]
+    public bool throwCarryEnabled = true;
+
+    [Tooltip("Backward throw only: at what % of the Throw animation the enemy has finished swinging to the new front side. Clamped to Throw Launch Point; the enemy waits there until launch.")]
+    [Range(0f, 1f)]
+    public float throwCarryTurnEnd = 0.45f;
+
+    [Tooltip("Backward throw only: how the swing is spread over its time window. Below 1 front-loads it so the enemy whips around immediately and settles - match this to a clip that turns right at the start. 1 = even ease in and out. Above 1 holds him back and moves him late.")]
+    [Range(0.25f, 4f)]
+    public float throwCarryEase = 1f;
+
+    [Tooltip("Backward throw only: extra height added while the enemy is swung around. 0 = flat orbit at normal hold height.")]
+    [Range(-1f, 1.5f)]
+    public float throwCarryLift = 0f;
+
+    [Tooltip("Backward throw only: scales the radius of the whole half circle the enemy is dragged around. 1 = swung around at Hold Offset, 2 = twice as wide, 0.5 = half. Eases in and out at the very ends so grab and release stay at normal hold distance.")]
+    [Range(0.2f, 3f)]
+    public float throwCarryRadiusScale = 1f;
+
+    [Tooltip("Backward throw only: extra radius on top of Radius Scale, peaking at the middle of the swing only. Positive arcs wide, negative drags the enemy closer past the body, 0 = even circle.")]
+    [Range(-1.5f, 2f)]
+    public float throwCarryBulge = 0f;
+
+    [Tooltip("Backward throw only: swing the enemy past the player's own right side. Flip if it does not match the side the Throw clip turns through.")]
+    public bool throwCarrySweepRight = true;
 
     [Header("Throw Projectile (Enemy hits other enemies)")]
     [Tooltip("Damage dealt when thrown enemy hits another enemy")]
@@ -134,4 +177,17 @@ public class PlayerSettings : ScriptableObject
     
     [Tooltip("Upward force applied to thrown enemy on landing")]
     public float impactKnockUp = 0f;
+
+    [Header("Hit Stop")]
+    [Tooltip("Freeze-frame duration when player attacks damage enemies")]
+    [Range(0f, 0.3f)]
+    public float combatHitStop = 0.05f;
+
+    [Tooltip("Freeze-frame duration when thrown enemy collides with another enemy")]
+    [Range(0f, 0.3f)]
+    public float grappleProjectileHitStop = 0.05f;
+
+    [Tooltip("Freeze-frame duration when thrown enemy takes the final impact hit")]
+    [Range(0f, 0.3f)]
+    public float grappleImpactHitStop = 0.08f;
 }

@@ -31,8 +31,10 @@ public class GameOverManager : MonoBehaviour
     private void ShowGameOver()
     {
         if (gameOverPanel != null) gameOverPanel.SetActive(true);
-        
+
         Time.timeScale = 0f;
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
 
         if (EndlessManager.Instance != null)
         {

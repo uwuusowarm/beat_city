@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 4694891605255957901}
   - component: {fileID: 5978393447553201622}
   - component: {fileID: 1579721176041507327}
+  - component: {fileID: 7344466675826295088}
+  - component: {fileID: 8496540607055891888}
   m_Layer: 0
   m_Name: NewBEUTest
   m_TagString: Untagged
@@ -78,3 +80,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf6612441ec742908a756378e119bb79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStateManager
+--- !u!114 &7344466675826295088
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6222190340364744707}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34fa53a859379bd43b55c1e3ddad4db2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameSettingsProvider
+  playerSettings: {fileID: 11400000, guid: c0dcd7301d4e72d46be870438824e773, type: 2}
+  enemySettings: {fileID: 11400000, guid: d60709139d79b6643ba4186b4b4d4e44, type: 2}
+--- !u!114 &8496540607055891888
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6222190340364744707}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2598b1a924d738a40ac87412f0d75c8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SettingsRuntimePanel
+  toggleKey: 283
+  showOnStart: 0
+  windowRect:
+    serializedVersion: 2
+    x: 20
+    y: 20
+    width: 540
+    height: 640
