@@ -12,6 +12,7 @@ public class DashStrike : MonoBehaviour
     [SerializeField] private Transform characterModel;
     [SerializeField] private InputBuffer inputBuffer;
     [SerializeField] private AfterimageEffect afterimageEffect;
+    [SerializeField] private SpeedLinesEffect speedLinesEffect;
     [SerializeField] private Health playerHealth;
 
     [Header("Animator")]
@@ -83,6 +84,7 @@ public class DashStrike : MonoBehaviour
     private float FinalSlowMoTimeScale => _settings != null ? _settings.dashStrikeFinalSlowMoTimeScale : 0.2f;
 
     private bool UseAfterimage => _settings == null || _settings.dashStrikeAfterimage;
+    private bool UseSpeedLines => _settings == null || _settings.dashStrikeSpeedLines;
 
     private float AnimSpeed => _settings != null ? _settings.dashStrikeAnimSpeed : 1f;
     private float Recovery => _settings != null ? _settings.dashStrikeRecovery : 0.15f;
@@ -101,6 +103,7 @@ public class DashStrike : MonoBehaviour
         if (controller == null) controller = GetComponent<CharacterController>();
         if (inputBuffer == null) inputBuffer = GetComponent<InputBuffer>();
         if (afterimageEffect == null) afterimageEffect = GetComponent<AfterimageEffect>();
+        if (speedLinesEffect == null) speedLinesEffect = GetComponent<SpeedLinesEffect>();
         if (playerHealth == null) playerHealth = GetComponent<Health>();
         if (animator == null) animator = GetComponentInChildren<Animator>();
 
@@ -195,6 +198,7 @@ public class DashStrike : MonoBehaviour
 
         if (inputBuffer != null) inputBuffer.Clear();
         if (afterimageEffect != null && UseAfterimage) afterimageEffect.Activate();
+        if (speedLinesEffect != null && UseSpeedLines) speedLinesEffect.Activate();
 
         if (animator != null)
         {
@@ -584,6 +588,9 @@ public class DashStrike : MonoBehaviour
 
         if (afterimageEffect != null)
             afterimageEffect.Deactivate();
+
+        if (speedLinesEffect != null)
+            speedLinesEffect.Deactivate();
     }
 
     private void OnDrawGizmosSelected()

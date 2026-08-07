@@ -201,6 +201,25 @@ public class PlayerSettings : ScriptableObject
     [Tooltip("Afterimage trail during the dash strike")]
     public bool dashStrikeAfterimage = true;
 
+    [Header("Speed Lines")]
+    [Tooltip("Master switch for the speed line streaks. Off suppresses them everywhere, regardless of the per-attack toggles below")]
+    public bool speedLinesEnabled = true;
+
+    [Tooltip("Speed lines during the dash strike")]
+    public bool dashStrikeSpeedLines = true;
+
+    [Tooltip("Minimum movement speed in units per second before lines are emitted. Keeps them off during the frozen strike poses where the player stands still at the enemy")]
+    public float speedLinesMinSpeed = 8f;
+
+    [Tooltip("Multiplier on the rate over distance authored in the particle prefab. 1 = the prefab value, higher = more lines per unit travelled")]
+    public float speedLinesDensity = 1f;
+
+    [Tooltip("Multiplier on the stretched billboard length scale authored in the particle prefab. 1 = the prefab value, higher = longer streaks")]
+    public float speedLinesLengthScale = 1f;
+
+    [Tooltip("Start color written to the particle system on activation. The prefab's Color over Lifetime fade is applied on top and stays intact")]
+    public Color speedLinesColor = Color.white;
+
     [Header("Dash Strike Special - Hits")]
     [Tooltip("Number of strikes. Must match the number of DashStrikeHit events in the dash clip")]
     public int dashStrikeHitCount = 3;
