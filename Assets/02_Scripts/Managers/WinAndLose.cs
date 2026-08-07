@@ -3,7 +3,8 @@ using UnityEngine.SceneManagement;
 
 public class WinAndLose : MonoBehaviour
 {
-    public GameObject winScreen;
+    [SerializeField] private GameObject winScreen;
+    [SerializeField] private GameObject loseScreen;
     [SerializeField] private StoryScreenController storyController;
     [SerializeField] private string nextSceneName = string.Empty;
 
@@ -12,6 +13,10 @@ public class WinAndLose : MonoBehaviour
         if (winScreen != null)
         {
             winScreen.SetActive(false);
+        }
+        if (loseScreen != null)
+        {
+            loseScreen.SetActive(false);
         }
     }
 
@@ -26,6 +31,15 @@ public class WinAndLose : MonoBehaviour
     public void ShowWinScreen()
     {
         if (winScreen != null) winScreen.SetActive(true);
+        AudioManager.Instance.StopMusic();
+        Time.timeScale = 0f;
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+    }
+
+    public void ShowLoseScreen()
+    {
+        if (loseScreen != null) loseScreen.SetActive(true);
         AudioManager.Instance.StopMusic();
         Time.timeScale = 0f;
         Cursor.visible = true;

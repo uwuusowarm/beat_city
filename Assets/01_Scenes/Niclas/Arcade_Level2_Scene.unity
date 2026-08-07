@@ -14691,6 +14691,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 788453840185ab34da911ad3262827ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StoryScreenController
+--- !u!114 &474785429 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2049174577112258775, guid: b6f100649d10b0d43b9d1c979baadfbd, type: 3}
+  m_PrefabInstance: {fileID: 474785426}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+--- !u!1 &474785430 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8066389487116802132, guid: b6f100649d10b0d43b9d1c979baadfbd, type: 3}
+  m_PrefabInstance: {fileID: 474785426}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &474785431 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2882599588960995887, guid: b6f100649d10b0d43b9d1c979baadfbd, type: 3}
+  m_PrefabInstance: {fileID: 474785426}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1001 &475389101
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -24372,6 +24399,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1035578852233614060, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
+      propertyPath: WinLoseScript
+      value: 
+      objectReference: {fileID: 1488389890}
     - target: {fileID: 1662536712636653983, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
       propertyPath: m_Name
       value: PlayerAnimGrey
@@ -24402,6 +24433,18 @@ PrefabInstance:
       objectReference: {fileID: 812365572}
     - target: {fileID: 4631613409987971520, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
       propertyPath: scoreText
+      value: 
+      objectReference: {fileID: 877091110}
+    - target: {fileID: 4631613409987971520, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
+      propertyPath: winScoreText
+      value: 
+      objectReference: {fileID: 474785431}
+    - target: {fileID: 4631613409987971520, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
+      propertyPath: loseScoreText
+      value: 
+      objectReference: {fileID: 474785429}
+    - target: {fileID: 4631613409987971520, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
+      propertyPath: inGameScoreText
       value: 
       objectReference: {fileID: 877091110}
     - target: {fileID: 4799275800366551407, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
@@ -40041,6 +40084,10 @@ PrefabInstance:
       propertyPath: winScreen
       value: 
       objectReference: {fileID: 474785427}
+    - target: {fileID: 2170928503740432930, guid: b687facc1ae0d394296b26b9fea921b0, type: 3}
+      propertyPath: loseScreen
+      value: 
+      objectReference: {fileID: 474785430}
     - target: {fileID: 2170928503740432930, guid: b687facc1ae0d394296b26b9fea921b0, type: 3}
       propertyPath: nextSceneName
       value: MainMenuPitch
