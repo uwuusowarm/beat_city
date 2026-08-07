@@ -101,16 +101,16 @@ MonoBehaviour:
     renderPassEvent: 300
     outlineEnabled: 1
     outlineColor: {r: 0, g: 0, b: 0, a: 1}
-    thickness: 1.5
+    thickness: 2.19
     depthThreshold: 0.02
-    normalThreshold: 0.4
+    normalThreshold: 6.56
     grazingSuppression: 4
     outlineTintFromScene: 0
-    posterizeEnabled: 0
-    posterizeAmount: 1
-    posterizeSteps: 6
+    posterizeEnabled: 1
+    posterizeAmount: 0.145
+    posterizeSteps: 32
     halftoneEnabled: 0
-    halftoneAmount: 1
+    halftoneAmount: 0.091
     halftoneScale: 6
     halftoneThreshold: 0.5
     halftoneSoftness: 0.1
@@ -139,7 +139,7 @@ MonoBehaviour:
   shaderTags:
   - UniversalForward
   player:
-    enabled: 1
+    enabled: 0
     renderingLayer:
       serializedVersion: 0
       m_Bits: 256
@@ -154,17 +154,17 @@ MonoBehaviour:
       serializedVersion: 0
       m_Bits: 512
     color: {r: 1, g: 0.2, b: 0.2, a: 1}
-    power: 2
-    threshold: 0.5
+    power: 1.76
+    threshold: 0.586
     smoothness: 0.25
-    intensity: 1
+    intensity: 0.45
   enemyWindup:
     enabled: 1
     renderingLayer:
       serializedVersion: 0
       m_Bits: 1024
     color: {r: 1, g: 0.35, b: 0.05, a: 1}
-    power: 2
+    power: 1.4
     threshold: 0.5
-    smoothness: 0.25
-    intensity: 3
+    smoothness: 0.3
+    intensity: 0.45
