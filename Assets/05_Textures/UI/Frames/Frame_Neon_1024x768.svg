@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="768" viewBox="0 0 1024 768">
+  <defs>
+    <!-- Metal bevel for the frame rail -->
+    <linearGradient id="metal" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#6b6f78"/>
+      <stop offset="18%"  stop-color="#484d56"/>
+      <stop offset="50%"  stop-color="#2f333b"/>
+      <stop offset="82%"  stop-color="#41454e"/>
+      <stop offset="100%" stop-color="#15171c"/>
+    </linearGradient>
+    <linearGradient id="metalV" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="#6b6f78"/>
+      <stop offset="18%"  stop-color="#484d56"/>
+      <stop offset="50%"  stop-color="#2f333b"/>
+      <stop offset="82%"  stop-color="#41454e"/>
+      <stop offset="100%" stop-color="#15171c"/>
+    </linearGradient>
+    <!-- Panel interior -->
+    <linearGradient id="panel" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0%"   stop-color="#34383f"/>
+      <stop offset="55%"  stop-color="#292d33"/>
+      <stop offset="100%" stop-color="#1f2227"/>
+    </linearGradient>
+    <!-- Plate (title / button) -->
+    <linearGradient id="plate" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#5a5f69"/>
+      <stop offset="12%"  stop-color="#3a3e46"/>
+      <stop offset="55%"  stop-color="#24272d"/>
+      <stop offset="100%" stop-color="#14161a"/>
+    </linearGradient>
+    <radialGradient id="rivet" cx="0.35" cy="0.3" r="0.85">
+      <stop offset="0%"   stop-color="#a8aeb8"/>
+      <stop offset="40%"  stop-color="#5e636d"/>
+      <stop offset="100%" stop-color="#191b1f"/>
+    </radialGradient>
+    <radialGradient id="ledRed" cx="0.35" cy="0.3" r="0.8">
+      <stop offset="0%"   stop-color="#ffd9d0"/>
+      <stop offset="30%"  stop-color="#ff4a2e"/>
+      <stop offset="75%"  stop-color="#a01608"/>
+      <stop offset="100%" stop-color="#3a0703"/>
+    </radialGradient>
+    <filter id="neonGlow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="6" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="softGlow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="2.5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" result="n"/>
+      <feColorMatrix in="n" type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.10"/></feComponentTransfer>
+    </filter>
+    <filter id="dropShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000" flood-opacity="0.75"/>
+    </filter>
+  </defs>
+
+  <!-- ===================== PANEL BODY ===================== -->
+  <g filter="url(#dropShadow)">
+    <!-- outer rail -->
+    <path d="M 62 96 H 962 A 26 26 0 0 1 988 122 V 706 A 26 26 0 0 1 962 732 H 62 A 26 26 0 0 1 36 706 V 122 A 26 26 0 0 1 62 96 Z"
+          fill="url(#metal)" stroke="#0c0d10" stroke-width="3"/>
+    <!-- inner rail groove -->
+    <path d="M 74 108 H 950 A 16 16 0 0 1 966 124 V 704 A 16 16 0 0 1 950 720 H 74 A 16 16 0 0 1 58 704 V 124 A 16 16 0 0 1 74 108 Z"
+          fill="none" stroke="#0e1013" stroke-width="2" opacity="0.9"/>
+    <!-- panel interior -->
+    <rect x="66" y="116" width="892" height="596" rx="14" fill="url(#panel)"/>
+    <!-- neon inner edge -->
+    <rect x="66" y="116" width="892" height="596" rx="14" fill="none"
+          stroke="#ff7a33" stroke-width="3" opacity="1" filter="url(#neonGlow)"/>
+    <rect x="70" y="120" width="884" height="588" rx="12" fill="none"
+          stroke="#ffb27a" stroke-width="1" opacity="0.5"/>
+    <!-- subtle vignette inside panel -->
+    <rect x="66" y="116" width="892" height="596" rx="14" filter="url(#grain)" opacity="0.5"/>
+  </g>
+
+  <!-- ===================== CORNER PLATES + BOLTS ===================== -->
+  <g>
+    <!-- corner gussets -->
+    <path d="M 36 122 A 26 26 0 0 1 62 96 H 132 L 96 132 V 190 L 36 190 Z" fill="url(#metalV)" opacity="0.95" stroke="#0c0d10" stroke-width="2"/>
+    <path d="M 988 122 A 26 26 0 0 0 962 96 H 892 L 928 132 V 190 L 988 190 Z" fill="url(#metalV)" opacity="0.95" stroke="#0c0d10" stroke-width="2"/>
+    <path d="M 36 706 A 26 26 0 0 0 62 732 H 132 L 96 696 V 638 L 36 638 Z" fill="url(#metalV)" opacity="0.95" stroke="#0c0d10" stroke-width="2"/>
+    <path d="M 988 706 A 26 26 0 0 1 962 732 H 892 L 928 696 V 638 L 988 638 Z" fill="url(#metalV)" opacity="0.95" stroke="#0c0d10" stroke-width="2"/>
+
+    <!-- red corner LEDs -->
+    <circle cx="72" cy="132" r="9" fill="url(#ledRed)" filter="url(#softGlow)"/>
+    <circle cx="952" cy="132" r="9" fill="url(#ledRed)" filter="url(#softGlow)"/>
+    <circle cx="72" cy="696" r="9" fill="url(#ledRed)" filter="url(#softGlow)"/>
+    <circle cx="952" cy="696" r="9" fill="url(#ledRed)" filter="url(#softGlow)"/>
+  </g>
+
+  <!-- rivets along the rail -->
+  <g>
+    <circle cx="200" cy="104" r="5" fill="url(#rivet)"/><circle cx="330" cy="104" r="5" fill="url(#rivet)"/>
+    <circle cx="694" cy="104" r="5" fill="url(#rivet)"/><circle cx="824" cy="104" r="5" fill="url(#rivet)"/>
+    <circle cx="200" cy="724" r="5" fill="url(#rivet)"/><circle cx="330" cy="724" r="5" fill="url(#rivet)"/>
+    <circle cx="694" cy="724" r="5" fill="url(#rivet)"/><circle cx="824" cy="724" r="5" fill="url(#rivet)"/>
+    <circle cx="47" cy="260" r="5" fill="url(#rivet)"/><circle cx="47" cy="414" r="5" fill="url(#rivet)"/><circle cx="47" cy="568" r="5" fill="url(#rivet)"/>
+    <circle cx="977" cy="260" r="5" fill="url(#rivet)"/><circle cx="977" cy="414" r="5" fill="url(#rivet)"/><circle cx="977" cy="568" r="5" fill="url(#rivet)"/>
+  </g>
+
+  <!-- ===================== TITLE PLATE (top) ===================== -->
+  <g filter="url(#dropShadow)">
+    <path d="M 352 22 H 672 L 700 50 V 118 L 672 146 H 352 L 324 118 V 50 Z"
+          fill="url(#plate)" stroke="#0b0c0f" stroke-width="3"/>
+    <path d="M 366 36 H 658 L 678 56 V 112 L 658 132 H 366 L 346 112 V 56 Z"
+          fill="none" stroke="#ff6a2c" stroke-width="2" opacity="0.9" filter="url(#neonGlow)"/>
+    <!-- rivets on plate -->
+    <circle cx="342" cy="46" r="4.5" fill="url(#rivet)"/><circle cx="682" cy="46" r="4.5" fill="url(#rivet)"/>
+    <circle cx="342" cy="122" r="4.5" fill="url(#rivet)"/><circle cx="682" cy="122" r="4.5" fill="url(#rivet)"/>
+    <rect x="366" y="36" width="292" height="96" filter="url(#grain)" opacity="0.45"/>
+  </g>
+  <!-- connector tabs from plate into rail -->
+  <rect x="316" y="88" width="20" height="26" rx="4" fill="url(#metal)" stroke="#0c0d10" stroke-width="2"/>
+  <rect x="688" y="88" width="20" height="26" rx="4" fill="url(#metal)" stroke="#0c0d10" stroke-width="2"/>
+
+  <!-- ===================== BUTTON PLATE (bottom) ===================== -->
+  <g filter="url(#dropShadow)">
+    <path d="M 404 700 H 620 L 646 726 L 620 752 H 404 L 378 726 Z"
+          fill="url(#plate)" stroke="#0b0c0f" stroke-width="3"/>
+    <path d="M 416 710 H 610 L 628 726 L 610 742 H 416 L 398 726 Z"
+          fill="none" stroke="#ff6a2c" stroke-width="1.8" opacity="0.9" filter="url(#neonGlow)"/>
+    <circle cx="392" cy="726" r="4.5" fill="url(#rivet)"/>
+    <circle cx="632" cy="726" r="4.5" fill="url(#rivet)"/>
+  </g>
+</svg>
