@@ -98,6 +98,11 @@ public class AudioManager : MonoBehaviour
 
     public void PlayMusic(MusicType type)
     {
+        PlayMusic(type, true);
+    }
+
+    public void PlayMusic(MusicType type, bool loop)
+    {
         foreach (MusicEntry entry in musicEntries)
         {
             if (entry.musicType == type)
@@ -117,7 +122,7 @@ public class AudioManager : MonoBehaviour
                 }
 
                 musicSource.clip = clip;
-                musicSource.loop = true;
+                musicSource.loop = loop;
                 musicSource.Play();
                 return;
             }
