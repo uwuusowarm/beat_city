@@ -10,6 +10,9 @@ public class StoryScreenController : MonoBehaviour
     [Header("Autoplay only in Stage 1")]
     [SerializeField] private bool autoPlay;
 
+    [Tooltip("Off: the story track plays through once. On: it repeats until the last image is clicked away.")]
+    [SerializeField] private bool loopStoryMusic = false;
+
     [Header("UI")]
     [SerializeField] private GameObject blackBackground;
     [SerializeField] private GameObject storyImageObject;
@@ -34,9 +37,11 @@ public class StoryScreenController : MonoBehaviour
     [SerializeField] private float imageSwitchFadeDuration = 0.5f;
     [SerializeField] private float delayBeforeText = 1.5f;
     [SerializeField] private float textFadeDuration = 2.5f;
+    [SerializeField] private float endFadeDuration = 1.0f;
 
     private bool isSequenceRunning = false;
     private Image storyImage;
+    private Image blackBackgroundImage;
     private string sceneName;
     private readonly List<MonoBehaviour> disabledScripts = new List<MonoBehaviour>();
 
@@ -46,19 +51,71 @@ public class StoryScreenController : MonoBehaviour
         {
             storyImage = storyImageObject.GetComponent<Image>();
         }
+
+        if (blackBackground != null)
+        {
+            blackBackgroundImage = blackBackground.GetComponent<Image>();
+        }
+    }
+
+    private void StretchStoryImageToFullscreen()
+    {
+        if (storyImage == null) return;
+
+        Canvas canvas = storyImage.GetComponentInParent<Canvas>(true);
+        if (canvas == null) return;
+
+        RectTransform canvasRect = canvas.rootCanvas.transform as RectTransform;
+        if (canvasRect == null) return;
+
+        RectTransform rect = storyImage.rectTransform;
+
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.localRotation = Quaternion.identity;
+        rect.localScale = Vector3.one;
+
+        Vector3 canvasScale = canvasRect.lossyScale;
+        Vector3 parentScale = rect.parent != null ? rect.parent.lossyScale : canvasScale;
+        float scaleX = Mathf.Approximately(parentScale.x, 0f) ? 1f : canvasScale.x / parentScale.x;
+        float scaleY = Mathf.Approximately(parentScale.y, 0f) ? 1f : canvasScale.y / parentScale.y;
+
+        rect.sizeDelta = new Vector2(canvasRect.rect.width * scaleX, canvasRect.rect.height * scaleY);
+        rect.position = canvasRect.TransformPoint(canvasRect.rect.center);
+
+        storyImage.type = Image.Type.Simple;
+        storyImage.preserveAspect = false;
+    }
+
+    private void ShowBlackBackground(bool show)
+    {
+        if (blackBackground == null) return;
+
+        if (show && blackBackgroundImage != null)
+        {
+            Color color = blackBackgroundImage.color;
+            color.a = 1f;
+            blackBackgroundImage.color = color;
+        }
+
+        blackBackground.SetActive(show);
     }
 
     void Start()
     {
         sceneName = SceneManager.GetActiveScene().name;
 
-        if (blackBackground != null) blackBackground.SetActive(false);
         if (storyImageObject != null) storyImageObject.SetActive(false);
         if (textCanvasGroup != null && textCanvasGroup.gameObject != null) textCanvasGroup.gameObject.SetActive(false);
 
-        if (autoPlay)
+        Sprite[] introSprites = autoPlay ? StartImageSprites : new Sprite[0];
+
+        ShowBlackBackground(introSprites.Length > 0);
+
+        if (introSprites.Length > 0)
         {
-            TriggerStorySequence(StartImageSprites);
+            TriggerStorySequence(introSprites);
         }
     }
 
@@ -144,6 +201,32 @@ public class StoryScreenController : MonoBehaviour
         group.alpha = to;
     }
 
+    private IEnumerator FadeBlackBackground(float from, float to, float duration)
+    {
+        if (blackBackgroundImage == null) yield break;
+
+        Color color = blackBackgroundImage.color;
+
+        if (duration <= 0f)
+        {
+            color.a = to;
+            blackBackgroundImage.color = color;
+            yield break;
+        }
+
+        float timer = 0f;
+        while (timer < duration)
+        {
+            timer += Time.unscaledDeltaTime;
+            color.a = Mathf.Lerp(from, to, timer / duration);
+            blackBackgroundImage.color = color;
+            yield return null;
+        }
+
+        color.a = to;
+        blackBackgroundImage.color = color;
+    }
+
     private IEnumerator WaitForAnyInput()
     {
         while (true)
@@ -162,22 +245,23 @@ public class StoryScreenController : MonoBehaviour
 
         if (sceneName == "Arcade_Level1_Scene")
         {
-            AudioManager.Instance.PlayMusic(MusicType.StorySound1);
+            AudioManager.Instance.PlayMusic(MusicType.StorySound1, loopStoryMusic);
         }
         else
         {
-            AudioManager.Instance.PlayMusic(MusicType.StorySound2);
+            AudioManager.Instance.PlayMusic(MusicType.StorySound2, loopStoryMusic);
         }
 
         if (textCanvasGroup != null) textCanvasGroup.alpha = 0f;
 
         if (imageCanvasGroup != null) imageCanvasGroup.alpha = 0f;
 
-        if (blackBackground != null) blackBackground.SetActive(true);
+        ShowBlackBackground(true);
 
         yield return new WaitForSecondsRealtime(delayBeforeImage);
 
         if (storyImage != null) storyImage.sprite = sprites[0];
+        StretchStoryImageToFullscreen();
         if (storyImageObject != null) storyImageObject.SetActive(true);
 
         yield return FadeCanvasGroup(imageCanvasGroup, 0f, 1f, imageFadeDuration);
@@ -197,8 +281,13 @@ public class StoryScreenController : MonoBehaviour
 
             yield return FadeCanvasGroup(imageCanvasGroup, 1f, 0f, imageSwitchFadeDuration);
             if (storyImage != null) storyImage.sprite = sprites[i + 1];
+            StretchStoryImageToFullscreen();
             yield return FadeCanvasGroup(imageCanvasGroup, 0f, 1f, imageSwitchFadeDuration);
         }
+
+        Coroutine textFadeOut = StartCoroutine(FadeCanvasGroup(textCanvasGroup, 1f, 0f, endFadeDuration));
+        yield return FadeCanvasGroup(imageCanvasGroup, 1f, 0f, endFadeDuration);
+        yield return textFadeOut;
 
         isSequenceRunning = false;
 
@@ -215,7 +304,9 @@ public class StoryScreenController : MonoBehaviour
             AudioManager.Instance.PlayMusic(MusicType.Stage1);
         }
 
-        if (blackBackground != null) blackBackground.SetActive(false);
+        yield return FadeBlackBackground(1f, 0f, endFadeDuration);
+
+        ShowBlackBackground(false);
         if (storyImageObject != null)
         {
             if (imageCanvasGroup != null) imageCanvasGroup.alpha = 0f;
