@@ -51,7 +51,7 @@ public class WinAndLose : MonoBehaviour
         if (winScreen != null) winScreen.SetActive(false);
         if (storyController != null)
         {
-            storyController.TriggerStorySequence(storyController.EndImageSprite, nextSceneName);
+            storyController.TriggerStorySequence(storyController.EndImageSprites, nextSceneName);
         }
         else
         {
