@@ -1,94 +1,312 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement; 
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+
 public class StoryScreenController : MonoBehaviour
 {
-    [Header("UI Referenzen")]
+    [Header("Autoplay only in Stage 1")]
+    [SerializeField] private bool autoPlay;
+
+    [Tooltip("Off: the story track plays through once. On: it repeats until the last image is clicked away.")]
+    [SerializeField] private bool loopStoryMusic = false;
+
+    [Header("UI")]
     [SerializeField] private GameObject blackBackground;
     [SerializeField] private GameObject storyImageObject;
     [SerializeField] private CanvasGroup imageCanvasGroup;
     [SerializeField] private CanvasGroup textCanvasGroup;
 
-    [Header("Zeiteinstellungen")]
+    [Header("Story Images (shown in order, click to advance)")]
+    [SerializeField] private Sprite[] startImages;
+    [SerializeField] private Sprite[] endImages;
+
+    [Header("Fallback if the lists above are empty")]
+    [SerializeField] private Image startImage;
+    [SerializeField] private Image endImage;
+
+    [Header("Disabled while the story is running")]
+    [Tooltip("Drag the player in here. Every script on it and its children gets disabled.")]
+    [SerializeField] private GameObject[] objectsToDisable;
+
+    [Header("TimerSettings")]
     [SerializeField] private float delayBeforeImage = 1.0f;
     [SerializeField] private float imageFadeDuration = 1.5f;
+    [SerializeField] private float imageSwitchFadeDuration = 0.5f;
     [SerializeField] private float delayBeforeText = 1.5f;
     [SerializeField] private float textFadeDuration = 2.5f;
+    [SerializeField] private float endFadeDuration = 1.0f;
 
     private bool isSequenceRunning = false;
+    private Image storyImage;
+    private Image blackBackgroundImage;
+    private string sceneName;
+    private readonly List<MonoBehaviour> disabledScripts = new List<MonoBehaviour>();
+
+    private void Awake()
+    {
+        if (storyImageObject != null)
+        {
+            storyImage = storyImageObject.GetComponent<Image>();
+        }
+
+        if (blackBackground != null)
+        {
+            blackBackgroundImage = blackBackground.GetComponent<Image>();
+        }
+    }
+
+    private void StretchStoryImageToFullscreen()
+    {
+        if (storyImage == null) return;
+
+        Canvas canvas = storyImage.GetComponentInParent<Canvas>(true);
+        if (canvas == null) return;
+
+        RectTransform canvasRect = canvas.rootCanvas.transform as RectTransform;
+        if (canvasRect == null) return;
+
+        RectTransform rect = storyImage.rectTransform;
+
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.localRotation = Quaternion.identity;
+        rect.localScale = Vector3.one;
+
+        Vector3 canvasScale = canvasRect.lossyScale;
+        Vector3 parentScale = rect.parent != null ? rect.parent.lossyScale : canvasScale;
+        float scaleX = Mathf.Approximately(parentScale.x, 0f) ? 1f : canvasScale.x / parentScale.x;
+        float scaleY = Mathf.Approximately(parentScale.y, 0f) ? 1f : canvasScale.y / parentScale.y;
+
+        rect.sizeDelta = new Vector2(canvasRect.rect.width * scaleX, canvasRect.rect.height * scaleY);
+        rect.position = canvasRect.TransformPoint(canvasRect.rect.center);
+
+        storyImage.type = Image.Type.Simple;
+        storyImage.preserveAspect = false;
+    }
+
+    private void ShowBlackBackground(bool show)
+    {
+        if (blackBackground == null) return;
+
+        if (show && blackBackgroundImage != null)
+        {
+            Color color = blackBackgroundImage.color;
+            color.a = 1f;
+            blackBackgroundImage.color = color;
+        }
+
+        blackBackground.SetActive(show);
+    }
 
     void Start()
     {
-        if (blackBackground != null) blackBackground.SetActive(false);
+        sceneName = SceneManager.GetActiveScene().name;
+
         if (storyImageObject != null) storyImageObject.SetActive(false);
         if (textCanvasGroup != null && textCanvasGroup.gameObject != null) textCanvasGroup.gameObject.SetActive(false);
-    }
 
-    public void TriggerStorySequence(string sceneToLoad)
-    {
-        if (!isSequenceRunning)
+        Sprite[] introSprites = autoPlay ? StartImageSprites : new Sprite[0];
+
+        ShowBlackBackground(introSprites.Length > 0);
+
+        if (introSprites.Length > 0)
         {
-            StartCoroutine(StorySequenceRoutine(sceneToLoad));
+            TriggerStorySequence(introSprites);
         }
     }
 
-    private IEnumerator StorySequenceRoutine(string sceneToLoad)
+    public Sprite[] StartImageSprites => ResolveSprites(startImages, startImage);
+
+    public Sprite[] EndImageSprites => ResolveSprites(endImages, endImage);
+
+    private static Sprite[] ResolveSprites(Sprite[] list, Image fallback)
+    {
+        if (list != null && list.Length > 0) return list;
+        if (fallback != null && fallback.sprite != null) return new[] { fallback.sprite };
+        return new Sprite[0];
+    }
+
+    public void TriggerStorySequence(Sprite spriteToUse = null, string sceneToLoad = null)
+    {
+        TriggerStorySequence(spriteToUse != null ? new[] { spriteToUse } : null, sceneToLoad);
+    }
+
+    public void TriggerStorySequence(Sprite[] spritesToShow, string sceneToLoad = null)
+    {
+        if (isSequenceRunning) return;
+
+        if (spritesToShow == null || spritesToShow.Length == 0)
+        {
+            if (!string.IsNullOrEmpty(sceneToLoad))
+            {
+                Time.timeScale = 1f;
+                SceneManager.LoadScene(sceneToLoad);
+            }
+            return;
+        }
+
+        StartCoroutine(StorySequenceRoutine(spritesToShow, sceneToLoad));
+    }
+
+    private void DisableGameplayScripts()
+    {
+        disabledScripts.Clear();
+
+        if (objectsToDisable == null) return;
+
+        foreach (var target in objectsToDisable)
+        {
+            if (target == null) continue;
+            foreach (var script in target.GetComponentsInChildren<MonoBehaviour>(true))
+            {
+                if (script == null || script == this) continue;
+                if (!script.enabled) continue;
+
+                script.enabled = false;
+                disabledScripts.Add(script);
+            }
+        }
+    }
+
+    private void RestoreGameplayScripts()
+    {
+        foreach (var script in disabledScripts)
+        {
+            if (script != null) script.enabled = true;
+        }
+        disabledScripts.Clear();
+    }
+
+    private IEnumerator FadeCanvasGroup(CanvasGroup group, float from, float to, float duration)
+    {
+        if (group == null) yield break;
+
+        if (duration <= 0f)
+        {
+            group.alpha = to;
+            yield break;
+        }
+
+        float timer = 0f;
+        while (timer < duration)
+        {
+            timer += Time.unscaledDeltaTime;
+            group.alpha = Mathf.Lerp(from, to, timer / duration);
+            yield return null;
+        }
+        group.alpha = to;
+    }
+
+    private IEnumerator FadeBlackBackground(float from, float to, float duration)
+    {
+        if (blackBackgroundImage == null) yield break;
+
+        Color color = blackBackgroundImage.color;
+
+        if (duration <= 0f)
+        {
+            color.a = to;
+            blackBackgroundImage.color = color;
+            yield break;
+        }
+
+        float timer = 0f;
+        while (timer < duration)
+        {
+            timer += Time.unscaledDeltaTime;
+            color.a = Mathf.Lerp(from, to, timer / duration);
+            blackBackgroundImage.color = color;
+            yield return null;
+        }
+
+        color.a = to;
+        blackBackgroundImage.color = color;
+    }
+
+    private IEnumerator WaitForAnyInput()
+    {
+        while (true)
+        {
+            if (Keyboard.current != null && Keyboard.current.anyKey.wasPressedThisFrame) yield break;
+            if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame) yield break;
+
+            yield return null;
+        }
+    }
+
+    private IEnumerator StorySequenceRoutine(Sprite[] sprites, string sceneToLoad)
     {
         isSequenceRunning = true;
+        DisableGameplayScripts();
+
+        if (sceneName == "Arcade_Level1_Scene")
+        {
+            AudioManager.Instance.PlayMusic(MusicType.StorySound1, loopStoryMusic);
+        }
+        else
+        {
+            AudioManager.Instance.PlayMusic(MusicType.StorySound2, loopStoryMusic);
+        }
 
         if (textCanvasGroup != null) textCanvasGroup.alpha = 0f;
 
-        if (blackBackground != null) blackBackground.SetActive(true);
+        if (imageCanvasGroup != null) imageCanvasGroup.alpha = 0f;
+
+        ShowBlackBackground(true);
 
         yield return new WaitForSecondsRealtime(delayBeforeImage);
 
+        if (storyImage != null) storyImage.sprite = sprites[0];
+        StretchStoryImageToFullscreen();
         if (storyImageObject != null) storyImageObject.SetActive(true);
 
-        float timer = 0f;
-        if (imageCanvasGroup != null)
-        {
-            while (timer < imageFadeDuration)
-            {
-                timer += Time.unscaledDeltaTime;
-                imageCanvasGroup.alpha = Mathf.Lerp(0f, 1f, timer / imageFadeDuration);
-                yield return null;
-            }
-            imageCanvasGroup.alpha = 1f;
-        }
+        yield return FadeCanvasGroup(imageCanvasGroup, 0f, 1f, imageFadeDuration);
 
         yield return new WaitForSecondsRealtime(delayBeforeText);
 
         if (textCanvasGroup != null && textCanvasGroup.gameObject != null) textCanvasGroup.gameObject.SetActive(true);
 
-        timer = 0f;
-        if (textCanvasGroup != null)
+        yield return FadeCanvasGroup(textCanvasGroup, 0f, 1f, textFadeDuration);
+
+        for (int i = 0; i < sprites.Length; i++)
         {
-            while (timer < textFadeDuration)
-            {
-                timer += Time.unscaledDeltaTime;
-                textCanvasGroup.alpha = Mathf.Lerp(0f, 1f, timer / textFadeDuration);
-                yield return null;
-            }
-            textCanvasGroup.alpha = 1f;
+            yield return WaitForAnyInput();
+
+            bool isLast = i == sprites.Length - 1;
+            if (isLast) break;
+
+            yield return FadeCanvasGroup(imageCanvasGroup, 1f, 0f, imageSwitchFadeDuration);
+            if (storyImage != null) storyImage.sprite = sprites[i + 1];
+            StretchStoryImageToFullscreen();
+            yield return FadeCanvasGroup(imageCanvasGroup, 0f, 1f, imageSwitchFadeDuration);
         }
 
-        bool inputDetected = false;
-        while (!inputDetected)
-        {
-            if (Keyboard.current != null && Keyboard.current.anyKey.wasPressedThisFrame)
-            {
-                inputDetected = true;
-            }
-            if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
-            {
-                inputDetected = true;
-            }
+        Coroutine textFadeOut = StartCoroutine(FadeCanvasGroup(textCanvasGroup, 1f, 0f, endFadeDuration));
+        yield return FadeCanvasGroup(imageCanvasGroup, 1f, 0f, endFadeDuration);
+        yield return textFadeOut;
 
-            yield return null;
+        isSequenceRunning = false;
+
+        Time.timeScale = 1f;
+
+        if (!string.IsNullOrEmpty(sceneToLoad))
+        {
+            SceneManager.LoadScene(sceneToLoad);
+            yield break;
         }
 
-        if (blackBackground != null) blackBackground.SetActive(false);
+        if (sceneName == "Arcade_Level1_Scene")
+        {
+            AudioManager.Instance.PlayMusic(MusicType.Stage1);
+        }
+
+        yield return FadeBlackBackground(1f, 0f, endFadeDuration);
+
+        ShowBlackBackground(false);
         if (storyImageObject != null)
         {
             if (imageCanvasGroup != null) imageCanvasGroup.alpha = 0f;
@@ -100,9 +318,6 @@ public class StoryScreenController : MonoBehaviour
             textCanvasGroup.gameObject.SetActive(false);
         }
 
-        isSequenceRunning = false;
-
-        Time.timeScale = 1f; 
-        SceneManager.LoadScene(sceneToLoad);
+        RestoreGameplayScripts();
     }
 }

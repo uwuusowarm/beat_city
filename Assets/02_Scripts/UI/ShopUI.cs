@@ -45,14 +45,16 @@ public class ShopUI : MonoBehaviour
 
     private void GenerateSpecialAttackList()
     {
-        if (PlayerStats.Instance == null || specialAttacksContainer == null || specialItemPrefab == null) return;
+        if (specialAttacksContainer == null || specialItemPrefab == null) return;
 
-        foreach (Transform child in specialAttacksContainer)
+        for (int i = specialAttacksContainer.childCount - 1; i >= 0; i--)
         {
-            Destroy(child.gameObject);
+            GameObject child = specialAttacksContainer.GetChild(i).gameObject;
+            child.transform.SetParent(null);
+            Destroy(child);
         }
 
-        foreach (var special in PlayerStats.Instance.allSpecialAttacks)
+        foreach (var special in SpecialAttackCatalog.All)
         {
             GameObject newBtn = Instantiate(specialItemPrefab, specialAttacksContainer);
             if (newBtn.TryGetComponent<SpecialShopItem>(out var shopItem))

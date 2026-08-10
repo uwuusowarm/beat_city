@@ -7,7 +7,9 @@ using TMPro;
 public class ComboScore : MonoBehaviour
 {
     [Header("UI")]
-    [SerializeField] private TextMeshProUGUI scoreText;
+    [SerializeField] private TextMeshProUGUI inGameScoreText;
+    [SerializeField] private TextMeshProUGUI winScoreText;
+    [SerializeField] private TextMeshProUGUI loseScoreText;
 
     [Header("Combo Settings")]
     [SerializeField] private int basePointsPerHit = 10;
@@ -91,10 +93,16 @@ public class ComboScore : MonoBehaviour
 
     private void UpdateUI()
     {
-        if (scoreText != null)
-        {
-            scoreText.text = $"SCORE: {_totalScore}";
-        }
+        string text = $"SCORE: {_totalScore}";
+
+        if (inGameScoreText != null)
+            inGameScoreText.text = text;
+
+        if (winScoreText != null)
+            winScoreText.text = text;
+
+        if (loseScoreText != null)
+            loseScoreText.text = text;
     }
 
     public int GetComboScore() => _comboScore;

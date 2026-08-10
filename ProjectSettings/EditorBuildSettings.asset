@@ -14,6 +14,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/01_Scenes/MainScenes/Arcade_Level1_Scene.unity
     guid: 51c51434f0f37984fbf9bdd3bff25d7c
+  - enabled: 1
+    path: Assets/01_Scenes/Niclas/Arcade_Level2_Scene.unity
+    guid: b5723eaedef2069469d4cb3846abb0c3
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

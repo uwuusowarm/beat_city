@@ -4,10 +4,13 @@ public enum SfxType
 {
     Punch,
     Kick,
-    Jump,
     EnemyDeath,
     PlayerDeath,
-    Special
+    Special,
+    PunchMiss,
+    KickMiss,
+    Movement,
+    UI,
 }
 
 public enum MusicType
@@ -15,6 +18,8 @@ public enum MusicType
     MainMenu,
     Stage1,
     Stage2,
+    StorySound1,
+    StorySound2
 }
 
 [System.Serializable]
@@ -93,6 +98,11 @@ public class AudioManager : MonoBehaviour
 
     public void PlayMusic(MusicType type)
     {
+        PlayMusic(type, true);
+    }
+
+    public void PlayMusic(MusicType type, bool loop)
+    {
         foreach (MusicEntry entry in musicEntries)
         {
             if (entry.musicType == type)
@@ -112,7 +122,7 @@ public class AudioManager : MonoBehaviour
                 }
 
                 musicSource.clip = clip;
-                musicSource.loop = true;
+                musicSource.loop = loop;
                 musicSource.Play();
                 return;
             }
@@ -158,5 +168,10 @@ public class AudioManager : MonoBehaviour
     {
         sfxVolume = value;
         UpdateVolume();
+    }
+
+    public void PlayButtonClick()
+    {
+        PlaySfx(SfxType.UI, 0);
     }
 }

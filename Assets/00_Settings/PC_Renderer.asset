@@ -113,7 +113,7 @@ MonoBehaviour:
   shaderTags:
   - UniversalForward
   player:
-    enabled: 1
+    enabled: 0
     renderingLayer:
       serializedVersion: 0
       m_Bits: 256

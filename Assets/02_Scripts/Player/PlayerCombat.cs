@@ -7,6 +7,8 @@ public class PlayerCombat : MonoBehaviour
 {
     [SerializeField] private Hitbox hitbox;
     [SerializeField] private Hitbox specialHitbox;
+    [SerializeField] private Hitbox dashStrikeHitbox;
+    [SerializeField] private Hitbox specialKickHitbox;
     [SerializeField] private float activeTime = 0.2f;
     [SerializeField] private float attackCooldown = 0.1f;
     [SerializeField] private float vfxSpawnDistance = 1.5f;
@@ -14,14 +16,17 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private Animator animator;
     [SerializeField] private AudioManager audioManager;
     [SerializeField] private GameObject specialVFXPrefab;
+    [SerializeField] private GameObject moonKickVFXPrefab;
     [SerializeField] private Transform vfxSpawnPoint;
+    [SerializeField] private Transform moonKickVfxSpawnPoint;
     [SerializeField] private Meter specialMeter;
 
-    public SpecialAttackSO equippedSpecial1;
-    public SpecialAttackSO equippedSpecial2;
+    public SpecialAttackId? equippedSpecial1;
+    public SpecialAttackId? equippedSpecial2;
 
     [Header("Special Move")]
     [SerializeField] private SpecialMove specialMove;
+    [SerializeField] private DashStrike dashStrike;
 
     [Header("Combo")]
     private PlayerSettings _settings;
@@ -41,11 +46,12 @@ public class PlayerCombat : MonoBehaviour
 
     private float _lastAttackTime;
 
-    private int _punchIndex;
-    private bool _inSpecialChain;
+    private bool _hitLanded;
 
-    private float _fist1InitialZ;
-    private float _fist2InitialZ;
+    private bool _inSpecialChain;
+    private SpecialAttackId? _currentSpecialId;
+
+
 
     private void Awake()
     {
@@ -63,10 +69,18 @@ public class PlayerCombat : MonoBehaviour
 
         hitbox.OnHitLanded += HandleHitLanded;
         specialHitbox.OnHitLanded += HandleHitLanded;
+
+        if (dashStrikeHitbox != null)
+            dashStrikeHitbox.OnHitLanded += HandleHitLanded;
+        if (specialKickHitbox != null)
+        {
+            specialKickHitbox.OnHitLanded += HandleHitLanded;
+        }
     }
 
     private void HandleHitLanded(GameObject target)
     {
+        _hitLanded = true;
         OnHitLanded?.Invoke(target);
         PlayAttackSfx(CurrentAttackType);
     }
@@ -87,10 +101,10 @@ public class PlayerCombat : MonoBehaviour
                     DoKick();
                     break;
                 case CombatInputType.Special:
-                    if (equippedSpecial1 != null) StartCoroutine(DoSpecialAttack(equippedSpecial1));
+                    if (equippedSpecial1.HasValue) PerformSpecial(equippedSpecial1.Value);
                     break;
                 case CombatInputType.SpecialChain:
-                    if (equippedSpecial2 != null) StartCoroutine(DoSpecialAttack(equippedSpecial2));
+                    if (equippedSpecial2.HasValue) PerformSpecial(equippedSpecial2.Value);
                     break;
             }
         }
@@ -162,12 +176,70 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
-    private void DoSpecial()
+    private void PerformSpecial(SpecialAttackId id)
+    {
+        SpecialAttackDef def = SpecialAttackCatalog.Get(id);
+        if (def == null) return;
+
+        if (!TrySpendMeter(def)) return;
+
+        switch (id)
+        {
+            case SpecialAttackId.ChainAttack:
+                if (specialMove != null)
+                {
+                    _isAttacking = true;
+                    if (!specialMove.TryActivate())
+                        _isAttacking = false;
+                }
+                break;
+            case SpecialAttackId.GroundSlam:
+                DoGroundSlam();
+                break;
+            case SpecialAttackId.MoonKick:
+                DoMoonKick();
+                break;
+            case SpecialAttackId.DashStrike:
+                if (dashStrike == null)
+                {
+                    Debug.LogWarning("[PlayerCombat] No DashStrike component assigned, cannot perform Dash Strike.");
+                    RefundMeter(id);
+                    break;
+                }
+
+                _isAttacking = true;
+                if (!dashStrike.TryActivate())
+                {
+                    _isAttacking = false;
+                    RefundMeter(id);
+                }
+                break;
+        }
+    }
+
+    private bool TrySpendMeter(SpecialAttackDef def)
+    {
+        if (def.meterCost <= 0) return true;
+
+        if (specialMeter == null)
+        {
+            Debug.LogWarning($"[PlayerCombat] No Meter assigned, cannot pay {def.meterCost} for {def.displayName}.");
+            return false;
+        }
+
+        return specialMeter.TrySpend(def.meterCost);
+    }
+
+    private void DoGroundSlam()
     {
         _isAttacking = true;
+        _currentSpecialId = SpecialAttackId.GroundSlam;
         PlayerStateManager.Instance.SetState(PlayerState.Attacking);
 
         AdvanceCombo(CombatInputType.Special);
+        
+        if (animator != null)
+            animator.SetInteger("SpecialId", 1);
 
         if (_settings != null)
         {
@@ -177,6 +249,28 @@ public class PlayerCombat : MonoBehaviour
             specialHitbox.JugglingForce = _settings.jugglingForce;
             specialHitbox.ShouldKnockdown = true;
             specialHitbox.IsLauncher = true;
+        }
+    }
+
+    private void DoMoonKick()
+    {
+        _isAttacking = true;
+        _currentSpecialId = SpecialAttackId.MoonKick;
+        PlayerStateManager.Instance.SetState(PlayerState.Attacking);
+
+        AdvanceCombo(CombatInputType.Special);
+
+        if (animator != null)
+            animator.SetInteger("SpecialId", 2);
+
+        if (_settings != null)
+        {
+            specialKickHitbox.Damage = _settings.specialDamage; 
+            specialKickHitbox.KnockbackForce = 0;
+            specialKickHitbox.KnockUpForce = _settings.specialKnockup;
+            specialKickHitbox.JugglingForce = _settings.jugglingForce;
+            specialKickHitbox.ShouldKnockdown = false;
+            specialKickHitbox.IsLauncher = true;
         }
     }
 
@@ -195,25 +289,74 @@ public class PlayerCombat : MonoBehaviour
 
     public void SpawnSpecialVfx()
     {
-        if (specialVFXPrefab == null) return;
+        Debug.Log("SpawnSpecialVfx wurde aufgerufen");
+        GameObject prefab = null;
+        Transform spawnPoint = null;
 
-        GameObject vfx = Instantiate(specialVFXPrefab, vfxSpawnPoint.position, Quaternion.identity);
-        Destroy(vfx, 20.0f);
+        switch (_currentSpecialId)
+        {
+            case SpecialAttackId.GroundSlam:
+                prefab = specialVFXPrefab;
+                spawnPoint = vfxSpawnPoint;
+                break;
+
+            case SpecialAttackId.MoonKick:
+                prefab = moonKickVFXPrefab;
+                spawnPoint = moonKickVfxSpawnPoint;
+
+                float currentY = transform.eulerAngles.y;
+                bool isFacingLeft = Mathf.Abs(Mathf.DeltaAngle(currentY, -90f))
+                                   < Mathf.Abs(Mathf.DeltaAngle(currentY, 90f));
+
+                float targetX = isFacingLeft ? -98f : -82f;
+                spawnPoint.localRotation = Quaternion.Euler(targetX, 90f, -90f);
+                break;
+        }
+
+        if (prefab == null || spawnPoint == null)
+            return;
+
+        GameObject vfx = Instantiate(prefab, spawnPoint.position, spawnPoint.rotation);
+        Destroy(vfx, 20f);
     }
 
     private Hitbox GetCurrentHitbox()
     {
-        if (CurrentAttackType == CombatInputType.Special && specialHitbox != null)
+        if (CurrentAttackType == CombatInputType.Special)
         {
-            return specialHitbox;
+            if (_currentSpecialId == SpecialAttackId.MoonKick && specialKickHitbox != null)
+                return specialKickHitbox;
+
+            if (specialHitbox != null)
+                return specialHitbox;
         }
-        return hitbox; 
+        return hitbox;
+    }
+
+    private void PlaySwingSfx(CombatInputType input)
+    {
+        EnsureAudioManager();
+        if (audioManager == null) return;
+
+        int index = Mathf.Clamp(_comboStep - 1, 0, 2);
+
+        switch (input)
+        {
+            case CombatInputType.Punch:
+                audioManager.PlaySfx(SfxType.PunchMiss, index);
+                break;
+            case CombatInputType.Kick:
+                audioManager.PlaySfx(SfxType.KickMiss, index);
+                break;
+        }
     }
 
     public void EnableHitbox()
     {
 
         Debug.Log("[PlayerCombat] EnableHitbox called");
+
+        _hitLanded = false;
 
         if (CurrentAttackType == CombatInputType.Special)
         {
@@ -224,7 +367,8 @@ public class PlayerCombat : MonoBehaviour
             }
         }
 
-        Hitbox activeHitbox = GetCurrentHitbox();
+
+            Hitbox activeHitbox = GetCurrentHitbox();
 
         if (_settings != null)
             activeHitbox.HitStopDuration = _settings.combatHitStop;
@@ -240,6 +384,12 @@ public class PlayerCombat : MonoBehaviour
 
         Hitbox activeHitbox = GetCurrentHitbox();
         activeHitbox.Deactivate();
+
+        if (!_hitLanded && CurrentAttackType != CombatInputType.Special)
+        {
+            PlaySwingSfx(CurrentAttackType);
+        }
+
         OnAttackEnded?.Invoke();
     }
 
@@ -262,6 +412,31 @@ public class PlayerCombat : MonoBehaviour
     public void SetSpecialChainActive(bool active)
     {
         _inSpecialChain = active;
+    }
+
+    public void AbortSpecialChain(bool refundMeter)
+    {
+        AbortSpecialAttack(SpecialAttackId.ChainAttack, refundMeter);
+    }
+
+    public void AbortSpecialAttack(SpecialAttackId id, bool refundMeter)
+    {
+        Debug.Log($"[PlayerCombat] AbortSpecialAttack called for {id} (refund: {refundMeter})");
+
+        _inSpecialChain = false;
+        _isAttacking = false;
+
+        if (refundMeter)
+            RefundMeter(id);
+    }
+
+    private void RefundMeter(SpecialAttackId id)
+    {
+        if (specialMeter == null) return;
+
+        SpecialAttackDef def = SpecialAttackCatalog.Get(id);
+        if (def != null && def.meterCost > 0)
+            specialMeter.AddMeter(def.meterCost);
     }
 
     public void SetSpecialChainAttack(CombatInputType type, int comboStep)
@@ -301,80 +476,9 @@ public class PlayerCombat : MonoBehaviour
                 audioManager.PlaySfx(SfxType.Kick, index);
                 break;
             case CombatInputType.Special:
-                audioManager.PlaySfx(SfxType.Punch, index);
+                audioManager.PlaySfx(SfxType.Special, index);
                 break;
         }
     }
 
-    private IEnumerator DoSpecialAttack(SpecialAttackSO special)
-    {
-        _isAttacking = true;
-        PlayerStateManager.Instance.SetState(PlayerState.Attacking);
-        OnAttackStarted?.Invoke();
-        float originalAnimSpeed = animator != null ? animator.speed : 1f;
-        
-        if (special.isComboSequence && animator != null)
-        {
-            animator.speed = special.animationPlaybackSpeed;
-        }
-        else if (animator != null) animator.SetTrigger(special.animatorTrigger);
-
-        if (special.moveForward && TryGetComponent<CharacterController>(out var cc))
-        {
-            StartCoroutine(PerformSpecialDash(cc, special.dashSpeed, special.totalDuration));
-        }
-
-        if (special.isProjectile && special.projectilePrefab != null)
-        {
-            Instantiate(special.projectilePrefab, transform.position + transform.forward, transform.rotation);
-            yield return new WaitForSeconds(special.totalDuration);
-        }
-        else
-        {
-            if (hitbox != null)
-            {
-                hitbox.SetDimensions(special.hitboxSize, special.hitboxOffset);
-
-                for (int i = 0; i < special.hitCount; i++)
-                {
-                    bool isFinisher = (i == special.hitCount - 1); 
-
-                    if (special.isComboSequence && special.animationSequence != null && special.animationSequence.Length > 0 && animator != null)
-                    {
-                        string animToPlay = special.animationSequence[i % special.animationSequence.Length];
-                        animator.Play(animToPlay, 0, 0f); 
-                    }
-
-                    hitbox.Damage = special.damagePerHit;
-                    hitbox.KnockbackForce = isFinisher ? special.finalKnockback : 1f;
-                    hitbox.KnockUpForce = isFinisher ? special.finalKnockup : 0f;
-                    hitbox.ShouldKnockdown = isFinisher && special.finalHitShouldKnockdown;
-
-                    hitbox.Activate();
-                    yield return new WaitForSeconds(0.05f); 
-                    hitbox.Deactivate();
-
-                    if (!isFinisher) yield return new WaitForSeconds(special.timeBetweenHits);
-                }
-            }
-        }
-
-        if (animator != null) animator.speed = originalAnimSpeed;
-
-        yield return new WaitForSeconds(attackCooldown);
-        _isAttacking = false;
-        PlayerStateManager.Instance.ResetToIdle();
-        OnAttackEnded?.Invoke();
-    }
-
-    private IEnumerator PerformSpecialDash(CharacterController cc, float speed, float duration)
-    {
-        float elapsed = 0f;
-        while (elapsed < duration)
-        {
-            cc.Move(transform.forward * speed * Time.deltaTime);
-            elapsed += Time.deltaTime;
-            yield return null;
-        }
-    }
 }

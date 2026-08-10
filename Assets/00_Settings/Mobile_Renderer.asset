@@ -1,5 +1,31 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-105557494357153069
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f62c9c65cf3354c93be831c8bc075510, type: 3}
+  m_Name: ScreenSpaceAmbientOcclusion
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.ScreenSpaceAmbientOcclusion
+  m_Active: 1
+  m_Settings:
+    AOMethod: 0
+    Downsample: 0
+    AfterOpaque: 0
+    Source: 1
+    NormalSamples: 1
+    Intensity: 3
+    DirectLightingStrength: 0.25
+    Radius: 0.035
+    Samples: 1
+    BlurQuality: 0
+    Falloff: 100
+    SampleCount: -1
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13,11 +39,9 @@ MonoBehaviour:
   m_Name: Mobile_Renderer
   m_EditorClassIdentifier: 
   debugShaders:
-    debugReplacementPS: {fileID: 4800000, guid: cf852408f2e174538bcd9b7fda1c5ae7,
-      type: 3}
+    debugReplacementPS: {fileID: 4800000, guid: cf852408f2e174538bcd9b7fda1c5ae7, type: 3}
     hdrDebugViewPS: {fileID: 4800000, guid: 573620ae32aec764abd4d728906d2587, type: 3}
-    probeVolumeSamplingDebugComputeShader: {fileID: 7200000, guid: 53626a513ea68ce47b59dc1299fe3959,
-      type: 3}
+    probeVolumeSamplingDebugComputeShader: {fileID: 7200000, guid: 53626a513ea68ce47b59dc1299fe3959, type: 3}
   probeVolumeResources:
     probeVolumeDebugShader: {fileID: 0}
     probeVolumeFragmentationDebugShader: {fileID: 0}
@@ -26,11 +50,18 @@ MonoBehaviour:
     probeSamplingDebugMesh: {fileID: 0}
     probeSamplingDebugTexture: {fileID: 0}
     probeVolumeBlendStatesCS: {fileID: 0}
-  m_RendererFeatures: []
-  m_RendererFeatureMap: 
+  m_RendererFeatures:
+  - {fileID: -105557494357153069}
+  - {fileID: 5687045182144111366}
+  - {fileID: 4206195951817694087}
+  m_RendererFeatureMap: d32a76a504fc88fe06e34b3f7671ec4e879bc7cbee685f3a
   m_UseNativeRenderPass: 1
+  xrSystemData: {fileID: 0}
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
-  m_AssetVersion: 2
+  m_AssetVersion: 3
+  m_PrepassLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
   m_OpaqueLayerMask:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -48,5 +79,92 @@ MonoBehaviour:
   m_RenderingMode: 0
   m_DepthPrimingMode: 0
   m_CopyDepthMode: 0
+  m_DepthAttachmentFormat: 0
+  m_DepthTextureFormat: 0
   m_AccurateGbufferNormals: 0
   m_IntermediateTextureMode: 0
+--- !u!114 &4206195951817694087
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0dad70ba93f608c48aaee5efb713d883, type: 3}
+  m_Name: ScreenSpaceOutlineFeature
+  m_EditorClassIdentifier: Assembly-CSharp::ScreenSpaceOutlineFeature
+  m_Active: 1
+  shader: {fileID: 4800000, guid: 5178f343dc61da44787317b9217a39ad, type: 3}
+  settings:
+    renderPassEvent: 300
+    outlineEnabled: 1
+    outlineColor: {r: 0, g: 0, b: 0, a: 1}
+    thickness: 2.19
+    depthThreshold: 0.02
+    normalThreshold: 6.56
+    grazingSuppression: 4
+    outlineTintFromScene: 0
+    posterizeEnabled: 1
+    posterizeAmount: 0.145
+    posterizeSteps: 32
+    halftoneEnabled: 0
+    halftoneAmount: 0.091
+    halftoneScale: 6
+    halftoneThreshold: 0.5
+    halftoneSoftness: 0.1
+    halftoneColor: {r: 0, g: 0, b: 0, a: 1}
+    fogEnabled: 0
+    fogAmount: 1
+    fogColor: {r: 0.5, g: 0.6, b: 0.8, a: 1}
+    fogStart: 0.1
+    fogEnd: 0.6
+    fogBands: 4
+--- !u!114 &5687045182144111366
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43f034574ccb5d14c92acf7a221b86db, type: 3}
+  m_Name: FresnelHighlightFeature
+  m_EditorClassIdentifier: Assembly-CSharp::FresnelHighlightFeature
+  m_Active: 1
+  shader: {fileID: 4800000, guid: 65835d5bfe0ae994281a9173c7b1155d, type: 3}
+  renderPassEvent: 450
+  shaderTags:
+  - UniversalForward
+  player:
+    enabled: 0
+    renderingLayer:
+      serializedVersion: 0
+      m_Bits: 256
+    color: {r: 0.2, g: 0.8, b: 1, a: 1}
+    power: 2
+    threshold: 0.5
+    smoothness: 0.25
+    intensity: 1
+  enemy:
+    enabled: 1
+    renderingLayer:
+      serializedVersion: 0
+      m_Bits: 512
+    color: {r: 1, g: 0.2, b: 0.2, a: 1}
+    power: 1.76
+    threshold: 0.586
+    smoothness: 0.25
+    intensity: 0.45
+  enemyWindup:
+    enabled: 1
+    renderingLayer:
+      serializedVersion: 0
+      m_Bits: 1024
+    color: {r: 1, g: 0.35, b: 0.05, a: 1}
+    power: 1.4
+    threshold: 0.5
+    smoothness: 0.3
+    intensity: 0.45

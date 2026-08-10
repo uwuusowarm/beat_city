@@ -22,7 +22,12 @@ public class EnemyMovement : MonoBehaviour
     
 
     public bool CanAct => CurrentState == EnemyState.Grounded || CurrentState == EnemyState.HitStun;
-    
+
+    public bool IsDowned => CurrentState == EnemyState.Knockdown ||
+                            CurrentState == EnemyState.StandingUp;
+
+    public bool IsInvulnerableWhileDowned => InvulnerableWhileDowned && IsDowned;
+
     public bool IsInThrowState 
     { 
         get => CurrentState == EnemyState.Launched || CurrentState == EnemyState.Airborne || CurrentState == EnemyState.Grabbed;
@@ -51,6 +56,8 @@ public class EnemyMovement : MonoBehaviour
     private float _juggleCeiling;
 
     private float _airTimer;
+
+    private float _lastLaunchImpactTime = -999f;
 
     private float _squashTimer;
     private const float SquashDuration = 0.12f;
@@ -122,9 +129,16 @@ public class EnemyMovement : MonoBehaviour
     private float JugglePopHeadroom => meleeSettings != null ? meleeSettings.jugglePopHeadroom : 0.4f;
     private float JugglePopFadeRange => meleeSettings != null ? meleeSettings.jugglePopFadeRange : 0.4f;
     private float JugglePopMinFade => meleeSettings != null ? meleeSettings.jugglePopMinFade : 0.35f;
+    private float LaunchHitStopDuration => meleeSettings != null ? meleeSettings.launchHitStopDuration : 0.18f;
+    private float LaunchSlowMoDuration => meleeSettings != null ? meleeSettings.launchSlowMoDuration : 0.18f;
+    private float LaunchSlowMoTimeScale => meleeSettings != null ? meleeSettings.launchSlowMoTimeScale : 0.35f;
+    private float LaunchImpactKnockbackThreshold => meleeSettings != null ? meleeSettings.launchImpactKnockbackThreshold : 5f;
+    private float LaunchImpactCooldown => meleeSettings != null ? meleeSettings.launchImpactCooldown : 0.75f;
     private float MaxAirborneDuration => meleeSettings != null ? meleeSettings.maxAirborneDuration : 3f;
     private float KnockdownDuration => meleeSettings != null ? meleeSettings.knockdownDuration : 1.0f;
     private float StandUpDuration => meleeSettings != null ? meleeSettings.standUpDuration : 1.0f;
+    private bool InvulnerableWhileDowned => meleeSettings == null || meleeSettings.invulnerableWhileDowned;
+    private const float StandUpSafetyBuffer = 1.5f;
     private float GroundCheckDistance => meleeSettings != null ? meleeSettings.groundCheckDistance : 0.2f;
     private LayerMask GroundLayer => meleeSettings != null ? meleeSettings.groundLayer : LayerMask.GetMask("Default");
     private float FallWobbleSpeed => meleeSettings != null ? meleeSettings.fallWobbleSpeed : 4f;
@@ -259,7 +273,7 @@ public class EnemyMovement : MonoBehaviour
                 break;
 
             case EnemyState.StandingUp:
-                _stateTimer = StandUpDuration;
+                _stateTimer = StandUpDuration + StandUpSafetyBuffer;
                 if (animator != null)
                 {
                     UpdateAnimatorFalling(false);
@@ -478,28 +492,35 @@ public class EnemyMovement : MonoBehaviour
         bool isGrounded = IsGroundedRaycast();
         
         float effectiveKnockUp = CalculateJuggleForce(hitData);
-        
+
+        bool sentFlying = false;
+
         if (hitData.ShouldKnockdown || _juggleCount >= MaxJuggleCount)
         {
             HandleKnockdownHit(hitData, effectiveKnockUp);
+            sentFlying = !wasAirborne;
         }
         else if (wasAirborne)
         {
             HandleJuggleHit(hitData, effectiveKnockUp);
         }
-        else if (hitData.IsLauncher || hitData.JuggleType == JuggleType.Launcher)
+        else if (hitData.IsLauncher || hitData.JuggleType == JuggleType.Launcher || effectiveKnockUp > LaunchThreshold)
         {
             HandleLauncherHit(hitData, effectiveKnockUp, isGrounded);
-        }
-        else if (effectiveKnockUp > LaunchThreshold)
-        {
-            HandleLauncherHit(hitData, effectiveKnockUp, isGrounded);
+            sentFlying = true;
         }
         else
         {
             HandleGroundHit(hitData);
+            sentFlying = LaunchImpactKnockbackThreshold > 0f &&
+                         hitData.KnockbackForce >= LaunchImpactKnockbackThreshold;
         }
-        
+
+        if (sentFlying)
+        {
+            PlayLaunchImpact();
+        }
+
         if (hitData.KnockbackForce > 0f && hitData.KnockbackDirection != Vector3.zero)
         {
             externalForce = hitData.KnockbackDirection * hitData.KnockbackForce;
@@ -511,6 +532,23 @@ public class EnemyMovement : MonoBehaviour
         }
     }
     
+    private void PlayLaunchImpact()
+    {
+        if (HitStop.Instance == null) return;
+
+        float freeze = LaunchHitStopDuration;
+        float slowMo = LaunchSlowMoDuration;
+        if (freeze <= 0f && slowMo <= 0f) return;
+
+        if (Time.unscaledTime - _lastLaunchImpactTime < LaunchImpactCooldown) return;
+        _lastLaunchImpactTime = Time.unscaledTime;
+
+        if (freeze > 0f) HitStop.Instance.Do(freeze);
+        if (slowMo > 0f) HitStop.Instance.DoSlowMotion(slowMo, LaunchSlowMoTimeScale);
+
+        Debug.Log($"[EnemyMovement] {gameObject.name} LAUNCH IMPACT - freeze {freeze:F3}s, slow mo {slowMo:F3}s @ {LaunchSlowMoTimeScale:F2}x");
+    }
+
     private float CalculateJuggleForce(HitData hitData)
     {
         if (hitData.IgnoreJuggleDecay) 
@@ -911,8 +949,12 @@ public class EnemyMovement : MonoBehaviour
     {
         ApplyGravityAndMove(Vector3.zero);
         if (animator != null) animator.SetFloat("Speed", 0f);
-        
-        if (_stateTimer <= 0f)
+
+        bool standUpAnimationDone = animator != null &&
+            animator.GetCurrentAnimatorStateInfo(0).IsName("Idle") &&
+            !animator.IsInTransition(0);
+
+        if (standUpAnimationDone || _stateTimer <= 0f)
         {
             SetState(EnemyState.Grounded);
             Debug.Log($"[EnemyMovement] {gameObject.name} finished standing up.");

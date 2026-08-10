@@ -23,6 +23,14 @@ public class PlayerGrapple : MonoBehaviour
     [SerializeField] private bool showCarryGizmos = true;
 
     private const float MaxWindupSeconds = 2f;
+    private const float GrabBlendSeconds = 0.15f;
+
+    private static readonly int GrabStateHash = Animator.StringToHash("Grab");
+    private static readonly int IdleStateHash = Animator.StringToHash("Idle");
+    private static readonly int HitStateHash = Animator.StringToHash("Hit");
+
+    private bool _grabStateAvailable;
+    private bool _idleStateAvailable;
 
     private float _nextGrappleTime;
     private GameObject _heldTarget;
@@ -55,7 +63,19 @@ public class PlayerGrapple : MonoBehaviour
             characterModel = transform.Find("Model");
         if (animator == null)
             animator = GetComponentInChildren<Animator>();
-        
+
+        if (animator != null)
+        {
+            _grabStateAvailable = animator.HasState(0, GrabStateHash);
+            _idleStateAvailable = animator.HasState(0, IdleStateHash);
+
+            if (!_grabStateAvailable)
+            {
+                Debug.LogWarning($"[PlayerGrapple] Animator on {gameObject.name} has no 'Grab' state on layer 0 - " +
+                                 "the grab pose can only be requested through IsGrabbing.");
+            }
+        }
+
         if (grabBoxAnchor == null)
         {
             Debug.LogError($"[PlayerGrapple] grabBoxAnchor is NOT assigned on {gameObject.name}!");
@@ -140,7 +160,7 @@ public class PlayerGrapple : MonoBehaviour
     {
         if (newState == PlayerState.Holding) return;
 
-        if (animator != null) animator.SetBool("IsGrabbing", false);
+        ExitGrabPose(newState != PlayerState.Grappling);
         Debug.Log("Player is no longer holding");
 
         if (_heldTarget != null)
@@ -201,6 +221,12 @@ public class PlayerGrapple : MonoBehaviour
             {
                 if (hurtbox.Owner == gameObject) continue;
                 if (hurtbox.Owner.CompareTag(gameObject.tag)) continue;
+
+                if (hurtbox.Owner.TryGetComponent<EnemyMovement>(out var downedCheck) && downedCheck.IsInvulnerableWhileDowned)
+                {
+                    Debug.Log($"[PlayerGrapple] -> Downed target ignored ({hurtbox.Owner.name} is {downedCheck.CurrentState})");
+                    continue;
+                }
 
                 if (hurtbox.Owner.TryGetComponent<Health>(out var health) && health.Current > 0)
                 {
@@ -303,11 +329,8 @@ public class PlayerGrapple : MonoBehaviour
             em.SetState(EnemyState.Grabbed);
         }
 
-        if (animator != null)
-        {
-            animator.SetBool("IsGrabbing", true);
-            Debug.Log("Player is holding");
-        }
+        EnterGrabPose();
+        Debug.Log("Player is holding");
 
         StartCoroutine(HoldTarget(target));
 
@@ -335,6 +358,8 @@ public class PlayerGrapple : MonoBehaviour
 
                 target.transform.LookAt(transform.position);
 
+                KeepGrabPose();
+
                 yield return null;
             }
         }
@@ -349,6 +374,62 @@ public class PlayerGrapple : MonoBehaviour
         }
     }
     
+    private void EnterGrabPose()
+    {
+        if (animator == null) return;
+
+        animator.ResetTrigger("Attack");
+        animator.ResetTrigger("Hit");
+        animator.ResetTrigger("Headbutt");
+        animator.ResetTrigger("Throw");
+        animator.SetBool("IsGrabbing", true);
+
+        if (_grabStateAvailable && animator.isActiveAndEnabled)
+            animator.CrossFadeInFixedTime(GrabStateHash, GrabBlendSeconds, 0);
+    }
+
+    private void KeepGrabPose()
+    {
+        if (animator == null || !_grabStateAvailable || !animator.isActiveAndEnabled) return;
+        if (animator.IsInTransition(0)) return;
+
+        int currentState = animator.GetCurrentAnimatorStateInfo(0).shortNameHash;
+        if (currentState == GrabStateHash) return;
+        if (currentState == HitStateHash) return;
+
+        animator.CrossFadeInFixedTime(GrabStateHash, GrabBlendSeconds, 0);
+    }
+
+
+    private void ForceGrabPoseForThrow()
+    {
+        if (animator == null || !_grabStateAvailable || !animator.isActiveAndEnabled) return;
+
+        if (animator.IsInTransition(0))
+        {
+            if (animator.GetNextAnimatorStateInfo(0).shortNameHash == GrabStateHash) return;
+        }
+        else if (animator.GetCurrentAnimatorStateInfo(0).shortNameHash == GrabStateHash)
+        {
+            return;
+        }
+
+        animator.CrossFadeInFixedTime(GrabStateHash, GrabBlendSeconds, 0);
+    }
+
+    private void ExitGrabPose(bool returnToIdlePose)
+    {
+        if (animator == null) return;
+
+        animator.SetBool("IsGrabbing", false);
+
+        if (!returnToIdlePose || !_idleStateAvailable || !animator.isActiveAndEnabled) return;
+        if (animator.IsInTransition(0)) return;
+        if (animator.GetCurrentAnimatorStateInfo(0).shortNameHash != GrabStateHash) return;
+        
+        animator.CrossFadeInFixedTime(IdleStateHash, GrabBlendSeconds, 0);
+    }
+
     private Vector3 HoldOffset()
     {
         return characterModel.forward * settings.holdOffset
@@ -361,7 +442,7 @@ public class PlayerGrapple : MonoBehaviour
     {
         _heldTarget = null;
 
-        if (animator != null) animator.SetBool("IsGrabbing", false);
+        ExitGrabPose(true);
         Debug.Log("Player is no longer holding");
 
         if (PlayerStateManager.Instance.CurrentState == PlayerState.Holding)
@@ -417,6 +498,7 @@ public class PlayerGrapple : MonoBehaviour
                 Debug.Log("Player is no longer holding");
                 string animName = isBackwardThrow ? "Throw" : "Headbutt";
                 float launchPoint = isBackwardThrow ? settings.throwLaunchPoint : settings.headbuttLaunchPoint;
+                ForceGrabPoseForThrow();
                 animator.SetTrigger(animName);
 
                 if (launchPoint > 0f)
@@ -436,6 +518,8 @@ public class PlayerGrapple : MonoBehaviour
                     {
                         Debug.LogWarning($"[PlayerGrapple] Animator never entered '{animName}' within " +
                                          $"{MaxWindupSeconds}s - launching from the current position.");
+
+                        animator.ResetTrigger(animName);
                     }
                     else if (carryArmed)
                     {
@@ -694,6 +778,12 @@ public class PlayerGrapple : MonoBehaviour
                         GameObject otherEnemy = hurtbox.Owner;
 
                         if (otherEnemy == null || otherEnemy == target || otherEnemy == gameObject) continue;
+
+                        if (otherEnemy.TryGetComponent<EnemyMovement>(out var otherMovement) && otherMovement.IsInvulnerableWhileDowned)
+                        {
+                            Debug.Log($"[PlayerGrapple] Thrown target passed over downed {otherEnemy.name}, no hit");
+                            continue;
+                        }
 
                         if (otherEnemy.TryGetComponent<IDamageable>(out var damageable))
                         {

@@ -5,6 +5,7 @@ public class PlayerDeathHandler : MonoBehaviour
 {
     [SerializeField] private MonoBehaviour[] scriptsToDisable; 
     [SerializeField] private Animator animator;
+    [SerializeField] private WinAndLose WinLoseScript;
 
     public delegate void PlayerDiedAction();
     public static event PlayerDiedAction OnPlayerDied;
@@ -16,6 +17,7 @@ public class PlayerDeathHandler : MonoBehaviour
 
     private void HandleDeath()
     {
+        WinLoseScript.ShowLoseScreen();
 
         foreach (var script in scriptsToDisable)
         {

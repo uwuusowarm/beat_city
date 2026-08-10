@@ -120,6 +120,7 @@ MonoBehaviour:
   rangedSettings: {fileID: 0}
   characterModel: {fileID: 4303948803056323079}
   animator: {fileID: 3709741302697047497}
+  grabbedFallPlaybackSpeed: 1
 --- !u!114 &4373587521813052635
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -175,7 +176,11 @@ MonoBehaviour:
   attackCooldown: 1.5
   knockbackForce: 5
   hitStunDuration: 0.5
+  hitStopDuration: 0.04
   telegraphDuration: 0.35
+  hitboxSize: {x: 1.2, y: 1.6, z: 1.2}
+  hitboxForwardOffset: 0.75
+  hitboxHeight: 0.3
 --- !u!114 &4508495242492750309
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -366,6 +371,7 @@ MonoBehaviour:
   rangedSettings: {fileID: 0}
   characterModel: {fileID: 8504875112584385217}
   animator: {fileID: 9164090700482153694}
+  grabbedFallPlaybackSpeed: 1
 --- !u!114 &3039677471306222819
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -421,7 +427,11 @@ MonoBehaviour:
   attackCooldown: 1.5
   knockbackForce: 5
   hitStunDuration: 0.5
+  hitStopDuration: 0.04
   telegraphDuration: 0.35
+  hitboxSize: {x: 1.2, y: 1.6, z: 1.2}
+  hitboxForwardOffset: 0.75
+  hitboxHeight: 0.3
 --- !u!114 &4549447020717631931
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -612,6 +622,7 @@ MonoBehaviour:
   rangedSettings: {fileID: 0}
   characterModel: {fileID: 738948854415703545}
   animator: {fileID: 5555856833809344594}
+  grabbedFallPlaybackSpeed: 1
 --- !u!114 &7337709837878212834
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -667,7 +678,11 @@ MonoBehaviour:
   attackCooldown: 1.5
   knockbackForce: 5
   hitStunDuration: 0.5
+  hitStopDuration: 0.04
   telegraphDuration: 0.35
+  hitboxSize: {x: 1.2, y: 1.6, z: 1.2}
+  hitboxForwardOffset: 0.75
+  hitboxHeight: 0.3
 --- !u!114 &53892746632558273
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -831,6 +846,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1bc940d02371d71409df58ffc95244e2, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5555856833809344594}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1bc940d02371d71409df58ffc95244e2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2001300030387425880}
   m_SourcePrefab: {fileID: 100100000, guid: 1bc940d02371d71409df58ffc95244e2, type: 3}
 --- !u!4 &4744080492067193017 stripped
 Transform:
@@ -864,6 +882,24 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &2001300030387425880
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5376608278244940291}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 618be7b1c615d0343a811ea3918a3c14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyObstacleAvoidance
+  probeDistance: 1.5
+  feelerAngle: 45
+  probeHeight: 0.6
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1001 &8079315278391658464
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -923,6 +959,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f51ca59db873def47b73eed713e1b3dc, type: 3}
       insertIndex: -1
       addedObject: {fileID: 9164090700482153694}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f51ca59db873def47b73eed713e1b3dc, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 18583199026627097}
   m_SourcePrefab: {fileID: 100100000, guid: f51ca59db873def47b73eed713e1b3dc, type: 3}
 --- !u!4 &8617012324757577739 stripped
 Transform:
@@ -956,6 +995,24 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &18583199026627097
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8997655087549971121}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 618be7b1c615d0343a811ea3918a3c14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyObstacleAvoidance
+  probeDistance: 1.5
+  feelerAngle: 45
+  probeHeight: 0.6
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1001 &8528949611092178839
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1015,6 +1072,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 003a5a7d23880c44bb71207139a3dd0c, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3709741302697047497}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 003a5a7d23880c44bb71207139a3dd0c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2900433162986041987}
   m_SourcePrefab: {fileID: 100100000, guid: 003a5a7d23880c44bb71207139a3dd0c, type: 3}
 --- !u!4 &8202835060209455228 stripped
 Transform:
@@ -1048,3 +1108,21 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &2900433162986041987
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8835362811217955526}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 618be7b1c615d0343a811ea3918a3c14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyObstacleAvoidance
+  probeDistance: 1.5
+  feelerAngle: 45
+  probeHeight: 0.6
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 4294967295

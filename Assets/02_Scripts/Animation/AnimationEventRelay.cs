@@ -3,6 +3,7 @@ using UnityEngine;
 public class AnimationEventRelay : MonoBehaviour
 {
     [SerializeField] private PlayerCombat playerCombat;
+    [SerializeField] private DashStrike dashStrike;
 
     private void Awake()
     {
@@ -16,7 +17,13 @@ public class AnimationEventRelay : MonoBehaviour
             }
         }
 
-        Debug.Log("[Relay] Awake. PlayerCombat found: " + (playerCombat != null));
+        if (dashStrike == null)
+        {
+            dashStrike = GetComponentInParent<DashStrike>();
+        }
+
+        Debug.Log("[Relay] Awake. PlayerCombat found: " + (playerCombat != null) +
+                  ", DashStrike found: " + (dashStrike != null));
     }
 
     public void EnableHitbox()
@@ -43,5 +50,26 @@ public class AnimationEventRelay : MonoBehaviour
     public void SpawnSpecialVFX()
     {
         playerCombat.SpawnSpecialVfx();
+    }
+
+    public void DashStrikeHit()
+    {
+        Debug.Log("[Relay] DashStrikeHit called");
+
+        if (dashStrike != null) dashStrike.OnStrikeHit();
+    }
+
+    public void DashStrikeSeek()
+    {
+        Debug.Log("[Relay] DashStrikeSeek called");
+
+        if (dashStrike != null) dashStrike.OnSeekNextTarget();
+    }
+
+    public void DashStrikeEnd()
+    {
+        Debug.Log("[Relay] DashStrikeEnd called");
+
+        if (dashStrike != null) dashStrike.OnDashStrikeEnd();
     }
 }

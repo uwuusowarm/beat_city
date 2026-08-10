@@ -18,8 +18,22 @@ public class AfterimageEffect : MonoBehaviour
 
     private SkinnedMeshRenderer[] skinnedRenderers;
 
+    private PlayerSettings settings;
+
     private static readonly int ColorID = Shader.PropertyToID("_Color");
     private static readonly int AlphaID = Shader.PropertyToID("_Alpha");
+
+    private bool IsEnabledInSettings => settings == null || settings.afterimageEnabled;
+
+    private void Awake()
+    {
+        settings = SettingsResolver.ResolvePlayerSettings();
+
+        if (settings == null)
+        {
+            Debug.LogWarning("[AfterimageEffect] No PlayerSettings found (provider/resources).");
+        }
+    }
 
     private void Start()
     {
@@ -43,13 +57,13 @@ public class AfterimageEffect : MonoBehaviour
 
     private void Update()
     {
-        if (Keyboard.current != null && Keyboard.current.hKey.wasPressedThisFrame)
-        {
-            if (isActive) Deactivate();
-            else Activate();
-        }
-
         if (!isActive) return;
+
+        if (!IsEnabledInSettings)
+        {
+            Deactivate();
+            return;
+        }
 
         spawnTimer -= Time.deltaTime;
         if (spawnTimer <= 0f)
@@ -61,6 +75,8 @@ public class AfterimageEffect : MonoBehaviour
 
     public void Activate()
     {
+        if (!IsEnabledInSettings) return;
+
         isActive = true;
         spawnTimer = 0f;
     }

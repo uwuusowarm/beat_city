@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
+using System.Text;
 using UnityEngine;
 
 #if ENABLE_INPUT_SYSTEM
@@ -290,10 +291,42 @@ public class SettingsRuntimePanel : MonoBehaviour
         }
     }
 
+    private static string NicifyFieldName(string name)
+    {
+        if (string.IsNullOrEmpty(name))
+            return string.Empty;
+
+        int start = 0;
+        if (name.Length > 2 && name[0] == 'm' && name[1] == '_')
+            start = 2;
+        else if (name[0] == '_')
+            start = 1;
+        else if (name.Length > 1 && name[0] == 'k' && char.IsUpper(name[1]))
+            start = 1;
+
+        StringBuilder builder = new StringBuilder(name.Length + 8);
+        for (int i = start; i < name.Length; i++)
+        {
+            char current = name[i];
+            if (i > start)
+            {
+                char previous = name[i - 1];
+                bool startsWord = (char.IsUpper(current) && !char.IsUpper(previous)) ||
+                                  (char.IsDigit(current) && !char.IsDigit(previous));
+                if (startsWord)
+                    builder.Append(' ');
+            }
+
+            builder.Append(i == start ? char.ToUpperInvariant(current) : current);
+        }
+
+        return builder.ToString();
+    }
+
     private void DrawSingleField(ScriptableObject settings, FieldInfo field)
     {
         object currentValue = field.GetValue(settings);
-        string label = ObjectNames.NicifyVariableName(field.Name);
+        string label = NicifyFieldName(field.Name);
 
         GUILayout.BeginHorizontal();
         GUILayout.Label(label, _labelStyle, GUILayout.Width(_labelWidth));
