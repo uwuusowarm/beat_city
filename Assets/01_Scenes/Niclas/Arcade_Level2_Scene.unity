@@ -14667,6 +14667,10 @@ PrefabInstance:
 '
       objectReference: {fileID: 0}
     - target: {fileID: 6129006211474208825, guid: b6f100649d10b0d43b9d1c979baadfbd, type: 3}
+      propertyPath: autoPlay
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6129006211474208825, guid: b6f100649d10b0d43b9d1c979baadfbd, type: 3}
       propertyPath: endImages.Array.size
       value: 1
       objectReference: {fileID: 0}
