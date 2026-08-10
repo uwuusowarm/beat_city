@@ -2614,10 +2614,6 @@ MonoBehaviour:
   damageLevel: 1
   hpBonusPerLevel: 20
   damageBonusPerLevel: 0.15
-  allSpecialAttacks:
-  - {fileID: 11400000, guid: 1076fa1d6b4560e4790d08225b2e1173, type: 2}
-  equippedSpecialId1: 
-  equippedSpecialId2: 
 --- !u!4 &1176926024
 Transform:
   m_ObjectHideFlags: 0
@@ -4098,10 +4094,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 4667260958754158351, guid: 22d0099fb3d04ea4681fa020bf31f5bd, type: 3}
-      propertyPath: m_Volume
-      value: 0.000000009999999
-      objectReference: {fileID: 0}
     - target: {fileID: 7848847113194953958, guid: 22d0099fb3d04ea4681fa020bf31f5bd, type: 3}
       propertyPath: m_LocalPosition.x
       value: 999.57855
@@ -4146,8 +4138,7 @@ PrefabInstance:
       propertyPath: m_Name
       value: AudioManager
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 7921563270516333146, guid: 22d0099fb3d04ea4681fa020bf31f5bd, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

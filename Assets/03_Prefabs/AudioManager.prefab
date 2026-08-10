@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 7994358371711348412}
   - component: {fileID: 4667260958754158351}
   - component: {fileID: 4850821595043226066}
-  - component: {fileID: 7921563270516333146}
   m_Layer: 0
   m_Name: AudioManager
   m_TagString: Untagged
@@ -55,16 +54,16 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 67a05c9dab4c47e4992250cbee8e668e, type: 3}
   - musicType: 1
     musicClips:
-    - {fileID: 8300000, guid: 397a5dcc356bcc34eb69c7f3e95dacf0, type: 3}
+    - {fileID: 8300000, guid: a3e09f02a08a0c64fab73113b314b31f, type: 3}
   - musicType: 2
     musicClips:
     - {fileID: 8300000, guid: a3e09f02a08a0c64fab73113b314b31f, type: 3}
   - musicType: 3
     musicClips:
-    - {fileID: 8300000, guid: c1114e50af220094c81ad6aeea62e4ce, type: 3}
+    - {fileID: 8300000, guid: 2431bc0d07619874ea9d30e85033a812, type: 3}
   - musicType: 4
     musicClips:
-    - {fileID: 8300000, guid: 67a05c9dab4c47e4992250cbee8e668e, type: 3}
+    - {fileID: 8300000, guid: 83f142b3fa9b8484bbbd41dcc33fd03e, type: 3}
   sfxEntries:
   - sfxType: 0
     sfxClips:
@@ -110,7 +109,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 0
+  m_Volume: 0.000000009999999
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -291,22 +290,3 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &7921563270516333146
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8312074545324063102}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 800900cedc791304ab546916ab0462ed, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
-  coins: 0
-  healthLevel: 1
-  damageLevel: 1
-  hpBonusPerLevel: 20
-  damageBonusPerLevel: 0.15
-  allSpecialAttacks: []
-  equippedSpecialId: 
