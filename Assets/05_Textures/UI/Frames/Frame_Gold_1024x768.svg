@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="768" viewBox="0 0 1024 768">
+  <defs>
+    <!-- Gold rail: bright top edge, warm core, dark bottom -->
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#f3dfa2"/>
+      <stop offset="18%"  stop-color="#c9a558"/>
+      <stop offset="50%"  stop-color="#8a6a2f"/>
+      <stop offset="80%"  stop-color="#5c451d"/>
+      <stop offset="100%" stop-color="#2b2011"/>
+    </linearGradient>
+    <linearGradient id="goldEdge" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"   stop-color="#ffeec2"/>
+      <stop offset="30%"  stop-color="#d4ae5e"/>
+      <stop offset="60%"  stop-color="#9a7734"/>
+      <stop offset="100%" stop-color="#4a3818"/>
+    </linearGradient>
+    <linearGradient id="goldThin" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#ffe9b0"/>
+      <stop offset="50%"  stop-color="#c29c4c"/>
+      <stop offset="100%" stop-color="#6b5223"/>
+    </linearGradient>
+    <!-- Panel interior -->
+    <linearGradient id="panelG" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0%"   stop-color="#34353a"/>
+      <stop offset="55%"  stop-color="#2a2b30"/>
+      <stop offset="100%" stop-color="#1e1f23"/>
+    </linearGradient>
+    <linearGradient id="bannerFill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#33322f"/>
+      <stop offset="45%"  stop-color="#232320"/>
+      <stop offset="100%" stop-color="#141412"/>
+    </linearGradient>
+    <filter id="goldGlow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="4" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="shadowG" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="5" stdDeviation="9" flood-color="#000" flood-opacity="0.8"/>
+    </filter>
+    <filter id="grainG">
+      <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" result="n"/>
+      <feColorMatrix in="n" type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.08"/></feComponentTransfer>
+    </filter>
+  </defs>
+
+  <!-- ===================== MAIN PANEL (chamfered corners) ===================== -->
+  <g filter="url(#shadowG)">
+    <!-- outer gold border -->
+    <path d="M 84 92 L 940 92 L 988 140 L 988 628 L 940 676 L 84 676 L 36 628 L 36 140 Z"
+          fill="url(#panelG)" stroke="url(#goldEdge)" stroke-width="7"/>
+    <!-- inner hairline -->
+    <path d="M 96 106 L 928 106 L 974 152 L 974 616 L 928 662 L 96 662 L 50 616 L 50 152 Z"
+          fill="none" stroke="url(#goldThin)" stroke-width="2.5" opacity="0.95"/>
+    <!-- second inner hairline (deco double-line) -->
+    <path d="M 106 118 L 918 118 L 962 162 L 962 606 L 918 650 L 106 650 L 62 606 L 62 162 Z"
+          fill="none" stroke="#8a6f31" stroke-width="1.2" opacity="0.7"/>
+    <!-- grain -->
+    <path d="M 84 92 L 940 92 L 988 140 L 988 628 L 940 676 L 84 676 L 36 628 L 36 140 Z"
+          filter="url(#grainG)" opacity="0.5"/>
+  </g>
+
+  <!-- ===================== CORNER ORNAMENTS ===================== -->
+  <g stroke="url(#goldThin)" stroke-width="3.5" fill="none" opacity="1" filter="url(#goldGlow)">
+    <!-- top-left -->
+    <path d="M 62 168 L 62 148 L 100 118 L 128 118"/>
+    <path d="M 74 178 L 74 156 L 106 130 L 124 130" stroke-width="1.6" opacity="0.75"/>
+    <!-- top-right -->
+    <path d="M 962 168 L 962 148 L 924 118 L 896 118"/>
+    <path d="M 950 178 L 950 156 L 918 130 L 900 130" stroke-width="1.6" opacity="0.75"/>
+    <!-- bottom-left -->
+    <path d="M 62 600 L 62 620 L 100 650 L 128 650"/>
+    <path d="M 74 590 L 74 612 L 106 638 L 124 638" stroke-width="1.6" opacity="0.75"/>
+    <!-- bottom-right -->
+    <path d="M 962 600 L 962 620 L 924 650 L 896 650"/>
+    <path d="M 950 590 L 950 612 L 918 638 L 900 638" stroke-width="1.6" opacity="0.75"/>
+  </g>
+
+  <!-- ===================== TOP BANNER ===================== -->
+  <g filter="url(#shadowG)">
+    <!-- wing left -->
+    <path d="M 250 62 L 330 62 L 330 122 L 250 122 L 274 92 Z" fill="url(#gold)" stroke="#3a2c14" stroke-width="2"/>
+    <path d="M 266 76 L 322 76 M 266 94 L 322 94 M 266 112 L 322 112" stroke="#3a2c14" stroke-width="5" opacity="0.9"/>
+    <path d="M 266 73 L 322 73 M 266 91 L 322 91 M 266 109 L 322 109" stroke="#f7e3aa" stroke-width="2" opacity="0.9"/>
+    <!-- wing right -->
+    <path d="M 774 62 L 694 62 L 694 122 L 774 122 L 750 92 Z" fill="url(#gold)" stroke="#3a2c14" stroke-width="2"/>
+    <path d="M 758 76 L 702 76 M 758 94 L 702 94 M 758 112 L 702 112" stroke="#3a2c14" stroke-width="5" opacity="0.9"/>
+    <path d="M 758 73 L 702 73 M 758 91 L 702 91 M 758 109 L 702 109" stroke="#f7e3aa" stroke-width="2" opacity="0.9"/>
+    <!-- centre banner -->
+    <path d="M 330 56 L 694 56 L 694 128 L 330 128 Z" fill="url(#bannerFill)" stroke="url(#goldEdge)" stroke-width="5"/>
+    <path d="M 344 68 L 680 68 L 680 116 L 344 116 Z" fill="none" stroke="url(#goldThin)" stroke-width="2" opacity="0.9"/>
+    <path d="M 330 56 L 694 56 L 694 128 L 330 128 Z" filter="url(#grainG)" opacity="0.45"/>
+  </g>
+
+  <!-- ===================== BOTTOM BUTTON PLATE ===================== -->
+  <g filter="url(#shadowG)">
+    <path d="M 386 646 L 638 646 L 676 692 L 638 738 L 386 738 L 348 692 Z"
+          fill="url(#bannerFill)" stroke="url(#goldEdge)" stroke-width="5"/>
+    <path d="M 398 660 L 626 660 L 656 692 L 626 724 L 398 724 L 368 692 Z"
+          fill="none" stroke="url(#goldThin)" stroke-width="2" opacity="0.9"/>
+  </g>
+</svg>
