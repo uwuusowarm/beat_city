@@ -114,15 +114,23 @@ public class EnemyCombat : MonoBehaviour
         if (_player == null || _isTelegraphing) return;
         if (_health != null && _health.Current <= 0) return;
         if (_movement != null && !_movement.CanAct) return;
-        if (_movement != null && _movement.rangedSettings != null)
-        {
-            return;
-        }
+
+        bool isRanged = _movement != null && _movement.rangedSettings != null;
 
         Vector3 playerPos2D = new Vector3(_player.position.x, transform.position.y, _player.position.z);
         float distanceToPlayer = Vector3.Distance(transform.position, playerPos2D);
 
-        float attackRange = _movement != null ? _movement.attackDistance : 2f;
+        float attackRange;
+        if (isRanged)
+        {
+            attackRange = _movement.RangedMeleeFallbackDistance;
+            if (distanceToPlayer > attackRange) return; 
+        }
+        else
+        {
+            attackRange = _movement != null ? _movement.attackDistance : 2f;
+        }
+
         if (distanceToPlayer <= attackRange && Time.time >= _lastAttackTime + attackCooldown)
         {
             if (BeatEmUpDirector.Instance != null && BeatEmUpDirector.Instance.RequestAttackToken(this))
@@ -130,6 +138,7 @@ public class EnemyCombat : MonoBehaviour
                 StartCoroutine(TelegraphAndAttack());
             }
         }
+
     }
 
     public void TryRangedAttack(RangedEnemySettings rangedSettings)
@@ -150,22 +159,25 @@ public class EnemyCombat : MonoBehaviour
         float dirX = _player.position.x >= transform.position.x ? 1f : -1f;
         Vector3 direction = new Vector3(dirX, 0f, 0f);
 
-        if (Physics.Raycast(origin, direction, out RaycastHit hit, rangedSettings.rangedShootRange))
-        {
-            if (hit.transform.CompareTag("Player"))
-            {
-                Health playerHealth = hit.transform.GetComponent<Health>();
+        RaycastHit[] hits = Physics.RaycastAll(origin, direction, rangedSettings.rangedShootRange);
+        System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
 
-                if (playerHealth != null)
+        foreach (var hit in hits)
+        {
+            if (!hit.transform.CompareTag("Player")) continue; 
+
+            Health playerHealth = hit.transform.GetComponent<Health>();
+            if (playerHealth != null)
+            {
+                playerHealth.TakeDamage(new HitData
                 {
-                    playerHealth.TakeDamage(new HitData
-                    {
-                        Damage = rangedSettings.rangedDamage,
-                        Source = gameObject,
-                        HitPosition = hit.point
-                    });
-                }
+                    Damage = rangedSettings.rangedDamage,
+                    Source = gameObject,
+                    HitPosition = hit.point
+                });
             }
+
+            break; 
         }
 
         Debug.DrawRay(origin, direction * rangedSettings.rangedShootRange, Color.red, 0.5f);

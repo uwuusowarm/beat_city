@@ -4,6 +4,10 @@ using System.Collections;
 [RequireComponent(typeof(CharacterController))]
 public class EnemyMovement : MonoBehaviour
 {
+    [Header("Ranged Melee Fallback")]
+    [SerializeField] private float rangedMeleeFallbackDistance = 1.8f;
+    public float RangedMeleeFallbackDistance => rangedMeleeFallbackDistance;
+
     [Header("Settings")]
     public EnemySettings meleeSettings;
     public RangedEnemySettings rangedSettings;
@@ -168,8 +172,15 @@ public class EnemyMovement : MonoBehaviour
         
         _groundYPosition = transform.position.y;
 
-        meleeSettings = SettingsResolver.ResolveEnemySettings(meleeSettings);
-        rangedSettings = null;
+        if (rangedSettings == null)
+        {
+            meleeSettings = SettingsResolver.ResolveEnemySettings(meleeSettings);
+        }
+        
+        if (meleeSettings != null)
+        {
+            rangedSettings = null;
+        }
 
         _juggleCeiling = MaxJuggleHeight;
 
@@ -195,7 +206,6 @@ public class EnemyMovement : MonoBehaviour
 
         if (rangedSettings != null)
         {
-            rangedSide = transform.position.x < player.position.x ? -1 : 1;
             PickNewRangedTarget();
             rangedShootTimer = Random.Range(rangedSettings.rangedShootCooldownMin, rangedSettings.rangedShootCooldownMax);
         }
@@ -1061,6 +1071,18 @@ public class EnemyMovement : MonoBehaviour
 
     private void MoveRanged()
     {
+        float distanceToPlayerXZ = Vector3.Distance(
+        new Vector3(transform.position.x, 0f, transform.position.z),
+        new Vector3(player.position.x, 0f, player.position.z));
+
+        if (distanceToPlayerXZ <= rangedMeleeFallbackDistance)
+        {
+            ApplyGravityAndMove(Vector3.zero);
+            if (animator != null) animator.SetFloat("Speed", 0f);
+            isAiming = false;
+            return;
+        }
+
         if (rangedRecoveryTimer > 0f)
         {
             rangedRecoveryTimer -= Time.deltaTime;
@@ -1157,6 +1179,8 @@ public class EnemyMovement : MonoBehaviour
 
     private void PickNewRangedTarget()
     {
+        rangedSide = transform.position.x < player.position.x ? -1 : 1;
+
         float targetDistance =
             (rangedSettings.rangedMinDistance + rangedSettings.rangedMaxDistance) * 0.5f;
 
