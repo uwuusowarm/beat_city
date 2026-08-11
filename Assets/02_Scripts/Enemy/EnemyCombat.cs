@@ -143,10 +143,13 @@ public class EnemyCombat : MonoBehaviour
 
     public void TryRangedAttack(RangedEnemySettings rangedSettings)
     {
+        Debug.Log($"TRY RANGED ATTACK: {name} | Time: {Time.time}");
+
         if (rangedSettings == null) return;
         if (_player == null) return;
         if (_health != null && _health.Current <= 0) return;
         if (_movement != null && !_movement.CanAct) return;
+        if (!IsReadyToAttack) return;
 
         ShootRanged(rangedSettings);
         _lastAttackTime = Time.time;
@@ -154,6 +157,13 @@ public class EnemyCombat : MonoBehaviour
 
     private void ShootRanged(RangedEnemySettings rangedSettings)
     {
+        Animator animator = _movement != null ? _movement.GetComponentInChildren<Animator>() : null;
+        if (animator != null)
+        {
+            Debug.Log($"PLAY SHOOT: {name} | Time: {Time.time}");
+            animator.Play("Shoot", 0, 0f);
+        }
+
         Vector3 origin = transform.position + Vector3.up * 1f;
 
         float dirX = _player.position.x >= transform.position.x ? 1f : -1f;
@@ -230,6 +240,9 @@ public class EnemyCombat : MonoBehaviour
     private void Attack()
     {
         Animator animator = null;
+
+        bool isRanged = _movement != null && _movement.rangedSettings != null;
+
         if (_movement != null)
         {
             animator = _movement.GetComponentInChildren<Animator>();
@@ -237,16 +250,27 @@ public class EnemyCombat : MonoBehaviour
 
         if (animator != null)
         {
-            string[] attacks = { "Punch1", "Punch2", "Kick" };
-            string randomAttack = attacks[Random.Range(0, attacks.Length)];
-            animator.Play(randomAttack, 0, 0f);
+            if (isRanged)
+            {
+                animator.Play("Attack", 0, 0f);
+            }
+            else
+            {
+                string[] attacks = { "Punch1", "Punch2", "Kick" };
+                string randomAttack = attacks[Random.Range(0, attacks.Length)];
+                animator.Play(randomAttack, 0, 0f);
+            }
         }
 
         if (_attackHitbox == null || _player == null) return;
 
         float dirX = _player.position.x >= transform.position.x ? 1f : -1f;
-        _attackHitboxTransform.position = transform.position + Vector3.up * HitboxHeight;
-        _attackHitboxTransform.rotation = Quaternion.LookRotation(new Vector3(dirX, 0f, 0f));
+
+        _attackHitboxTransform.position =
+            transform.position + Vector3.up * HitboxHeight;
+
+        _attackHitboxTransform.rotation =
+            Quaternion.LookRotation(new Vector3(dirX, 0f, 0f));
 
         _attackHitbox.Size = HitboxSize;
         _attackHitbox.Offset = Vector3.forward * HitboxForwardOffset;
@@ -255,9 +279,27 @@ public class EnemyCombat : MonoBehaviour
         _attackHitbox.HitStunDuration = hitStunDuration;
         _attackHitbox.HitStopDuration = hitStopDuration;
 
-        _attackHitbox.Activate();
-        _attackHitbox.Deactivate();
+        if (!isRanged)
+        {
+            _attackHitbox.Activate();
+            _attackHitbox.Deactivate();
+        }
+        
     }
+
+    public void EnableAttackHitbox()
+    {
+        if (_attackHitbox != null)
+            _attackHitbox.Activate();
+    }
+
+    public void DisableAttackHitbox()
+    {
+        if (_attackHitbox != null)
+            _attackHitbox.Deactivate();
+    }
+
+
 
     private void ResetVisuals()
     {
