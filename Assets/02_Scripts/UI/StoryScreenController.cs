@@ -14,7 +14,6 @@ public class StoryScreenController : MonoBehaviour
     [SerializeField] private bool loopStoryMusic = false;
 
     [Header("UI")]
-    [SerializeField] private GameObject blackBackground;
     [SerializeField] private GameObject storyImageObject;
     [SerializeField] private CanvasGroup imageCanvasGroup;
     [SerializeField] private CanvasGroup textCanvasGroup;
@@ -41,7 +40,6 @@ public class StoryScreenController : MonoBehaviour
 
     private bool isSequenceRunning = false;
     private Image storyImage;
-    private Image blackBackgroundImage;
     private string sceneName;
     private readonly List<MonoBehaviour> disabledScripts = new List<MonoBehaviour>();
 
@@ -51,14 +49,9 @@ public class StoryScreenController : MonoBehaviour
         {
             storyImage = storyImageObject.GetComponent<Image>();
         }
-
-        if (blackBackground != null)
-        {
-            blackBackgroundImage = blackBackground.GetComponent<Image>();
-        }
     }
 
-    private void StretchStoryImageToFullscreen()
+    private void StretchStoryImageToFullscreen(float safetyMargin = 1f)
     {
         if (storyImage == null) return;
 
@@ -81,41 +74,39 @@ public class StoryScreenController : MonoBehaviour
         float scaleX = Mathf.Approximately(parentScale.x, 0f) ? 1f : canvasScale.x / parentScale.x;
         float scaleY = Mathf.Approximately(parentScale.y, 0f) ? 1f : canvasScale.y / parentScale.y;
 
-        rect.sizeDelta = new Vector2(canvasRect.rect.width * scaleX, canvasRect.rect.height * scaleY);
+        rect.sizeDelta = new Vector2(canvasRect.rect.width * scaleX, canvasRect.rect.height * scaleY) * safetyMargin;
         rect.position = canvasRect.TransformPoint(canvasRect.rect.center);
 
         storyImage.type = Image.Type.Simple;
         storyImage.preserveAspect = false;
     }
 
-    private void ShowBlackBackground(bool show)
+    private void SetStoryImageTint(float brightness)
     {
-        if (blackBackground == null) return;
-
-        if (show && blackBackgroundImage != null)
-        {
-            Color color = blackBackgroundImage.color;
-            color.a = 1f;
-            blackBackgroundImage.color = color;
-        }
-
-        blackBackground.SetActive(show);
+        if (storyImage == null) return;
+        storyImage.color = new Color(brightness, brightness, brightness, 1f);
     }
 
     void Start()
     {
         sceneName = SceneManager.GetActiveScene().name;
 
-        if (storyImageObject != null) storyImageObject.SetActive(false);
         if (textCanvasGroup != null && textCanvasGroup.gameObject != null) textCanvasGroup.gameObject.SetActive(false);
 
         Sprite[] introSprites = autoPlay ? StartImageSprites : new Sprite[0];
 
-        ShowBlackBackground(introSprites.Length > 0);
-
         if (introSprites.Length > 0)
         {
+            StretchStoryImageToFullscreen(4f);
+            SetStoryImageTint(0f);
+            if (imageCanvasGroup != null) imageCanvasGroup.alpha = 1f;
+            if (storyImageObject != null) storyImageObject.SetActive(true);
+
             TriggerStorySequence(introSprites);
+        }
+        else if (storyImageObject != null)
+        {
+            storyImageObject.SetActive(false);
         }
     }
 
@@ -201,16 +192,13 @@ public class StoryScreenController : MonoBehaviour
         group.alpha = to;
     }
 
-    private IEnumerator FadeBlackBackground(float from, float to, float duration)
+    private IEnumerator FadeStoryImageTint(float from, float to, float duration)
     {
-        if (blackBackgroundImage == null) yield break;
-
-        Color color = blackBackgroundImage.color;
+        if (storyImage == null) yield break;
 
         if (duration <= 0f)
         {
-            color.a = to;
-            blackBackgroundImage.color = color;
+            SetStoryImageTint(to);
             yield break;
         }
 
@@ -218,13 +206,11 @@ public class StoryScreenController : MonoBehaviour
         while (timer < duration)
         {
             timer += Time.unscaledDeltaTime;
-            color.a = Mathf.Lerp(from, to, timer / duration);
-            blackBackgroundImage.color = color;
+            SetStoryImageTint(Mathf.Lerp(from, to, timer / duration));
             yield return null;
         }
 
-        color.a = to;
-        blackBackgroundImage.color = color;
+        SetStoryImageTint(to);
     }
 
     private IEnumerator WaitForAnyInput()
@@ -254,17 +240,17 @@ public class StoryScreenController : MonoBehaviour
 
         if (textCanvasGroup != null) textCanvasGroup.alpha = 0f;
 
-        if (imageCanvasGroup != null) imageCanvasGroup.alpha = 0f;
-
-        ShowBlackBackground(true);
+        if (imageCanvasGroup != null) imageCanvasGroup.alpha = 1f;
+        SetStoryImageTint(0f);
+        StretchStoryImageToFullscreen(4f);
+        if (storyImageObject != null) storyImageObject.SetActive(true);
 
         yield return new WaitForSecondsRealtime(delayBeforeImage);
 
         if (storyImage != null) storyImage.sprite = sprites[0];
         StretchStoryImageToFullscreen();
-        if (storyImageObject != null) storyImageObject.SetActive(true);
 
-        yield return FadeCanvasGroup(imageCanvasGroup, 0f, 1f, imageFadeDuration);
+        yield return FadeStoryImageTint(0f, 1f, imageFadeDuration);
 
         yield return new WaitForSecondsRealtime(delayBeforeText);
 
@@ -279,14 +265,14 @@ public class StoryScreenController : MonoBehaviour
             bool isLast = i == sprites.Length - 1;
             if (isLast) break;
 
-            yield return FadeCanvasGroup(imageCanvasGroup, 1f, 0f, imageSwitchFadeDuration);
+            yield return FadeStoryImageTint(1f, 0f, imageSwitchFadeDuration);
             if (storyImage != null) storyImage.sprite = sprites[i + 1];
             StretchStoryImageToFullscreen();
-            yield return FadeCanvasGroup(imageCanvasGroup, 0f, 1f, imageSwitchFadeDuration);
+            yield return FadeStoryImageTint(0f, 1f, imageSwitchFadeDuration);
         }
 
         Coroutine textFadeOut = StartCoroutine(FadeCanvasGroup(textCanvasGroup, 1f, 0f, endFadeDuration));
-        yield return FadeCanvasGroup(imageCanvasGroup, 1f, 0f, endFadeDuration);
+        yield return FadeStoryImageTint(1f, 0f, endFadeDuration);
         yield return textFadeOut;
 
         isSequenceRunning = false;
@@ -304,9 +290,8 @@ public class StoryScreenController : MonoBehaviour
             AudioManager.Instance.PlayMusic(MusicType.Stage1);
         }
 
-        yield return FadeBlackBackground(1f, 0f, endFadeDuration);
+        yield return FadeCanvasGroup(imageCanvasGroup, 1f, 0f, endFadeDuration);
 
-        ShowBlackBackground(false);
         if (storyImageObject != null)
         {
             if (imageCanvasGroup != null) imageCanvasGroup.alpha = 0f;

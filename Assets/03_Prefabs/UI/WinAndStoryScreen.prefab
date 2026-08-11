@@ -1967,17 +1967,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 788453840185ab34da911ad3262827ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StoryScreenController
-  autoPlay: 1
-  blackBackground: {fileID: 8552679538323634594}
+  autoPlay: 0
+  loopStoryMusic: 0
   storyImageObject: {fileID: 2101757932609005222}
   imageCanvasGroup: {fileID: 8963823167030858477}
   textCanvasGroup: {fileID: 4114403398242715087}
+  startImages: []
+  endImages: []
   startImage: {fileID: 5132074085287146984}
   endImage: {fileID: 6948239382079398742}
+  objectsToDisable: []
   delayBeforeImage: 1
   imageFadeDuration: 1.5
+  imageSwitchFadeDuration: 0.5
   delayBeforeText: 1
   textFadeDuration: 1.5
+  endFadeDuration: 1
 --- !u!1 &6216718143885213249
 GameObject:
   m_ObjectHideFlags: 0
@@ -3014,7 +3019,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &9147385943515340827
 RectTransform:
   m_ObjectHideFlags: 0
