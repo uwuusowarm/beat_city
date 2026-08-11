@@ -347,6 +347,13 @@ public class PlayerCombat : MonoBehaviour
             case SpecialAttackId.MoonKick:
                 prefab = moonKickVFXPrefab;
                 spawnPoint = moonKickVfxSpawnPoint;
+
+                float currentY = transform.eulerAngles.y;
+                bool isFacingLeft = Mathf.Abs(Mathf.DeltaAngle(currentY, -90f))
+                                   < Mathf.Abs(Mathf.DeltaAngle(currentY, 90f));
+
+                float targetX = isFacingLeft ? -98f : -82f;
+                spawnPoint.localRotation = Quaternion.Euler(targetX, 90f, -90f);
                 break;
         }
 

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class WinAndLose : MonoBehaviour
 {
@@ -7,6 +8,9 @@ public class WinAndLose : MonoBehaviour
     [SerializeField] private GameObject loseScreen;
     [SerializeField] private StoryScreenController storyController;
     [SerializeField] private string nextSceneName = string.Empty;
+
+    [SerializeField] private TextMeshProUGUI earnedCoinsText;
+    private int _startingCoins;
 
     void Start()
     {
@@ -17,6 +21,11 @@ public class WinAndLose : MonoBehaviour
         if (loseScreen != null)
         {
             loseScreen.SetActive(false);
+        }
+
+        if (PlayerStats.Instance != null)
+        {
+            _startingCoins = PlayerStats.Instance.coins;
         }
     }
 
@@ -44,6 +53,15 @@ public class WinAndLose : MonoBehaviour
         Time.timeScale = 0f;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
+
+        if (PlayerStats.Instance != null && earnedCoinsText != null)
+        {
+            int earnedCoins = PlayerStats.Instance.coins - _startingCoins;
+            
+            earnedCoins = Mathf.Max(0, earnedCoins);
+
+            earnedCoinsText.text = $"COINS: + {earnedCoins}";
+        }
     }
 
     public void ContinueGame()
