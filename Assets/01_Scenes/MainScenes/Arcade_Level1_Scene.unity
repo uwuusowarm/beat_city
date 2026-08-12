@@ -900,10 +900,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: WinAndStoryScreen
       objectReference: {fileID: 0}
-    - target: {fileID: 7292478556499395923, guid: b6f100649d10b0d43b9d1c979baadfbd, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1413,6 +1409,66 @@ PrefabInstance:
       propertyPath: m_Name
       value: Arcade Stage 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5487172708363370996, guid: 5d8658f6d7d663245aa4c9d4e62718b3, type: 3}
+      propertyPath: singleEnemyPrefabs.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5487172708363370996, guid: 5d8658f6d7d663245aa4c9d4e62718b3, type: 3}
+      propertyPath: 'singleEnemyPrefabs.Array.data[0]'
+      value: 
+      objectReference: {fileID: 116653089531905180, guid: 50f90a6c94f837c45bee94da21fdd110, type: 3}
+    - target: {fileID: 5487172708363370996, guid: 5d8658f6d7d663245aa4c9d4e62718b3, type: 3}
+      propertyPath: 'singleEnemyPrefabs.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1613854844687562703, guid: 20a3b4d6bfe6a3e4dacf6d43b5e82399, type: 3}
+    - target: {fileID: 5506482575649835217, guid: 5d8658f6d7d663245aa4c9d4e62718b3, type: 3}
+      propertyPath: singleEnemyPrefabs.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5506482575649835217, guid: 5d8658f6d7d663245aa4c9d4e62718b3, type: 3}
+      propertyPath: 'singleEnemyPrefabs.Array.data[0]'
+      value: 
+      objectReference: {fileID: 116653089531905180, guid: 50f90a6c94f837c45bee94da21fdd110, type: 3}
+    - target: {fileID: 5506482575649835217, guid: 5d8658f6d7d663245aa4c9d4e62718b3, type: 3}
+      propertyPath: 'singleEnemyPrefabs.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1613854844687562703, guid: 20a3b4d6bfe6a3e4dacf6d43b5e82399, type: 3}
+    - target: {fileID: 5736713744879106527, guid: 5d8658f6d7d663245aa4c9d4e62718b3, type: 3}
+      propertyPath: singleEnemyPrefabs.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5736713744879106527, guid: 5d8658f6d7d663245aa4c9d4e62718b3, type: 3}
+      propertyPath: 'singleEnemyPrefabs.Array.data[0]'
+      value: 
+      objectReference: {fileID: 116653089531905180, guid: 50f90a6c94f837c45bee94da21fdd110, type: 3}
+    - target: {fileID: 5736713744879106527, guid: 5d8658f6d7d663245aa4c9d4e62718b3, type: 3}
+      propertyPath: 'singleEnemyPrefabs.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1613854844687562703, guid: 20a3b4d6bfe6a3e4dacf6d43b5e82399, type: 3}
+    - target: {fileID: 7945384366762330906, guid: 5d8658f6d7d663245aa4c9d4e62718b3, type: 3}
+      propertyPath: singleEnemyPrefabs.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7945384366762330906, guid: 5d8658f6d7d663245aa4c9d4e62718b3, type: 3}
+      propertyPath: 'singleEnemyPrefabs.Array.data[0]'
+      value: 
+      objectReference: {fileID: 116653089531905180, guid: 50f90a6c94f837c45bee94da21fdd110, type: 3}
+    - target: {fileID: 7945384366762330906, guid: 5d8658f6d7d663245aa4c9d4e62718b3, type: 3}
+      propertyPath: 'singleEnemyPrefabs.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1613854844687562703, guid: 20a3b4d6bfe6a3e4dacf6d43b5e82399, type: 3}
+    - target: {fileID: 8212642165970685178, guid: 5d8658f6d7d663245aa4c9d4e62718b3, type: 3}
+      propertyPath: singleEnemyPrefabs.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8212642165970685178, guid: 5d8658f6d7d663245aa4c9d4e62718b3, type: 3}
+      propertyPath: 'singleEnemyPrefabs.Array.data[0]'
+      value: 
+      objectReference: {fileID: 116653089531905180, guid: 50f90a6c94f837c45bee94da21fdd110, type: 3}
+    - target: {fileID: 8212642165970685178, guid: 5d8658f6d7d663245aa4c9d4e62718b3, type: 3}
+      propertyPath: 'singleEnemyPrefabs.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1613854844687562703, guid: 20a3b4d6bfe6a3e4dacf6d43b5e82399, type: 3}
     - target: {fileID: 8541489708330827149, guid: 5d8658f6d7d663245aa4c9d4e62718b3, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
