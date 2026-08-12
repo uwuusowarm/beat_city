@@ -114,30 +114,42 @@ public class EnemyCombat : MonoBehaviour
         if (_player == null || _isTelegraphing) return;
         if (_health != null && _health.Current <= 0) return;
         if (_movement != null && !_movement.CanAct) return;
-        if (_movement != null && _movement.rangedSettings != null)
-        {
-            return;
-        }
+
+        bool isRanged = _movement != null && _movement.rangedSettings != null;
 
         Vector3 playerPos2D = new Vector3(_player.position.x, transform.position.y, _player.position.z);
         float distanceToPlayer = Vector3.Distance(transform.position, playerPos2D);
 
-        float attackRange = _movement != null ? _movement.attackDistance : 2f;
-        if (distanceToPlayer <= attackRange && Time.time >= _lastAttackTime + attackCooldown)
+        float attackRange;
+        if (isRanged)
+        {
+            attackRange = _movement.RangedMeleeFallbackDistance;
+            if (distanceToPlayer > attackRange) return; 
+        }
+        else
+        {
+            attackRange = _movement != null ? _movement.attackDistance : 2f;
+        }
+
+        if (distanceToPlayer <= attackRange && Time.time >= _lastAttackTime + attackCooldown && !(isRanged && _movement.IsRangedRepositioning))
         {
             if (BeatEmUpDirector.Instance != null && BeatEmUpDirector.Instance.RequestAttackToken(this))
             {
                 StartCoroutine(TelegraphAndAttack());
             }
         }
+
     }
 
     public void TryRangedAttack(RangedEnemySettings rangedSettings)
     {
+        Debug.Log($"TRY RANGED ATTACK: {name} | Time: {Time.time}");
+
         if (rangedSettings == null) return;
         if (_player == null) return;
         if (_health != null && _health.Current <= 0) return;
         if (_movement != null && !_movement.CanAct) return;
+        if (!IsReadyToAttack) return;
 
         ShootRanged(rangedSettings);
         _lastAttackTime = Time.time;
@@ -145,30 +157,90 @@ public class EnemyCombat : MonoBehaviour
 
     private void ShootRanged(RangedEnemySettings rangedSettings)
     {
+        Animator animator = _movement != null ? _movement.GetComponentInChildren<Animator>() : null;
+        if (animator != null)
+        {
+            animator.Play("Shoot", 0, 0f);
+        }
+
+        //Vector3 origin = transform.position + Vector3.up * 1f;
+
+        //float dirX = _player.position.x >= transform.position.x ? 1f : -1f;
+        //Vector3 direction = new Vector3(dirX, 0f, 0f);
+
+        //RaycastHit[] hits = Physics.RaycastAll(origin, direction, rangedSettings.rangedShootRange);
+        //System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+
+        //foreach (var hit in hits)
+        //{
+        //    if (!hit.transform.CompareTag("Player")) continue; 
+
+        //    Health playerHealth = hit.transform.GetComponent<Health>();
+        //    if (playerHealth != null)
+        //    {
+        //        playerHealth.TakeDamage(new HitData
+        //        {
+        //            Damage = rangedSettings.rangedDamage,
+        //            Source = gameObject,
+        //            HitPosition = hit.point
+        //        });
+        //    }
+
+        //    break; 
+        //}
+
+        //Debug.DrawRay(origin, direction * rangedSettings.rangedShootRange, Color.red, 0.5f);
+    }
+
+    public void RangedShootHit()
+    {
+        if (_player == null)
+            return;
+
+        RangedEnemySettings settings = _movement.rangedSettings;
+
+        if (settings == null)
+            return;
+
         Vector3 origin = transform.position + Vector3.up * 1f;
 
         float dirX = _player.position.x >= transform.position.x ? 1f : -1f;
         Vector3 direction = new Vector3(dirX, 0f, 0f);
 
-        if (Physics.Raycast(origin, direction, out RaycastHit hit, rangedSettings.rangedShootRange))
-        {
-            if (hit.transform.CompareTag("Player"))
-            {
-                Health playerHealth = hit.transform.GetComponent<Health>();
+        RaycastHit[] hits = Physics.RaycastAll(
+            origin,
+            direction,
+            settings.rangedShootRange
+        );
 
-                if (playerHealth != null)
+        System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+
+        foreach (var hit in hits)
+        {
+            if (!hit.transform.CompareTag("Player"))
+                continue;
+
+            Health playerHealth = hit.transform.GetComponent<Health>();
+
+            if (playerHealth != null)
+            {
+                playerHealth.TakeDamage(new HitData
                 {
-                    playerHealth.TakeDamage(new HitData
-                    {
-                        Damage = rangedSettings.rangedDamage,
-                        Source = gameObject,
-                        HitPosition = hit.point
-                    });
-                }
+                    Damage = settings.rangedDamage,
+                    Source = gameObject,
+                    HitPosition = hit.point
+                });
             }
+
+            break;
         }
 
-        Debug.DrawRay(origin, direction * rangedSettings.rangedShootRange, Color.red, 0.5f);
+        Debug.DrawRay(
+            origin,
+            direction * settings.rangedShootRange,
+            Color.red,
+            0.5f
+        );
     }
 
     private IEnumerator TelegraphAndAttack()
@@ -211,13 +283,21 @@ public class EnemyCombat : MonoBehaviour
             _isTelegraphing = false;
             if (_movement != null) _movement.SetAttackWindupActive(false);
             if (BeatEmUpDirector.Instance != null) BeatEmUpDirector.Instance.ReleaseToken(this);
-            if (_movement != null) _movement.ForceRecalculateTactic();
+            if (_movement != null)
+            {
+                _movement.ForceRecalculateTactic();
+                if (_movement.rangedSettings != null)
+                    _movement.ForceRangedReposition();
+            }
         }
     }
 
     private void Attack()
     {
         Animator animator = null;
+
+        bool isRanged = _movement != null && _movement.rangedSettings != null;
+
         if (_movement != null)
         {
             animator = _movement.GetComponentInChildren<Animator>();
@@ -225,16 +305,27 @@ public class EnemyCombat : MonoBehaviour
 
         if (animator != null)
         {
-            string[] attacks = { "Punch1", "Punch2", "Kick" };
-            string randomAttack = attacks[Random.Range(0, attacks.Length)];
-            animator.Play(randomAttack, 0, 0f);
+            if (isRanged)
+            {
+                animator.Play("Attack", 0, 0f);
+            }
+            else
+            {
+                string[] attacks = { "Punch1", "Punch2", "Kick" };
+                string randomAttack = attacks[Random.Range(0, attacks.Length)];
+                animator.Play(randomAttack, 0, 0f);
+            }
         }
 
         if (_attackHitbox == null || _player == null) return;
 
         float dirX = _player.position.x >= transform.position.x ? 1f : -1f;
-        _attackHitboxTransform.position = transform.position + Vector3.up * HitboxHeight;
-        _attackHitboxTransform.rotation = Quaternion.LookRotation(new Vector3(dirX, 0f, 0f));
+
+        _attackHitboxTransform.position =
+            transform.position + Vector3.up * HitboxHeight;
+
+        _attackHitboxTransform.rotation =
+            Quaternion.LookRotation(new Vector3(dirX, 0f, 0f));
 
         _attackHitbox.Size = HitboxSize;
         _attackHitbox.Offset = Vector3.forward * HitboxForwardOffset;
@@ -243,9 +334,27 @@ public class EnemyCombat : MonoBehaviour
         _attackHitbox.HitStunDuration = hitStunDuration;
         _attackHitbox.HitStopDuration = hitStopDuration;
 
-        _attackHitbox.Activate();
-        _attackHitbox.Deactivate();
+        if (!isRanged)
+        {
+            _attackHitbox.Activate();
+            _attackHitbox.Deactivate();
+        }
+        
     }
+
+    public void EnableAttackHitbox()
+    {
+        if (_attackHitbox != null)
+            _attackHitbox.Activate();
+    }
+
+    public void DisableAttackHitbox()
+    {
+        if (_attackHitbox != null)
+            _attackHitbox.Deactivate();
+    }
+
+
 
     private void ResetVisuals()
     {
