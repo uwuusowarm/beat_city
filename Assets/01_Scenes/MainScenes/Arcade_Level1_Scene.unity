@@ -755,6 +755,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: WinAndStoryScreen
       objectReference: {fileID: 0}
+    - target: {fileID: 8481972658877976932, guid: b6f100649d10b0d43b9d1c979baadfbd, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8552679538323634594, guid: b6f100649d10b0d43b9d1c979baadfbd, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
