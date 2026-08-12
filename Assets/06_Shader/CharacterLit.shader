@@ -25,6 +25,18 @@ Shader "Custom/Character Lit"
         _Cutoff ("Alpha Cutoff", Range(0,1)) = 0.5
         [Enum(UnityEngine.Rendering.CullMode)] _Cull ("Cull Mode", Float) = 2
 
+        [Header(Material Maps (import with sRGB off))]
+        [Toggle(_OCCLUSIONMAP)] _UseOcclusionMap ("Use Occlusion Map", Float) = 0
+        _OcclusionMap ("Occlusion / AO", 2D) = "white" {}
+        _OcclusionStrength ("Occlusion Strength", Range(0,1)) = 1
+
+        [Toggle(_ROUGHNESSMAP)] _UseRoughnessMap ("Use Roughness Map", Float) = 0
+        _RoughnessMap ("Roughness", 2D) = "black" {}
+
+        [Toggle(_METALLICMAP)] _UseMetallicMap ("Use Metallic Map", Float) = 0
+        _MetallicMap ("Metallic", 2D) = "white" {}
+        _Metallic ("Metallic Scale", Range(0,1)) = 0
+
         [Header(Fill Light (no scene lights needed))]
         [HDR] _FillSky ("Fill From Above", Color) = (0.34,0.38,0.5,1)
         [HDR] _FillGround ("Fill From Below", Color) = (0.14,0.12,0.11,1)
@@ -84,6 +96,8 @@ Shader "Custom/Character Lit"
             half   _AdditionalLights;
             half4  _SpecularColor;
             half   _Smoothness;
+            half   _OcclusionStrength;
+            half   _Metallic;
             half4  _RimColor;
             half   _RimThreshold;
             half   _RimSmoothness;
@@ -109,6 +123,9 @@ Shader "Custom/Character Lit"
             #pragma fragment Frag
 
             #pragma shader_feature_local _NORMALMAP
+            #pragma shader_feature_local_fragment _OCCLUSIONMAP
+            #pragma shader_feature_local_fragment _ROUGHNESSMAP
+            #pragma shader_feature_local_fragment _METALLICMAP
             #pragma shader_feature_local_fragment _ALPHATEST_ON
             #pragma shader_feature_local_fragment _SPECULAR_ON
             #pragma shader_feature_local_fragment _RIM_ON
@@ -132,6 +149,9 @@ Shader "Custom/Character Lit"
 
             TEXTURE2D(_BaseMap);      SAMPLER(sampler_BaseMap);
             TEXTURE2D(_BumpMap);      SAMPLER(sampler_BumpMap);
+            TEXTURE2D(_OcclusionMap); SAMPLER(sampler_OcclusionMap);
+            TEXTURE2D(_RoughnessMap); SAMPLER(sampler_RoughnessMap);
+            TEXTURE2D(_MetallicMap);  SAMPLER(sampler_MetallicMap);
             TEXTURE2D(_EmissionMap);  SAMPLER(sampler_EmissionMap);
 
             struct Attributes
@@ -166,7 +186,8 @@ Shader "Custom/Character Lit"
 
             // Contribution of one light. Shared by the main light and both
             // additional light loops so they cannot drift apart.
-            half3 ShadeLight(Light light, half3 normalWS, half3 viewDir, half3 albedo)
+            half3 ShadeLight(Light light, half3 normalWS, half3 viewDir, half3 albedo,
+                             half3 specColor, half smoothness)
             {
                 half shadow = (_ReceiveShadows > 0.5) ? light.shadowAttenuation : 1.0h;
                 shadow = lerp(1.0h, shadow, _ShadowStrength);
@@ -178,8 +199,8 @@ Shader "Custom/Character Lit"
             #if defined(_SPECULAR_ON)
                 half3 halfVec = normalize(light.direction + viewDir);
                 half  ndh     = saturate(dot(normalWS, halfVec));
-                half  power   = exp2(10.0h * _Smoothness + 1.0h);
-                result += pow(ndh, power) * _SpecularColor.rgb * light.color
+                half  power   = exp2(10.0h * smoothness + 1.0h);
+                result += pow(ndh, power) * specColor * light.color
                           * atten * saturate(ndl);
             #endif
 
@@ -228,6 +249,31 @@ Shader "Custom/Character Lit"
 
                 half3 viewDir = normalize(input.viewDirWS);
 
+                // --- Material maps ---------------------------------------------
+                half occlusion = 1.0h;
+            #if defined(_OCCLUSIONMAP)
+                half ao = SAMPLE_TEXTURE2D(_OcclusionMap, sampler_OcclusionMap, input.uv).r;
+                occlusion = lerp(1.0h, ao, _OcclusionStrength);
+            #endif
+
+                // Roughness is the inverse of smoothness; the default black map
+                // keeps materials without a map at the slider value.
+                half smoothness = _Smoothness;
+            #if defined(_ROUGHNESSMAP)
+                half roughness = SAMPLE_TEXTURE2D(_RoughnessMap, sampler_RoughnessMap, input.uv).r;
+                smoothness = saturate((1.0h - roughness) * _Smoothness * 2.0h);
+            #endif
+
+                half metallic = _Metallic;
+            #if defined(_METALLICMAP)
+                metallic *= SAMPLE_TEXTURE2D(_MetallicMap, sampler_MetallicMap, input.uv).r;
+            #endif
+
+                // Stylised metal: highlight takes the surface colour and the
+                // diffuse drops back, without going full PBR.
+                half3 specColor = lerp(_SpecularColor.rgb, albedo.rgb, metallic);
+                half3 diffuse = albedo.rgb * (1.0h - metallic * 0.5h);
+
                 float2 screenUV = GetNormalizedScreenSpaceUV(input.positionHCS);
                 AmbientOcclusionFactor aoFactor = GetScreenSpaceAmbientOcclusion(screenUV);
 
@@ -245,7 +291,9 @@ Shader "Custom/Character Lit"
                 half3 ambient = SAMPLE_GI(input.lightmapUV, input.vertexSH, normalWS)
                                 * _AmbientStrength;
 
-                half3 color = albedo.rgb * (fill + ambient) * aoFactor.indirectAmbientOcclusion;
+                // Baked occlusion belongs on the indirect light, same as URP Lit.
+                half3 color = diffuse * (fill + ambient)
+                              * aoFactor.indirectAmbientOcclusion * occlusion;
 
                 // --- Main light ------------------------------------------------
                 float4 shadowCoord = TransformWorldToShadowCoord(input.positionWS);
@@ -256,7 +304,7 @@ Shader "Custom/Character Lit"
                 if (IsMatchingLightLayer(mainLight.layerMask, meshRenderingLayers))
             #endif
                 {
-                    color += ShadeLight(mainLight, normalWS, viewDir, albedo.rgb);
+                    color += ShadeLight(mainLight, normalWS, viewDir, diffuse, specColor, smoothness);
                 }
 
                 // --- Additional lights -----------------------------------------
@@ -281,7 +329,7 @@ Shader "Custom/Character Lit"
                     #ifdef _LIGHT_LAYERS
                         if (!IsMatchingLightLayer(light.layerMask, meshRenderingLayers)) continue;
                     #endif
-                        color += ShadeLight(light, normalWS, viewDir, albedo.rgb);
+                        color += ShadeLight(light, normalWS, viewDir, diffuse, specColor, smoothness);
                     }
                 #endif
 
@@ -290,7 +338,7 @@ Shader "Custom/Character Lit"
                     #ifdef _LIGHT_LAYERS
                         if (!IsMatchingLightLayer(light.layerMask, meshRenderingLayers)) continue;
                     #endif
-                        color += ShadeLight(light, normalWS, viewDir, albedo.rgb);
+                        color += ShadeLight(light, normalWS, viewDir, diffuse, specColor, smoothness);
                     LIGHT_LOOP_END
                 }
 

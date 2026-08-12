@@ -35,6 +35,8 @@ public class PlayerDeathHandler : MonoBehaviour
         if (_isDead) return;
         _isDead = true;
 
+        AudioManager.Resolve()?.PlaySfxRandom(SfxType.PlayerDeath);
+
         if (PlayerStateManager.Instance != null)
             PlayerStateManager.Instance.SetState(PlayerState.Dead);
 

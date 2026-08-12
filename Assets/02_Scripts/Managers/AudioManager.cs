@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public enum SfxType
@@ -11,6 +12,10 @@ public enum SfxType
     KickMiss,
     Movement,
     UI,
+    Grab,
+    EnemyLandThrow,
+    EnemyLandKnockup,
+    SlowMoImpact,
 }
 
 public enum MusicType
@@ -50,6 +55,8 @@ public class AudioManager : MonoBehaviour
     private float musicVolume = 1f;
     private float sfxVolume = 1f;
 
+    private readonly Dictionary<SfxType, float> lastPlayTime = new Dictionary<SfxType, float>();
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -61,7 +68,48 @@ public class AudioManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         UpdateVolume();
     }
-    
+
+    public static AudioManager Resolve()
+    {
+        if (Instance == null)
+        {
+            Instance = FindFirstObjectByType<AudioManager>();
+        }
+        return Instance;
+    }
+
+    public void PlaySfxRandom(SfxType type)
+    {
+        PlaySfxRandom(type, 0f);
+    }
+
+    public void PlaySfxRandom(SfxType type, float minInterval)
+    {
+        if (minInterval > 0f
+            && lastPlayTime.TryGetValue(type, out float last)
+            && Time.unscaledTime - last < minInterval)
+        {
+            return;
+        }
+
+        foreach (SfxEntry entry in sfxEntries)
+        {
+            if (entry.sfxType != type) continue;
+
+            if (entry.sfxClips == null || entry.sfxClips.Length == 0)
+            {
+                Debug.LogWarning("No clips assigned for: " + type);
+                return;
+            }
+
+            lastPlayTime[type] = Time.unscaledTime;
+            PlaySfx(type, Random.Range(0, entry.sfxClips.Length));
+            return;
+        }
+
+        Debug.LogWarning("No SfxEntry found for: " + type);
+    }
+
     public void PlaySfx(SfxType type, int index)
     {
         foreach (SfxEntry entry in sfxEntries)
