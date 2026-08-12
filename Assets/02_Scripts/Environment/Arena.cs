@@ -6,6 +6,7 @@ using UnityEngine;
 public class Arena : MonoBehaviour
 {
     [SerializeField] private GameObject[] enemyGroupPrefabs;
+    [SerializeField] private GameObject[] singleEnemyPrefabs;
     [SerializeField] private int enemyCount = 3;
     [SerializeField] private float spawnDelay = 1.5f;
 
@@ -65,13 +66,27 @@ public class Arena : MonoBehaviour
 
     private GameObject GetRandomChar()
     {
-        int groupIndex = Random.Range(0, enemyGroupPrefabs.Length);
+        int totalOptions = enemyGroupPrefabs.Length + singleEnemyPrefabs.Length;
 
-        GameObject selectedGroup = enemyGroupPrefabs[groupIndex];
+        if (totalOptions == 0) return null;
 
-        int childIndex = Random.Range(0, selectedGroup.transform.childCount);
+        int choice = Random.Range(0, totalOptions);
 
-        return selectedGroup.transform.GetChild(childIndex).gameObject;
+        if (choice < enemyGroupPrefabs.Length)
+        {
+           
+            GameObject selectedGroup = enemyGroupPrefabs[choice];
+
+            if (selectedGroup.transform.childCount == 0) return null;
+
+            int childIndex = Random.Range(0, selectedGroup.transform.childCount);
+            return selectedGroup.transform.GetChild(childIndex).gameObject;
+        }
+        else
+        {
+            int singleIndex = choice - enemyGroupPrefabs.Length;
+            return singleEnemyPrefabs[singleIndex];
+        }
     }
 
     private void OnEnemyDied()

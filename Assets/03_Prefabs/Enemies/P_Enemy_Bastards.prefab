@@ -54,6 +54,8 @@ GameObject:
   - component: {fileID: 3179065876100757259}
   - component: {fileID: 7522853543613000676}
   - component: {fileID: 1322119640187401673}
+  - component: {fileID: 4256715495036745152}
+  - component: {fileID: 3476881866380762827}
   m_Layer: 0
   m_Name: Enemy_Bastard_Purple
   m_TagString: Enemy
@@ -150,6 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a1f2d8570f90394783959550708db5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
+  rangedMeleeFallbackDistance: 1.8
   meleeSettings: {fileID: 0}
   rangedSettings: {fileID: 0}
   characterModel: {fileID: 6416908574643148924}
@@ -285,6 +288,95 @@ MonoBehaviour:
   metersPerDifficultyStep: 60
   hpIncreasePerStep: 0.2
   damageIncreasePerStep: 0.15
+--- !u!114 &4256715495036745152
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2341932926542406260}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c384d43dcaa100847a3abba6f552feff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDrop
+  item1: {fileID: 6139397281013752985, guid: 8d0f2efa10792b54fa99b083234835d8, type: 3}
+  item2: {fileID: 1945441015087013551, guid: 1d057e91502617e4fabedd122634efdf, type: 3}
+  dropChance: 20
+  item1Chance: 50
+  upwardForce: 4
+  spawnHeightOffset: 0.5
+  rotationSpeed: 60
+--- !u!114 &3476881866380762827
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2341932926542406260}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5b6c5471ff68a47808ab7564b6bead, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BlobShadow
+  shadowMaterial: {fileID: 2100000, guid: 4eeae1e77b9e969409077fc51fdfb106, type: 2}
+  size: 1.2
+  strength: 0.702
+  maxDistance: 6
+  originHeight: 0.5
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  surfaceOffset: 0.02
+  maxHeight: 3
+  sizeOverHeight:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: -0.45
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0.55
+      inSlope: -0.45
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  alphaOverHeight:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: -1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: -1
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &5993968919127322692
 GameObject:
   m_ObjectHideFlags: 0
@@ -305,6 +397,8 @@ GameObject:
   - component: {fileID: 8081174850741081342}
   - component: {fileID: 3390125541619468304}
   - component: {fileID: 2909339999984141916}
+  - component: {fileID: 4203987767576248116}
+  - component: {fileID: 1063334344938264771}
   m_Layer: 0
   m_Name: Enemy_Bastard_Red
   m_TagString: Enemy
@@ -401,6 +495,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a1f2d8570f90394783959550708db5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
+  rangedMeleeFallbackDistance: 1.8
   meleeSettings: {fileID: 0}
   rangedSettings: {fileID: 0}
   characterModel: {fileID: 2756358946490977613}
@@ -536,6 +631,95 @@ MonoBehaviour:
   metersPerDifficultyStep: 60
   hpIncreasePerStep: 0.2
   damageIncreasePerStep: 0.15
+--- !u!114 &4203987767576248116
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5993968919127322692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c384d43dcaa100847a3abba6f552feff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDrop
+  item1: {fileID: 6139397281013752985, guid: 8d0f2efa10792b54fa99b083234835d8, type: 3}
+  item2: {fileID: 1945441015087013551, guid: 1d057e91502617e4fabedd122634efdf, type: 3}
+  dropChance: 20
+  item1Chance: 50
+  upwardForce: 4
+  spawnHeightOffset: 0.5
+  rotationSpeed: 60
+--- !u!114 &1063334344938264771
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5993968919127322692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5b6c5471ff68a47808ab7564b6bead, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BlobShadow
+  shadowMaterial: {fileID: 2100000, guid: 4eeae1e77b9e969409077fc51fdfb106, type: 2}
+  size: 1.2
+  strength: 0.702
+  maxDistance: 6
+  originHeight: 0.5
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  surfaceOffset: 0.02
+  maxHeight: 3
+  sizeOverHeight:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: -0.45
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0.55
+      inSlope: -0.45
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  alphaOverHeight:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: -1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: -1
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &6431816695687519032
 GameObject:
   m_ObjectHideFlags: 0
@@ -556,6 +740,8 @@ GameObject:
   - component: {fileID: 8280926895975012122}
   - component: {fileID: 7021295248373446994}
   - component: {fileID: 3643230125674805888}
+  - component: {fileID: 668063211866775664}
+  - component: {fileID: 4414905920644272097}
   m_Layer: 0
   m_Name: Enemy_Bastard_Green
   m_TagString: Enemy
@@ -652,6 +838,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a1f2d8570f90394783959550708db5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
+  rangedMeleeFallbackDistance: 1.8
   meleeSettings: {fileID: 0}
   rangedSettings: {fileID: 0}
   characterModel: {fileID: 4743427245449753684}
@@ -787,6 +974,95 @@ MonoBehaviour:
   metersPerDifficultyStep: 60
   hpIncreasePerStep: 0.2
   damageIncreasePerStep: 0.15
+--- !u!114 &668063211866775664
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6431816695687519032}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c384d43dcaa100847a3abba6f552feff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDrop
+  item1: {fileID: 6139397281013752985, guid: 8d0f2efa10792b54fa99b083234835d8, type: 3}
+  item2: {fileID: 1945441015087013551, guid: 1d057e91502617e4fabedd122634efdf, type: 3}
+  dropChance: 20
+  item1Chance: 50
+  upwardForce: 4
+  spawnHeightOffset: 0.5
+  rotationSpeed: 60
+--- !u!114 &4414905920644272097
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6431816695687519032}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5b6c5471ff68a47808ab7564b6bead, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BlobShadow
+  shadowMaterial: {fileID: 2100000, guid: 4eeae1e77b9e969409077fc51fdfb106, type: 2}
+  size: 1.2
+  strength: 0.702
+  maxDistance: 6
+  originHeight: 0.5
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  surfaceOffset: 0.02
+  maxHeight: 3
+  sizeOverHeight:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: -0.45
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0.55
+      inSlope: -0.45
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  alphaOverHeight:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: -1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: -1
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &8558134004750198491
 GameObject:
   m_ObjectHideFlags: 0

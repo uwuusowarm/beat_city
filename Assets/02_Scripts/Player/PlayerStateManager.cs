@@ -9,7 +9,8 @@ public enum PlayerState
     Holding,
     Dashing,
     Stunned,
-    SpecialAttacking
+    SpecialAttacking,
+    Dead
 }
 
 public class PlayerStateManager : MonoBehaviour
@@ -40,7 +41,8 @@ public class PlayerStateManager : MonoBehaviour
     public void SetState(PlayerState newState)
     {
         if (CurrentState == newState) return;
-        
+        if (CurrentState == PlayerState.Dead) return;
+
         CurrentState = newState;
         OnStateChanged?.Invoke(newState);
         Debug.Log($"[PlayerStateManager] State changed to: {newState}");

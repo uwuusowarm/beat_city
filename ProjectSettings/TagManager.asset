@@ -10,7 +10,7 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Ground
   - Water
   - UI
   - 
@@ -55,3 +55,4 @@ TagManager:
   - Character Player
   - Character Enemy
   - Character Enemy Windup
+  - Character Light

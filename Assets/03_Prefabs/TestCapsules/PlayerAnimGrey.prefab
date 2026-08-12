@@ -119,6 +119,7 @@ GameObject:
   - component: {fileID: 4631613409987971520}
   - component: {fileID: 4776618944779855045}
   - component: {fileID: 5001611271001262615}
+  - component: {fileID: 7373582438464455799}
   m_Layer: 0
   m_Name: PlayerAnimGrey
   m_TagString: Player
@@ -183,7 +184,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: d0d5e109cda5ce046b42f8f9cf6a766f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -413,6 +414,7 @@ MonoBehaviour:
   - {fileID: 4850563744316324283}
   animator: {fileID: 4255781138198214351}
   WinLoseScript: {fileID: 0}
+  deathScreenDelay: 1
 --- !u!114 &8612664414132317126
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -523,6 +525,76 @@ MonoBehaviour:
   speedLines: {fileID: 1202822032157074344}
   emitterOffset: {x: 0, y: 0.25, z: 0}
   teleportSpeed: 150
+--- !u!114 &7373582438464455799
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1662536712636653983}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5b6c5471ff68a47808ab7564b6bead, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BlobShadow
+  shadowMaterial: {fileID: 2100000, guid: 4eeae1e77b9e969409077fc51fdfb106, type: 2}
+  size: 1.2
+  strength: 0.5
+  maxDistance: 6
+  originHeight: 1
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  surfaceOffset: 0.02
+  maxHeight: 8.48
+  sizeOverHeight:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: -0.45
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0.55
+      inSlope: -0.45
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  alphaOverHeight:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: -1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: -1
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &6132255611989648559
 GameObject:
   m_ObjectHideFlags: 0
