@@ -1,9 +1,14 @@
 fileFormatVersion: 2
-guid: 5e1d908f2a2c1d740962a3f5885c8e9d
+guid: a3c13ce519eda0c48ae5f5ac9d638bbf
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material
+    second: {fileID: 2100000, guid: f14aeef239afc8a4ea944847015d6dba, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -31,9 +36,9 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: rig|Attack
-      takeName: rig|Attack
-      internalID: -6464178533435968529
+      name: rig|rig|Attack
+      takeName: rig|rig|Attack
+      internalID: -3370533190455485490
       firstFrame: 0
       lastFrame: 30
       wrapMode: 0
@@ -55,22 +60,15 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.35
+      - time: 0.32107022
         functionName: EnableAttackHitbox
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.35833332
+      - time: 0.3411371
         functionName: DisableAttackHitbox
-        data: 
-        objectReferenceParameter: {instanceID: 0}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
-      - time: 0.72549856
-        functionName: RangedMeleeAttackFinished
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
@@ -81,9 +79,9 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: rig|Fall
-      takeName: rig|Fall
-      internalID: -6307865569117542267
+      name: rig|rig|Fall
+      takeName: rig|rig|Fall
+      internalID: -2543379748781464169
       firstFrame: 0
       lastFrame: 20
       wrapMode: 0
@@ -110,9 +108,9 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: rig|Hit
-      takeName: rig|Hit
-      internalID: -7728914653311161946
+      name: rig|rig|Hit
+      takeName: rig|rig|Hit
+      internalID: -3076362792949433052
       firstFrame: 0
       lastFrame: 10
       wrapMode: 0
@@ -139,9 +137,9 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: rig|Idle
-      takeName: rig|Idle
-      internalID: -7361427651036151181
+      name: rig|rig|Idle
+      takeName: rig|rig|Idle
+      internalID: 7007285692857286930
       firstFrame: 0
       lastFrame: 30
       wrapMode: 0
@@ -168,9 +166,9 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: rig|Shoot
-      takeName: rig|Shoot
-      internalID: -159792356973024212
+      name: rig|rig|Shoot
+      takeName: rig|rig|Shoot
+      internalID: -3754628491762326685
       firstFrame: 0
       lastFrame: 30
       wrapMode: 0
@@ -191,15 +189,22 @@ ModelImporter:
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
-      events: []
+      events:
+      - time: 0.5652174
+        functionName: RangedShootHit
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: rig|Stand Up
-      takeName: rig|Stand Up
-      internalID: -1814064815424440475
+      name: rig|rig|Stand Up
+      takeName: rig|rig|Stand Up
+      internalID: 5606474902389428083
       firstFrame: 0
       lastFrame: 25
       wrapMode: 0
@@ -226,11 +231,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: rig|Walk
-      takeName: rig|Walk
-      internalID: 1023992570608409904
+      name: rig|rig|Walk
+      takeName: rig|rig|Walk
+      internalID: -2093756534664325279
       firstFrame: 0
-      lastFrame: 34
+      lastFrame: 33
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

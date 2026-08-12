@@ -98,6 +98,8 @@ public class EnemyMovement : MonoBehaviour
     private float rangedDodgeTimer;
     private float rangedDodgeDirection;
     private float rangedRecoveryTimer;
+    private bool isRangedRepositioning;
+    public bool IsRangedRepositioning => isRangedRepositioning;
 
     private Health _health;
     private EnemyCombat _combat;
@@ -1075,10 +1077,18 @@ public class EnemyMovement : MonoBehaviour
         new Vector3(transform.position.x, 0f, transform.position.z),
         new Vector3(player.position.x, 0f, player.position.z));
 
-        if (distanceToPlayerXZ <= rangedMeleeFallbackDistance)
+        if (isRangedRepositioning && distanceToPlayerXZ > rangedMeleeFallbackDistance)
+        {
+            isRangedRepositioning = false;
+        }
+
+        if (distanceToPlayerXZ <= rangedMeleeFallbackDistance && !isRangedRepositioning)
         {
             ApplyGravityAndMove(Vector3.zero);
-            if (animator != null) animator.SetFloat("Speed", 0f);
+
+            if (animator != null)
+                animator.SetFloat("Speed", 0f);
+
             isAiming = false;
             return;
         }
@@ -1280,5 +1290,16 @@ public class EnemyMovement : MonoBehaviour
         Vector3 strictDirection = new Vector3(dirX, 0f, 0f);
         
         characterModel.rotation = Quaternion.LookRotation(strictDirection);
+    }
+
+    public void ForceRangedReposition()
+    {
+        if (rangedSettings == null || player == null)
+            return;
+
+        isRangedRepositioning = true;
+        isAiming = false;
+
+        PickNewRangedTarget();
     }
 }

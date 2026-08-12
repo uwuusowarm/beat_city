@@ -131,7 +131,7 @@ public class EnemyCombat : MonoBehaviour
             attackRange = _movement != null ? _movement.attackDistance : 2f;
         }
 
-        if (distanceToPlayer <= attackRange && Time.time >= _lastAttackTime + attackCooldown)
+        if (distanceToPlayer <= attackRange && Time.time >= _lastAttackTime + attackCooldown && !(isRanged && _movement.IsRangedRepositioning))
         {
             if (BeatEmUpDirector.Instance != null && BeatEmUpDirector.Instance.RequestAttackToken(this))
             {
@@ -160,37 +160,87 @@ public class EnemyCombat : MonoBehaviour
         Animator animator = _movement != null ? _movement.GetComponentInChildren<Animator>() : null;
         if (animator != null)
         {
-            Debug.Log($"PLAY SHOOT: {name} | Time: {Time.time}");
             animator.Play("Shoot", 0, 0f);
         }
+
+        //Vector3 origin = transform.position + Vector3.up * 1f;
+
+        //float dirX = _player.position.x >= transform.position.x ? 1f : -1f;
+        //Vector3 direction = new Vector3(dirX, 0f, 0f);
+
+        //RaycastHit[] hits = Physics.RaycastAll(origin, direction, rangedSettings.rangedShootRange);
+        //System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+
+        //foreach (var hit in hits)
+        //{
+        //    if (!hit.transform.CompareTag("Player")) continue; 
+
+        //    Health playerHealth = hit.transform.GetComponent<Health>();
+        //    if (playerHealth != null)
+        //    {
+        //        playerHealth.TakeDamage(new HitData
+        //        {
+        //            Damage = rangedSettings.rangedDamage,
+        //            Source = gameObject,
+        //            HitPosition = hit.point
+        //        });
+        //    }
+
+        //    break; 
+        //}
+
+        //Debug.DrawRay(origin, direction * rangedSettings.rangedShootRange, Color.red, 0.5f);
+    }
+
+    public void RangedShootHit()
+    {
+        if (_player == null)
+            return;
+
+        RangedEnemySettings settings = _movement.rangedSettings;
+
+        if (settings == null)
+            return;
 
         Vector3 origin = transform.position + Vector3.up * 1f;
 
         float dirX = _player.position.x >= transform.position.x ? 1f : -1f;
         Vector3 direction = new Vector3(dirX, 0f, 0f);
 
-        RaycastHit[] hits = Physics.RaycastAll(origin, direction, rangedSettings.rangedShootRange);
+        RaycastHit[] hits = Physics.RaycastAll(
+            origin,
+            direction,
+            settings.rangedShootRange
+        );
+
         System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
 
         foreach (var hit in hits)
         {
-            if (!hit.transform.CompareTag("Player")) continue; 
+            if (!hit.transform.CompareTag("Player"))
+                continue;
 
             Health playerHealth = hit.transform.GetComponent<Health>();
+
             if (playerHealth != null)
             {
                 playerHealth.TakeDamage(new HitData
                 {
-                    Damage = rangedSettings.rangedDamage,
+                    Damage = settings.rangedDamage,
                     Source = gameObject,
                     HitPosition = hit.point
                 });
             }
 
-            break; 
+            break;
         }
 
-        Debug.DrawRay(origin, direction * rangedSettings.rangedShootRange, Color.red, 0.5f);
+        Debug.DrawRay(
+            origin,
+            direction * settings.rangedShootRange,
+            Color.red,
+            0.5f
+        );
     }
 
     private IEnumerator TelegraphAndAttack()
@@ -233,7 +283,12 @@ public class EnemyCombat : MonoBehaviour
             _isTelegraphing = false;
             if (_movement != null) _movement.SetAttackWindupActive(false);
             if (BeatEmUpDirector.Instance != null) BeatEmUpDirector.Instance.ReleaseToken(this);
-            if (_movement != null) _movement.ForceRecalculateTactic();
+            if (_movement != null)
+            {
+                _movement.ForceRecalculateTactic();
+                if (_movement.rangedSettings != null)
+                    _movement.ForceRangedReposition();
+            }
         }
     }
 

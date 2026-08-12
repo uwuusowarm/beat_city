@@ -14,5 +14,9 @@ public class EnemyAnimationEventRelay : MonoBehaviour
         enemyCombat.DisableAttackHitbox();
     }
 
+    public void RangedShootHit()
+    {
+        enemyCombat.RangedShootHit();
+    }
 
 }
