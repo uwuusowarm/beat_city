@@ -54,6 +54,7 @@ GameObject:
   - component: {fileID: 6656804542050624544}
   - component: {fileID: 7887967780279235466}
   - component: {fileID: 6614944387370831897}
+  - component: {fileID: 6226926932380209297}
   m_Layer: 0
   m_Name: Enemy_Clerk_Green
   m_TagString: Enemy
@@ -150,6 +151,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a1f2d8570f90394783959550708db5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
+  rangedMeleeFallbackDistance: 1.8
   meleeSettings: {fileID: 0}
   rangedSettings: {fileID: 0}
   characterModel: {fileID: 1385330487943477218}
@@ -285,6 +287,25 @@ MonoBehaviour:
   metersPerDifficultyStep: 60
   hpIncreasePerStep: 0.2
   damageIncreasePerStep: 0.15
+--- !u!114 &6226926932380209297
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2336674374545229697}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c384d43dcaa100847a3abba6f552feff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDrop
+  item1: {fileID: 6139397281013752985, guid: 8d0f2efa10792b54fa99b083234835d8, type: 3}
+  item2: {fileID: 1945441015087013551, guid: 1d057e91502617e4fabedd122634efdf, type: 3}
+  dropChance: 20
+  item1Chance: 50
+  upwardForce: 4
+  spawnHeightOffset: 0.5
+  rotationSpeed: 60
 --- !u!1 &4655223023946547876
 GameObject:
   m_ObjectHideFlags: 0
@@ -305,6 +326,7 @@ GameObject:
   - component: {fileID: 2225368458752613558}
   - component: {fileID: 1781233701951839861}
   - component: {fileID: 8175133941580297914}
+  - component: {fileID: 3925468671072827403}
   m_Layer: 0
   m_Name: Enemy_Clerk_Purple
   m_TagString: Enemy
@@ -401,6 +423,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a1f2d8570f90394783959550708db5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
+  rangedMeleeFallbackDistance: 1.8
   meleeSettings: {fileID: 0}
   rangedSettings: {fileID: 0}
   characterModel: {fileID: 3221350716742140775}
@@ -536,6 +559,25 @@ MonoBehaviour:
   metersPerDifficultyStep: 60
   hpIncreasePerStep: 0.2
   damageIncreasePerStep: 0.15
+--- !u!114 &3925468671072827403
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4655223023946547876}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c384d43dcaa100847a3abba6f552feff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDrop
+  item1: {fileID: 6139397281013752985, guid: 8d0f2efa10792b54fa99b083234835d8, type: 3}
+  item2: {fileID: 1945441015087013551, guid: 1d057e91502617e4fabedd122634efdf, type: 3}
+  dropChance: 20
+  item1Chance: 50
+  upwardForce: 4
+  spawnHeightOffset: 0.5
+  rotationSpeed: 60
 --- !u!1 &6021690092030721686
 GameObject:
   m_ObjectHideFlags: 0
@@ -556,6 +598,7 @@ GameObject:
   - component: {fileID: 4861793013207294915}
   - component: {fileID: 8970979055086758525}
   - component: {fileID: 2230627666308087388}
+  - component: {fileID: 6028683131984162857}
   m_Layer: 0
   m_Name: Enemy_Clerk_Red
   m_TagString: Enemy
@@ -652,6 +695,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a1f2d8570f90394783959550708db5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
+  rangedMeleeFallbackDistance: 1.8
   meleeSettings: {fileID: 0}
   rangedSettings: {fileID: 0}
   characterModel: {fileID: 828330454222476270}
@@ -787,6 +831,25 @@ MonoBehaviour:
   metersPerDifficultyStep: 60
   hpIncreasePerStep: 0.2
   damageIncreasePerStep: 0.15
+--- !u!114 &6028683131984162857
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6021690092030721686}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c384d43dcaa100847a3abba6f552feff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDrop
+  item1: {fileID: 6139397281013752985, guid: 8d0f2efa10792b54fa99b083234835d8, type: 3}
+  item2: {fileID: 1945441015087013551, guid: 1d057e91502617e4fabedd122634efdf, type: 3}
+  dropChance: 20
+  item1Chance: 50
+  upwardForce: 4
+  spawnHeightOffset: 0.5
+  rotationSpeed: 60
 --- !u!1001 &1700393430095983606
 PrefabInstance:
   m_ObjectHideFlags: 0

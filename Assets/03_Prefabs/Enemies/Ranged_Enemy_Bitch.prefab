@@ -20,6 +20,7 @@ GameObject:
   - component: {fileID: 6838365817203052281}
   - component: {fileID: 3387317406910535947}
   - component: {fileID: 8422759264021862031}
+  - component: {fileID: 208098389766177829}
   m_Layer: 0
   m_Name: Ranged_Enemy_Bitch
   m_TagString: Enemy
@@ -252,6 +253,25 @@ MonoBehaviour:
   metersPerDifficultyStep: 60
   hpIncreasePerStep: 0.2
   damageIncreasePerStep: 0.15
+--- !u!114 &208098389766177829
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1613854844687562703}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c384d43dcaa100847a3abba6f552feff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDrop
+  item1: {fileID: 6139397281013752985, guid: 8d0f2efa10792b54fa99b083234835d8, type: 3}
+  item2: {fileID: 1945441015087013551, guid: 1d057e91502617e4fabedd122634efdf, type: 3}
+  dropChance: 20
+  item1Chance: 50
+  upwardForce: 4
+  spawnHeightOffset: 0.5
+  rotationSpeed: 60
 --- !u!1001 &6037603294365926039
 PrefabInstance:
   m_ObjectHideFlags: 0

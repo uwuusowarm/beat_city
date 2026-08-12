@@ -54,6 +54,7 @@ GameObject:
   - component: {fileID: 3179065876100757259}
   - component: {fileID: 7522853543613000676}
   - component: {fileID: 1322119640187401673}
+  - component: {fileID: 4256715495036745152}
   m_Layer: 0
   m_Name: Enemy_Bastard_Purple
   m_TagString: Enemy
@@ -150,6 +151,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a1f2d8570f90394783959550708db5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
+  rangedMeleeFallbackDistance: 1.8
   meleeSettings: {fileID: 0}
   rangedSettings: {fileID: 0}
   characterModel: {fileID: 6416908574643148924}
@@ -285,6 +287,25 @@ MonoBehaviour:
   metersPerDifficultyStep: 60
   hpIncreasePerStep: 0.2
   damageIncreasePerStep: 0.15
+--- !u!114 &4256715495036745152
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2341932926542406260}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c384d43dcaa100847a3abba6f552feff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDrop
+  item1: {fileID: 6139397281013752985, guid: 8d0f2efa10792b54fa99b083234835d8, type: 3}
+  item2: {fileID: 1945441015087013551, guid: 1d057e91502617e4fabedd122634efdf, type: 3}
+  dropChance: 20
+  item1Chance: 50
+  upwardForce: 4
+  spawnHeightOffset: 0.5
+  rotationSpeed: 60
 --- !u!1 &5993968919127322692
 GameObject:
   m_ObjectHideFlags: 0
@@ -305,6 +326,7 @@ GameObject:
   - component: {fileID: 8081174850741081342}
   - component: {fileID: 3390125541619468304}
   - component: {fileID: 2909339999984141916}
+  - component: {fileID: 4203987767576248116}
   m_Layer: 0
   m_Name: Enemy_Bastard_Red
   m_TagString: Enemy
@@ -401,6 +423,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a1f2d8570f90394783959550708db5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
+  rangedMeleeFallbackDistance: 1.8
   meleeSettings: {fileID: 0}
   rangedSettings: {fileID: 0}
   characterModel: {fileID: 2756358946490977613}
@@ -536,6 +559,25 @@ MonoBehaviour:
   metersPerDifficultyStep: 60
   hpIncreasePerStep: 0.2
   damageIncreasePerStep: 0.15
+--- !u!114 &4203987767576248116
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5993968919127322692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c384d43dcaa100847a3abba6f552feff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDrop
+  item1: {fileID: 6139397281013752985, guid: 8d0f2efa10792b54fa99b083234835d8, type: 3}
+  item2: {fileID: 1945441015087013551, guid: 1d057e91502617e4fabedd122634efdf, type: 3}
+  dropChance: 20
+  item1Chance: 50
+  upwardForce: 4
+  spawnHeightOffset: 0.5
+  rotationSpeed: 60
 --- !u!1 &6431816695687519032
 GameObject:
   m_ObjectHideFlags: 0
@@ -556,6 +598,7 @@ GameObject:
   - component: {fileID: 8280926895975012122}
   - component: {fileID: 7021295248373446994}
   - component: {fileID: 3643230125674805888}
+  - component: {fileID: 668063211866775664}
   m_Layer: 0
   m_Name: Enemy_Bastard_Green
   m_TagString: Enemy
@@ -652,6 +695,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a1f2d8570f90394783959550708db5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
+  rangedMeleeFallbackDistance: 1.8
   meleeSettings: {fileID: 0}
   rangedSettings: {fileID: 0}
   characterModel: {fileID: 4743427245449753684}
@@ -787,6 +831,25 @@ MonoBehaviour:
   metersPerDifficultyStep: 60
   hpIncreasePerStep: 0.2
   damageIncreasePerStep: 0.15
+--- !u!114 &668063211866775664
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6431816695687519032}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c384d43dcaa100847a3abba6f552feff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDrop
+  item1: {fileID: 6139397281013752985, guid: 8d0f2efa10792b54fa99b083234835d8, type: 3}
+  item2: {fileID: 1945441015087013551, guid: 1d057e91502617e4fabedd122634efdf, type: 3}
+  dropChance: 20
+  item1Chance: 50
+  upwardForce: 4
+  spawnHeightOffset: 0.5
+  rotationSpeed: 60
 --- !u!1 &8558134004750198491
 GameObject:
   m_ObjectHideFlags: 0

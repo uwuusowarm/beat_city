@@ -46,6 +46,7 @@ public class Health : MonoBehaviour, IDamageable
         if (Current <= 0)
         {
             Debug.Log($"[Health] {gameObject.name} is dead!");
+            GetComponent<EnemyDrop>().DropItem();
             OnDeath?.Invoke();
         }
     }
