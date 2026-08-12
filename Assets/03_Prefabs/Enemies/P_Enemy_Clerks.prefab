@@ -55,6 +55,7 @@ GameObject:
   - component: {fileID: 7887967780279235466}
   - component: {fileID: 6614944387370831897}
   - component: {fileID: 6226926932380209297}
+  - component: {fileID: 434372902790705181}
   m_Layer: 0
   m_Name: Enemy_Clerk_Green
   m_TagString: Enemy
@@ -306,6 +307,76 @@ MonoBehaviour:
   upwardForce: 4
   spawnHeightOffset: 0.5
   rotationSpeed: 60
+--- !u!114 &434372902790705181
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2336674374545229697}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5b6c5471ff68a47808ab7564b6bead, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BlobShadow
+  shadowMaterial: {fileID: 2100000, guid: 4eeae1e77b9e969409077fc51fdfb106, type: 2}
+  size: 1.2
+  strength: 0.702
+  maxDistance: 6
+  originHeight: 0.5
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  surfaceOffset: 0.02
+  maxHeight: 3
+  sizeOverHeight:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: -0.45
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0.55
+      inSlope: -0.45
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  alphaOverHeight:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: -1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: -1
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &4655223023946547876
 GameObject:
   m_ObjectHideFlags: 0
@@ -327,6 +398,7 @@ GameObject:
   - component: {fileID: 1781233701951839861}
   - component: {fileID: 8175133941580297914}
   - component: {fileID: 3925468671072827403}
+  - component: {fileID: 8858303587418136871}
   m_Layer: 0
   m_Name: Enemy_Clerk_Purple
   m_TagString: Enemy
@@ -578,6 +650,76 @@ MonoBehaviour:
   upwardForce: 4
   spawnHeightOffset: 0.5
   rotationSpeed: 60
+--- !u!114 &8858303587418136871
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4655223023946547876}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5b6c5471ff68a47808ab7564b6bead, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BlobShadow
+  shadowMaterial: {fileID: 2100000, guid: 4eeae1e77b9e969409077fc51fdfb106, type: 2}
+  size: 1.2
+  strength: 0.702
+  maxDistance: 6
+  originHeight: 0.5
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  surfaceOffset: 0.02
+  maxHeight: 3
+  sizeOverHeight:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: -0.45
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0.55
+      inSlope: -0.45
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  alphaOverHeight:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: -1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: -1
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &6021690092030721686
 GameObject:
   m_ObjectHideFlags: 0
@@ -599,6 +741,7 @@ GameObject:
   - component: {fileID: 8970979055086758525}
   - component: {fileID: 2230627666308087388}
   - component: {fileID: 6028683131984162857}
+  - component: {fileID: 4143746021505626849}
   m_Layer: 0
   m_Name: Enemy_Clerk_Red
   m_TagString: Enemy
@@ -850,6 +993,76 @@ MonoBehaviour:
   upwardForce: 4
   spawnHeightOffset: 0.5
   rotationSpeed: 60
+--- !u!114 &4143746021505626849
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6021690092030721686}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5b6c5471ff68a47808ab7564b6bead, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BlobShadow
+  shadowMaterial: {fileID: 2100000, guid: 4eeae1e77b9e969409077fc51fdfb106, type: 2}
+  size: 1.2
+  strength: 0.702
+  maxDistance: 6
+  originHeight: 0.5
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  surfaceOffset: 0.02
+  maxHeight: 3
+  sizeOverHeight:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: -0.45
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0.55
+      inSlope: -0.45
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  alphaOverHeight:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: -1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: -1
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1001 &1700393430095983606
 PrefabInstance:
   m_ObjectHideFlags: 0

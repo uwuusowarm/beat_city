@@ -329,6 +329,8 @@ public class PlayerGrapple : MonoBehaviour
             em.SetState(EnemyState.Grabbed);
         }
 
+        AudioManager.Resolve()?.PlaySfxRandom(SfxType.Grab);
+
         EnterGrabPose();
         Debug.Log("Player is holding");
 

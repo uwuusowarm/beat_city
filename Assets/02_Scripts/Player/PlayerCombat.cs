@@ -183,26 +183,42 @@ public class PlayerCombat : MonoBehaviour
 
         if (!TrySpendMeter(def)) return;
 
+        SetCurrentSpecial(id);
+
         switch (id)
         {
             case SpecialAttackId.ChainAttack:
-                if (specialMove != null)
+                if (specialMove == null)
                 {
-                    _isAttacking = true;
-                    if (!specialMove.TryActivate())
-                        _isAttacking = false;
+                    Debug.LogWarning("[PlayerCombat] No SpecialMove component assigned, cannot perform Chain Attack.");
+                    ClearCurrentSpecial();
+                    RefundMeter(id);
+                    break;
+                }
+
+                _isAttacking = true;
+                if (!specialMove.TryActivate())
+                {
+                    _isAttacking = false;
+                    ClearCurrentSpecial();
+                    RefundMeter(id);
                 }
                 break;
             case SpecialAttackId.GroundSlam:
                 DoGroundSlam();
                 break;
             case SpecialAttackId.MoonKick:
-                DoMoonKick();
+                if (!DoMoonKick())
+                {
+                    ClearCurrentSpecial();
+                    RefundMeter(id);
+                }
                 break;
             case SpecialAttackId.DashStrike:
                 if (dashStrike == null)
                 {
                     Debug.LogWarning("[PlayerCombat] No DashStrike component assigned, cannot perform Dash Strike.");
+                    ClearCurrentSpecial();
                     RefundMeter(id);
                     break;
                 }
@@ -211,10 +227,39 @@ public class PlayerCombat : MonoBehaviour
                 if (!dashStrike.TryActivate())
                 {
                     _isAttacking = false;
+                    ClearCurrentSpecial();
                     RefundMeter(id);
                 }
                 break;
         }
+    }
+
+    private void SetCurrentSpecial(SpecialAttackId id)
+    {
+        _currentSpecialId = id;
+
+        if (animator == null) return;
+
+        switch (id)
+        {
+            case SpecialAttackId.GroundSlam:
+                animator.SetInteger("SpecialId", 1);
+                break;
+            case SpecialAttackId.MoonKick:
+                animator.SetInteger("SpecialId", 2);
+                break;
+            default:
+                animator.SetInteger("SpecialId", 0);
+                break;
+        }
+    }
+
+    private void ClearCurrentSpecial()
+    {
+        _currentSpecialId = null;
+
+        if (animator != null)
+            animator.SetInteger("SpecialId", 0);
     }
 
     private bool TrySpendMeter(SpecialAttackDef def)
@@ -233,13 +278,9 @@ public class PlayerCombat : MonoBehaviour
     private void DoGroundSlam()
     {
         _isAttacking = true;
-        _currentSpecialId = SpecialAttackId.GroundSlam;
         PlayerStateManager.Instance.SetState(PlayerState.Attacking);
 
         AdvanceCombo(CombatInputType.Special);
-        
-        if (animator != null)
-            animator.SetInteger("SpecialId", 1);
 
         if (_settings != null)
         {
@@ -252,26 +293,30 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
-    private void DoMoonKick()
+    private bool DoMoonKick()
     {
+        if (specialKickHitbox == null)
+        {
+            Debug.LogWarning("[PlayerCombat] No specialKickHitbox assigned, cannot perform Moon Kick.");
+            return false;
+        }
+
         _isAttacking = true;
-        _currentSpecialId = SpecialAttackId.MoonKick;
         PlayerStateManager.Instance.SetState(PlayerState.Attacking);
 
         AdvanceCombo(CombatInputType.Special);
 
-        if (animator != null)
-            animator.SetInteger("SpecialId", 2);
-
         if (_settings != null)
         {
-            specialKickHitbox.Damage = _settings.specialDamage; 
+            specialKickHitbox.Damage = _settings.specialDamage;
             specialKickHitbox.KnockbackForce = 0;
             specialKickHitbox.KnockUpForce = _settings.specialKnockup;
             specialKickHitbox.JugglingForce = _settings.jugglingForce;
             specialKickHitbox.ShouldKnockdown = false;
             specialKickHitbox.IsLauncher = true;
         }
+
+        return true;
     }
 
     private void EnsureAudioManager()
@@ -289,7 +334,6 @@ public class PlayerCombat : MonoBehaviour
 
     public void SpawnSpecialVfx()
     {
-        Debug.Log("SpawnSpecialVfx wurde aufgerufen");
         GameObject prefab = null;
         Transform spawnPoint = null;
 
@@ -326,6 +370,9 @@ public class PlayerCombat : MonoBehaviour
         {
             if (_currentSpecialId == SpecialAttackId.MoonKick && specialKickHitbox != null)
                 return specialKickHitbox;
+
+            if (_currentSpecialId == SpecialAttackId.DashStrike && dashStrikeHitbox != null)
+                return dashStrikeHitbox;
 
             if (specialHitbox != null)
                 return specialHitbox;
@@ -406,6 +453,7 @@ public class PlayerCombat : MonoBehaviour
             return;
         }
 
+        ClearCurrentSpecial();
         PlayerStateManager.Instance.ResetToIdle();
     }
 
@@ -425,6 +473,8 @@ public class PlayerCombat : MonoBehaviour
 
         _inSpecialChain = false;
         _isAttacking = false;
+
+        ClearCurrentSpecial();
 
         if (refundMeter)
             RefundMeter(id);

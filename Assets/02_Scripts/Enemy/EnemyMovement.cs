@@ -555,6 +555,8 @@ public class EnemyMovement : MonoBehaviour
         if (Time.unscaledTime - _lastLaunchImpactTime < LaunchImpactCooldown) return;
         _lastLaunchImpactTime = Time.unscaledTime;
 
+        AudioManager.Resolve()?.PlaySfxRandom(SfxType.SlowMoImpact, 0.2f);
+
         if (freeze > 0f) HitStop.Instance.Do(freeze);
         if (slowMo > 0f) HitStop.Instance.DoSlowMotion(slowMo, LaunchSlowMoTimeScale);
 
@@ -978,7 +980,11 @@ public class EnemyMovement : MonoBehaviour
         Debug.Log($"[EnemyMovement] {gameObject.name} LANDED! JuggleCount: {_juggleCount}, _wasThrownSkipReset={_wasThrownSkipReset}");
         
         _groundYPosition = transform.position.y;
-        
+
+        AudioManager.Resolve()?.PlaySfxRandom(
+            _wasThrownSkipReset ? SfxType.EnemyLandThrow : SfxType.EnemyLandKnockup,
+            0.05f);
+
         if (animator != null)
         {
             if (_wasThrownSkipReset)
