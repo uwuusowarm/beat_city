@@ -60,7 +60,7 @@ public class WinAndLose : MonoBehaviour
             
             earnedCoins = Mathf.Max(0, earnedCoins);
 
-            earnedCoinsText.text = $"COINS: + {earnedCoins}";
+            earnedCoinsText.text = $"+ {earnedCoins}";
         }
     }
 

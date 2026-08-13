@@ -12,12 +12,14 @@ public class EnemyDeathHandler : MonoBehaviour
     private EnemyMovement _movement;
     private Health _health;
     private Animator _animator;
+    private EnemyDrop _drop;
 
     private void Start()
     {
         _health = GetComponent<Health>();
         _movement = GetComponent<EnemyMovement>();
         _animator = GetComponentInChildren<Animator>();
+        _drop = GetComponent<EnemyDrop>();
 
         if (settings == null && _movement != null)
         {
@@ -34,6 +36,12 @@ public class EnemyDeathHandler : MonoBehaviour
 
     private void HandleDeath()
     {
+        // Drops belong here, not in Health. Health is shared with the player,
+        // which carries no EnemyDrop, so looking the component up there threw
+        // before OnDeath was raised and swallowed the whole death sequence.
+        // Dropped first so the item still spawns against a live collider.
+        if (_drop != null) _drop.DropItem();
+
         if (PlayerStats.Instance != null)
         {
             PlayerStats.Instance.AddCoins(coinReward);

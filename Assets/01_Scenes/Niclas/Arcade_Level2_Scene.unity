@@ -26281,6 +26281,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 896752177350143562, guid: 657481147422a37418123f320e560f25, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1236233662867445993, guid: 657481147422a37418123f320e560f25, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -26292,6 +26296,10 @@ PrefabInstance:
     - target: {fileID: 1295028567361169531, guid: 657481147422a37418123f320e560f25, type: 3}
       propertyPath: m_Name
       value: Canvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 2141625983012708641, guid: 657481147422a37418123f320e560f25, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3935501410915414547, guid: 657481147422a37418123f320e560f25, type: 3}
       propertyPath: m_Pivot.x

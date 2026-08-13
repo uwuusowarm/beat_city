@@ -213,12 +213,21 @@ public class StoryScreenController : MonoBehaviour
         SetStoryImageTint(to);
     }
 
+    /// <summary>
+    /// "Any input" has to mean every device the game actually ships on. On
+    /// Android there is no Keyboard and no Mouse — only Touchscreen — so
+    /// polling just those two left the story unadvanceable on phones.
+    /// </summary>
     private IEnumerator WaitForAnyInput()
     {
         while (true)
         {
             if (Keyboard.current != null && Keyboard.current.anyKey.wasPressedThisFrame) yield break;
             if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame) yield break;
+            if (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.wasPressedThisFrame) yield break;
+            if (Gamepad.current != null &&
+                (Gamepad.current.buttonSouth.wasPressedThisFrame ||
+                 Gamepad.current.startButton.wasPressedThisFrame)) yield break;
 
             yield return null;
         }
