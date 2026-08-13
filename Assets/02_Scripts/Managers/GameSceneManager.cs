@@ -9,7 +9,7 @@ public class GameSceneManager : MonoBehaviour
     void Start()
     {
         sceneName = SceneManager.GetActiveScene().name;
-        if (sceneName == "Arcade_Level1_Scene" || sceneName == "EndlessGate1")
+        if (sceneName == "EndlessGate1")
         {
             AudioManager.Instance.PlayMusic(MusicType.Stage1);
         }
