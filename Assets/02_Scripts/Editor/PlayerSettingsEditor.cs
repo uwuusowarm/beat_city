@@ -26,7 +26,7 @@ public class PlayerSettingsEditor : Editor
         if (GUILayout.Button($"Add {CoinGrant} coins"))
             AddCoins(CoinGrant);
 
-        if (GUILayout.Button("Reset purchased specials"))
+        if (GUILayout.Button("Reset specials (lock all again)"))
             ResetPurchasedSpecials();
     }
 
@@ -61,7 +61,15 @@ public class PlayerSettingsEditor : Editor
             PlayerStats.Instance.ApplyStatsToPlayer();
         }
 
-        Debug.Log($"[PlayerSettings] Reset {SpecialAttackCatalog.All.Count} purchased specials and cleared both slots.");
+        RefreshOpenShops();
+
+        Debug.Log($"[PlayerSettings] Locked {SpecialAttackCatalog.All.Count} specials and cleared both slots.");
+    }
+
+    private static void RefreshOpenShops()
+    {
+        foreach (var shop in FindObjectsByType<ShopUI>(FindObjectsSortMode.None))
+            shop.UpdateShopUI();
     }
 
     private static int CurrentCoins()

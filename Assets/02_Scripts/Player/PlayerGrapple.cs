@@ -24,6 +24,7 @@ public class PlayerGrapple : MonoBehaviour
 
     private const float MaxWindupSeconds = 2f;
     private const float GrabBlendSeconds = 0.15f;
+    private const float ThrowInputDeadzone = 0.4f;
 
     private static readonly int GrabStateHash = Animator.StringToHash("Grab");
     private static readonly int IdleStateHash = Animator.StringToHash("Idle");
@@ -469,19 +470,18 @@ public class PlayerGrapple : MonoBehaviour
 
         try
         {
-            Vector3 throwDir = characterModel.forward;
+            Vector3 facingDir = FlattenToThrowAxis(characterModel.forward);
+            Vector3 throwDir = facingDir;
             bool isBackwardThrow = false;
             if (_movement != null)
             {
                 Vector3 inputDir = _movement.GetInputDirection();
-                if (inputDir.magnitude > 0.1f)
+                if (inputDir.magnitude > 0.1f && Mathf.Abs(inputDir.x) >= ThrowInputDeadzone)
                 {
-                    isBackwardThrow = Vector3.Dot(characterModel.forward, inputDir) < -0.5f;
-                    throwDir = inputDir;
-                    
-                    float faceX = Mathf.Abs(throwDir.x) > 0.0001f ? throwDir.x : characterModel.forward.x;
-                    if (Mathf.Abs(faceX) > 0.0001f)
-                        characterModel.rotation = Quaternion.LookRotation(new Vector3(faceX, 0f, 0f));
+                    throwDir = FlattenToThrowAxis(inputDir);
+                    isBackwardThrow = throwDir != facingDir;
+
+                    characterModel.rotation = Quaternion.LookRotation(throwDir);
                 }
             }
             _carryThrowDir = throwDir;
@@ -601,6 +601,12 @@ public class PlayerGrapple : MonoBehaviour
         {
             _carryTarget = null;
         }
+    }
+
+    // Throws only ever go left or right - up/down input must not tilt the flight path into the depth axis.
+    private static Vector3 FlattenToThrowAxis(Vector3 dir)
+    {
+        return dir.x >= 0f ? Vector3.right : Vector3.left;
     }
 
     private IEnumerator CarryHeldTargetThroughTurn(GameObject target, string animName, float launchPoint,
