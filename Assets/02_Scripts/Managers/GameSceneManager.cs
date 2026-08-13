@@ -9,7 +9,7 @@ public class GameSceneManager : MonoBehaviour
     void Start()
     {
         sceneName = SceneManager.GetActiveScene().name;
-        if (sceneName == "Arcade_Level1_Scene")
+        if (sceneName == "Arcade_Level1_Scene" || sceneName == "EndlessGate1")
         {
             AudioManager.Instance.PlayMusic(MusicType.Stage1);
         }
@@ -17,6 +17,7 @@ public class GameSceneManager : MonoBehaviour
         {
             AudioManager.Instance.PlayMusic(MusicType.Stage2);
         }
+
     }
 
     // Update is called once per frame
