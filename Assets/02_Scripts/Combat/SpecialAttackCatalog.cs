@@ -30,10 +30,10 @@ public static class SpecialAttackCatalog
 {
     public static readonly List<SpecialAttackDef> All = new List<SpecialAttackDef>
     {
-        new SpecialAttackDef(SpecialAttackId.ChainAttack, "Chain Attack", 500, false, 25),
-        new SpecialAttackDef(SpecialAttackId.GroundSlam, "Ground Slam", 500, false, 25),
-        new SpecialAttackDef(SpecialAttackId.DashStrike, "Dash Strike", 500, false, 25),
-        new SpecialAttackDef(SpecialAttackId.MoonKick, "Moon Kick", 500, false, 25)
+        new SpecialAttackDef(SpecialAttackId.ChainAttack, "Chain Attack", 10, false, 25),
+        new SpecialAttackDef(SpecialAttackId.GroundSlam, "Ground Slam", 10, false, 25),
+        new SpecialAttackDef(SpecialAttackId.DashStrike, "Dash Strike", 10, false, 25),
+        new SpecialAttackDef(SpecialAttackId.MoonKick, "Moon Kick", 10, false, 25)
     };
 
     public static SpecialAttackDef Get(SpecialAttackId id)

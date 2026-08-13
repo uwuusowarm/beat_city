@@ -26,7 +26,7 @@ public class SpecialShopItem : MonoBehaviour
 
         if (nameText != null) nameText.text = _special.displayName;
 
-        SetButtonText(buyButton, "Kaufen");
+        SetButtonText(buyButton, "Buy");
         SetButtonText(equipSlot1Button, "Input 1");
         SetButtonText(equipSlot2Button, "Input 2");
         
@@ -67,10 +67,10 @@ public class SpecialShopItem : MonoBehaviour
             equipSlot1Button.gameObject.SetActive(true);
             equipSlot2Button.gameObject.SetActive(true);
             
-            if (costText != null) costText.text = "Gekauft";
+            if (costText != null) costText.text = "Bought";
 
-            SetButtonText(equipSlot1Button, isEquippedSlot1 ? "Auf Slot 1" : "Input 1");
-            SetButtonText(equipSlot2Button, isEquippedSlot2 ? "Auf Slot 2" : "Input 2");
+            SetButtonText(equipSlot1Button, isEquippedSlot1 ? "On Slot 1" : "Input 1");
+            SetButtonText(equipSlot2Button, isEquippedSlot2 ? "On Slot 2" : "Input 2");
 
             equipSlot1Button.interactable = !isEquippedSlot1;
             equipSlot2Button.interactable = !isEquippedSlot2;
