@@ -290,7 +290,7 @@ PrefabInstance:
       objectReference: {fileID: 993331733}
     - target: {fileID: 8315422397030599102, guid: dee2be1b7cf56984a9ef1063fbffc38c, type: 3}
       propertyPath: maxHealth
-      value: 25
+      value: 50
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1315,7 +1315,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7292478556499395923, guid: b6f100649d10b0d43b9d1c979baadfbd, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8202621271040896784, guid: b6f100649d10b0d43b9d1c979baadfbd, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
