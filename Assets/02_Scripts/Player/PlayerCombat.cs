@@ -405,17 +405,7 @@ public class PlayerCombat : MonoBehaviour
 
         _hitLanded = false;
 
-        if (CurrentAttackType == CombatInputType.Special)
-        {
-            EnsureAudioManager();
-            if (audioManager != null)
-            {
-                audioManager.PlaySfx(SfxType.Special, 0);
-            }
-        }
-
-
-            Hitbox activeHitbox = GetCurrentHitbox();
+        Hitbox activeHitbox = GetCurrentHitbox();
 
         if (_settings != null)
             activeHitbox.HitStopDuration = _settings.combatHitStop;
@@ -525,9 +515,32 @@ public class PlayerCombat : MonoBehaviour
             case CombatInputType.Kick:
                 audioManager.PlaySfx(SfxType.Kick, index);
                 break;
-            case CombatInputType.Special:
-                audioManager.PlaySfx(SfxType.Special, index);
-                break;
+            //case CombatInputType.Special:
+            //    audioManager.PlaySfx(GetSpecialSfx(), 0);
+            //    break;
+        }
+    }
+
+    private SfxType GetSpecialSfx()
+    {
+        return _currentSpecialId switch
+        {
+            SpecialAttackId.GroundSlam => SfxType.SpecialGroundSmash,
+            SpecialAttackId.MoonKick => SfxType.SpecialMoonKick,
+            _ => SfxType.Special
+        };
+    }
+
+    public void PlayAttackStartSfx()
+    {
+        Debug.Log("[PlayerCombat] PlayAttackStartSfx called");
+
+        EnsureAudioManager();
+        if (audioManager == null) return;
+
+        if (CurrentAttackType == CombatInputType.Special)
+        {
+            audioManager.PlaySfx(GetSpecialSfx(), 0);
         }
     }
 

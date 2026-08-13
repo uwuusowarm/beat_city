@@ -16,6 +16,8 @@ public enum SfxType
     EnemyLandThrow,
     EnemyLandKnockup,
     SlowMoImpact,
+    SpecialGroundSmash,
+    SpecialMoonKick,
 }
 
 public enum MusicType
@@ -51,9 +53,13 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private MusicEntry[] musicEntries;
     [SerializeField] private SfxEntry[] sfxEntries;
 
-    private float masterVolume = 1f;
-    private float musicVolume = 1f;
-    private float sfxVolume = 1f;
+    private float masterVolume = 0.5f;
+    private float musicVolume = 0.5f;
+    private float sfxVolume = 0.5f;
+
+    public float SfxVolume => sfxVolume;
+    public float MusicVolume => musicVolume;
+    public float MasterVolume => masterVolume;
 
     private readonly Dictionary<SfxType, float> lastPlayTime = new Dictionary<SfxType, float>();
 

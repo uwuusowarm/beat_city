@@ -52,6 +52,11 @@ public class AnimationEventRelay : MonoBehaviour
         playerCombat.SpawnSpecialVfx();
     }
 
+    public void PlayAttackStartSfx()
+    {
+        playerCombat.PlayAttackStartSfx();
+    }
+
     public void DashStrikeHit()
     {
         Debug.Log("[Relay] DashStrikeHit called");
