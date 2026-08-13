@@ -125,6 +125,12 @@ MonoBehaviour:
     sfxClips:
     - {fileID: 8300000, guid: ca3a6fb956d15b54ba98bc9b5813482c, type: 3}
     - {fileID: 8300000, guid: 40b2db5996183d94390736171100628d, type: 3}
+  - sfxType: 13
+    sfxClips:
+    - {fileID: 8300000, guid: c210f565a3e087748b6b7aedcef83be3, type: 3}
+  - sfxType: 14
+    sfxClips:
+    - {fileID: 8300000, guid: 945a7ad951110ab428f1715ad5333d67, type: 3}
 --- !u!82 &4667260958754158351
 AudioSource:
   m_ObjectHideFlags: 0

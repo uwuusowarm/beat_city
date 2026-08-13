@@ -4185,6 +4185,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7994358371711348412, guid: 22d0099fb3d04ea4681fa020bf31f5bd, type: 3}
+      propertyPath: 'sfxEntries.Array.data[13].sfxClips.Array.data[0]'
+      value: 
+      objectReference: {fileID: 8300000, guid: c210f565a3e087748b6b7aedcef83be3, type: 3}
     - target: {fileID: 8312074545324063102, guid: 22d0099fb3d04ea4681fa020bf31f5bd, type: 3}
       propertyPath: m_Name
       value: AudioManager
@@ -5520,14 +5524,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: SettingsTab
       objectReference: {fileID: 0}
-    - target: {fileID: 426120518924814240, guid: aff70bd3644f7104fa64e41eb0285e78, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2849147589540095278, guid: aff70bd3644f7104fa64e41eb0285e78, type: 3}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 749951147}
     - target: {fileID: 3651221691081359266, guid: aff70bd3644f7104fa64e41eb0285e78, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Target
       value: 
@@ -5536,20 +5532,12 @@ PrefabInstance:
       propertyPath: firstSelectedButton
       value: 
       objectReference: {fileID: 1735115214}
-    - target: {fileID: 5528618812347475439, guid: aff70bd3644f7104fa64e41eb0285e78, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6046768994307586156, guid: aff70bd3644f7104fa64e41eb0285e78, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Target
       value: 
       objectReference: {fileID: 749951147}
     - target: {fileID: 6361746067042074013, guid: aff70bd3644f7104fa64e41eb0285e78, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Target
-      value: 
-      objectReference: {fileID: 749951147}
-    - target: {fileID: 6662171953334354167, guid: aff70bd3644f7104fa64e41eb0285e78, type: 3}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 749951147}
     - target: {fileID: 7548296828164584311, guid: aff70bd3644f7104fa64e41eb0285e78, type: 3}
@@ -5634,10 +5622,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8256006694580344454, guid: aff70bd3644f7104fa64e41eb0285e78, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Target
-      value: 
-      objectReference: {fileID: 749951147}
-    - target: {fileID: 8936710652043156813, guid: aff70bd3644f7104fa64e41eb0285e78, type: 3}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 749951147}
     m_RemovedComponents: []
