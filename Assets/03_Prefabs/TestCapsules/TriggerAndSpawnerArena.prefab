@@ -82,9 +82,9 @@ MonoBehaviour:
   - {fileID: 1455022229344683694, guid: 6e169e3a2fcd701429dab898f18ef4d9, type: 3}
   - {fileID: 86603612472512833, guid: e24ef14a0058f084e9446a405616825a, type: 3}
   - {fileID: 6219036811190547938, guid: cf2ca3e7e85a6b64babf65b557c0b563, type: 3}
-  - {fileID: 116653089531905180, guid: 50f90a6c94f837c45bee94da21fdd110, type: 3}
+  singleEnemyPrefabs:
   - {fileID: 1613854844687562703, guid: 20a3b4d6bfe6a3e4dacf6d43b5e82399, type: 3}
-  singleEnemyPrefabs: []
+  - {fileID: 116653089531905180, guid: 50f90a6c94f837c45bee94da21fdd110, type: 3}
   enemyCount: 5
   spawnDelay: 1.5
 --- !u!65 &3619542099398464621

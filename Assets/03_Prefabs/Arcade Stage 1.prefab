@@ -1780,7 +1780,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 10, y: 10}
   m_Shadows:
-    m_Type: 2
+    m_Type: 0
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -3077,7 +3077,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 10, y: 10}
   m_Shadows:
-    m_Type: 2
+    m_Type: 0
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -3296,6 +3296,9 @@ MonoBehaviour:
   - {fileID: 1455022229344683694, guid: 6e169e3a2fcd701429dab898f18ef4d9, type: 3}
   - {fileID: 86603612472512833, guid: e24ef14a0058f084e9446a405616825a, type: 3}
   - {fileID: 6219036811190547938, guid: cf2ca3e7e85a6b64babf65b557c0b563, type: 3}
+  singleEnemyPrefabs:
+  - {fileID: 116653089531905180, guid: 50f90a6c94f837c45bee94da21fdd110, type: 3}
+  - {fileID: 1613854844687562703, guid: 20a3b4d6bfe6a3e4dacf6d43b5e82399, type: 3}
   enemyCount: 3
   spawnDelay: 1.5
 --- !u!65 &2126302701156866475
@@ -5979,6 +5982,9 @@ MonoBehaviour:
   - {fileID: 1455022229344683694, guid: 6e169e3a2fcd701429dab898f18ef4d9, type: 3}
   - {fileID: 86603612472512833, guid: e24ef14a0058f084e9446a405616825a, type: 3}
   - {fileID: 6219036811190547938, guid: cf2ca3e7e85a6b64babf65b557c0b563, type: 3}
+  singleEnemyPrefabs:
+  - {fileID: 116653089531905180, guid: 50f90a6c94f837c45bee94da21fdd110, type: 3}
+  - {fileID: 1613854844687562703, guid: 20a3b4d6bfe6a3e4dacf6d43b5e82399, type: 3}
   enemyCount: 3
   spawnDelay: 1.5
 --- !u!65 &8079549979802841258
@@ -6397,6 +6403,9 @@ MonoBehaviour:
   - {fileID: 1455022229344683694, guid: 6e169e3a2fcd701429dab898f18ef4d9, type: 3}
   - {fileID: 86603612472512833, guid: e24ef14a0058f084e9446a405616825a, type: 3}
   - {fileID: 6219036811190547938, guid: cf2ca3e7e85a6b64babf65b557c0b563, type: 3}
+  singleEnemyPrefabs:
+  - {fileID: 116653089531905180, guid: 50f90a6c94f837c45bee94da21fdd110, type: 3}
+  - {fileID: 1613854844687562703, guid: 20a3b4d6bfe6a3e4dacf6d43b5e82399, type: 3}
   enemyCount: 3
   spawnDelay: 1.5
 --- !u!65 &3362924336915363608
@@ -7431,6 +7440,9 @@ MonoBehaviour:
   - {fileID: 1455022229344683694, guid: 6e169e3a2fcd701429dab898f18ef4d9, type: 3}
   - {fileID: 86603612472512833, guid: e24ef14a0058f084e9446a405616825a, type: 3}
   - {fileID: 6219036811190547938, guid: cf2ca3e7e85a6b64babf65b557c0b563, type: 3}
+  singleEnemyPrefabs:
+  - {fileID: 116653089531905180, guid: 50f90a6c94f837c45bee94da21fdd110, type: 3}
+  - {fileID: 1613854844687562703, guid: 20a3b4d6bfe6a3e4dacf6d43b5e82399, type: 3}
   enemyCount: 3
   spawnDelay: 1.5
 --- !u!65 &5266250426186593746
@@ -7774,7 +7786,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1240690828856328942}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -8254,7 +8266,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1260902054595497279}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -9372,7 +9384,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1535854764254006011}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -11098,7 +11110,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 10, y: 10}
   m_Shadows:
-    m_Type: 2
+    m_Type: 0
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -11633,7 +11645,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1816632323535528411}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -12500,7 +12512,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2038069137368003278}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -13103,7 +13115,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2112851231691073998}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -13288,7 +13300,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2115912908247195192}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -13617,7 +13629,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2200284577613691538}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -17760,6 +17772,9 @@ MonoBehaviour:
   - {fileID: 1455022229344683694, guid: 6e169e3a2fcd701429dab898f18ef4d9, type: 3}
   - {fileID: 86603612472512833, guid: e24ef14a0058f084e9446a405616825a, type: 3}
   - {fileID: 6219036811190547938, guid: cf2ca3e7e85a6b64babf65b557c0b563, type: 3}
+  singleEnemyPrefabs:
+  - {fileID: 116653089531905180, guid: 50f90a6c94f837c45bee94da21fdd110, type: 3}
+  - {fileID: 1613854844687562703, guid: 20a3b4d6bfe6a3e4dacf6d43b5e82399, type: 3}
   enemyCount: 3
   spawnDelay: 1.5
 --- !u!65 &3619542099398464621
@@ -18456,7 +18471,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3186771335813719001}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -18675,7 +18690,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3211543109340846607}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -19330,7 +19345,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3422330887069893607}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -19421,7 +19436,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3423455376603218201}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -27333,7 +27348,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 10, y: 10}
   m_Shadows:
-    m_Type: 2
+    m_Type: 0
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -27587,7 +27602,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 10, y: 10}
   m_Shadows:
-    m_Type: 2
+    m_Type: 0
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -38824,7 +38839,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 10, y: 10}
   m_Shadows:
-    m_Type: 2
+    m_Type: 0
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -39679,7 +39694,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6471737996276828004}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -40631,7 +40646,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6648828004940771273}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -41572,7 +41587,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6753034469534863217}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -43477,7 +43492,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 10, y: 10}
   m_Shadows:
-    m_Type: 2
+    m_Type: 0
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -43873,7 +43888,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7192670304485360357}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -46600,7 +46615,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 10, y: 10}
   m_Shadows:
-    m_Type: 2
+    m_Type: 0
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -47070,7 +47085,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7807709458150774188}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -53841,7 +53856,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8946819492014097182}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -55659,6 +55674,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5585828482522139527, guid: bb2fbe10985b8584aae4b5849c7a5ee1, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6272703169919645887, guid: bb2fbe10985b8584aae4b5849c7a5ee1, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -56065,6 +56088,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5564214462465924865, guid: bb2fbe10985b8584aae4b5849c7a5ee1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5585828482522139527, guid: bb2fbe10985b8584aae4b5849c7a5ee1, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6272703169919645887, guid: bb2fbe10985b8584aae4b5849c7a5ee1, type: 3}
+      propertyPath: m_Shadows.m_Type
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
