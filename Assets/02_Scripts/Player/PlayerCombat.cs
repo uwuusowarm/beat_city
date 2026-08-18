@@ -51,7 +51,17 @@ public class PlayerCombat : MonoBehaviour
     private bool _inSpecialChain;
     private SpecialAttackId? _currentSpecialId;
 
+    private Health _health;
 
+    private bool _inHitStun;
+    private float _hitStunEndTime;
+    private int _hitStunEndFrame;
+
+    private bool _watchdogArmed;
+    private float _watchdogDeadline;
+
+    private const float DefaultHitStunDuration = 0.35f;
+    private const float DefaultWatchdogTimeout = 2f;
 
     private void Awake()
     {
@@ -76,6 +86,22 @@ public class PlayerCombat : MonoBehaviour
         {
             specialKickHitbox.OnHitLanded += HandleHitLanded;
         }
+
+        _health = GetComponent<Health>();
+        if (_health != null)
+        {
+            _health.OnHit += HandleHitTaken;
+        }
+        else
+        {
+            Debug.LogWarning("[PlayerCombat] No Health on this object, attacks will not be cancelled when the player is hit.");
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (_health != null)
+            _health.OnHit -= HandleHitTaken;
     }
 
     private void HandleHitLanded(GameObject target)
@@ -85,8 +111,94 @@ public class PlayerCombat : MonoBehaviour
         PlayAttackSfx(CurrentAttackType);
     }
 
+    private void HandleHitTaken(HitData hitData)
+    {
+        PlayerStateManager state = PlayerStateManager.Instance;
+        if (state == null) return;
+
+        if (_health != null && _health.Current <= 0) return;
+
+        if (state.CurrentState != PlayerState.Idle &&
+            state.CurrentState != PlayerState.Attacking &&
+            state.CurrentState != PlayerState.SpecialAttacking &&
+            state.CurrentState != PlayerState.Stunned)
+        {
+            return;
+        }
+
+        Debug.Log($"[PlayerCombat] Hit taken while {state.CurrentState}, cancelling attack");
+
+        CancelCurrentAttack();
+        EnterHitStun();
+    }
+
+    private void CancelCurrentAttack()
+    {
+        _isAttacking = false;
+        _watchdogArmed = false;
+
+        DeactivateAllHitboxes();
+        ClearCurrentSpecial();
+    }
+
+    private void EnterHitStun()
+    {
+        float duration = _settings != null ? _settings.hitStunDuration : DefaultHitStunDuration;
+
+        _inHitStun = true;
+        _hitStunEndTime = Mathf.Max(_hitStunEndTime, Time.time + Mathf.Max(duration, 0f));
+        _hitStunEndFrame = Time.frameCount + 1;
+
+        PlayerStateManager.Instance.SetState(PlayerState.Stunned);
+    }
+
+    private void TickHitStun()
+    {
+        if (!_inHitStun) return;
+
+        // The special/dash coroutines poll PlayerState.Stunned after Update, so hold the
+        // state for one full frame even at duration 0 - otherwise they never see it.
+        if (Time.frameCount <= _hitStunEndFrame) return;
+        if (Time.time < _hitStunEndTime) return;
+
+        _inHitStun = false;
+
+        PlayerStateManager state = PlayerStateManager.Instance;
+        if (state != null && state.CurrentState == PlayerState.Stunned)
+            state.ResetToIdle();
+    }
+
+    private void TickAttackWatchdog()
+    {
+        if (!_watchdogArmed) return;
+
+        if (!_isAttacking || _inSpecialChain)
+        {
+            _watchdogArmed = false;
+            return;
+        }
+
+        if (Time.time < _watchdogDeadline) return;
+
+        Debug.LogWarning("[PlayerCombat] Attack watchdog fired - no FinishAttack event arrived, forcing recovery.");
+
+        DeactivateAllHitboxes();
+        FinishAttack();
+    }
+
+    private void DeactivateAllHitboxes()
+    {
+        if (hitbox != null) hitbox.Deactivate();
+        if (specialHitbox != null) specialHitbox.Deactivate();
+        if (dashStrikeHitbox != null) dashStrikeHitbox.Deactivate();
+        if (specialKickHitbox != null) specialKickHitbox.Deactivate();
+    }
+
     private void Update()
     {
+        TickHitStun();
+        TickAttackWatchdog();
+
         if (_isAttacking || _inSpecialChain) return;
         if (!PlayerStateManager.Instance.CanPerformAction()) return;
 
@@ -128,6 +240,10 @@ public class PlayerCombat : MonoBehaviour
 
         _lastAttackTime = Time.time;
         CurrentAttackType = input;
+
+        float watchdogTimeout = _settings != null ? _settings.attackWatchdogTimeout : DefaultWatchdogTimeout;
+        _watchdogArmed = watchdogTimeout > 0f;
+        _watchdogDeadline = Time.time + watchdogTimeout;
 
         Debug.Log($"[PlayerCombat] Combo Step: {_comboStep}/{maxSteps} Attack: {input}");
 
@@ -403,6 +519,12 @@ public class PlayerCombat : MonoBehaviour
 
         Debug.Log("[PlayerCombat] EnableHitbox called");
 
+        if (!_isAttacking && !_inSpecialChain)
+        {
+            Debug.Log("[PlayerCombat] EnableHitbox ignored - attack was already cancelled");
+            return;
+        }
+
         _hitLanded = false;
 
         Hitbox activeHitbox = GetCurrentHitbox();
@@ -422,6 +544,12 @@ public class PlayerCombat : MonoBehaviour
         Hitbox activeHitbox = GetCurrentHitbox();
         activeHitbox.Deactivate();
 
+        if (!_isAttacking && !_inSpecialChain)
+        {
+            Debug.Log("[PlayerCombat] DisableHitbox ignored - attack was already cancelled");
+            return;
+        }
+
         if (!_hitLanded && CurrentAttackType != CombatInputType.Special)
         {
             PlaySwingSfx(CurrentAttackType);
@@ -435,6 +563,7 @@ public class PlayerCombat : MonoBehaviour
         Debug.Log("[PlayerCombat] FinishAttack called");
 
         _isAttacking = false;
+        _watchdogArmed = false;
 
         if (_inSpecialChain)
         {
@@ -444,6 +573,9 @@ public class PlayerCombat : MonoBehaviour
         }
 
         ClearCurrentSpecial();
+
+        if (_inHitStun) return;
+
         PlayerStateManager.Instance.ResetToIdle();
     }
 
@@ -463,6 +595,7 @@ public class PlayerCombat : MonoBehaviour
 
         _inSpecialChain = false;
         _isAttacking = false;
+        _watchdogArmed = false;
 
         ClearCurrentSpecial();
 

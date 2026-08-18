@@ -191,6 +191,14 @@ public class PlayerSettings : ScriptableObject
     [Range(0f, 0.3f)]
     public float grappleImpactHitStop = 0.08f;
 
+    [Header("Hit Reaction")]
+    [Tooltip("How long the player is locked after taking a hit. The running attack is cancelled either way, this only controls how long control stays away. 0 = cancel the attack and hand control back on the next frame. The Hit clip itself runs about 0.6s, so higher values leave the player standing in idle but locked")]
+    [Range(0f, 1f)]
+    public float hitStunDuration = 0.35f;
+
+    [Tooltip("Watchdog. An attack whose FinishAttack animation event never arrives - interrupted clip, missing event - is force-ended after this many seconds. 0 disables it")]
+    public float attackWatchdogTimeout = 2f;
+
     [Header("Afterimage")]
     [Tooltip("Master switch for the afterimage ghost trail. Off suppresses it everywhere, regardless of the per-attack toggles below")]
     public bool afterimageEnabled = true;
